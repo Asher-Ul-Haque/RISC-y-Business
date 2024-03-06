@@ -23,4 +23,3 @@ typedef struct Bit
 
 // - - - - - - - - - - 
 #endif //BIT_H
- 
