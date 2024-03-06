@@ -4,12 +4,12 @@
 // - - - - - - - - - 
 
 //JUST SOMEBODY: I am going to create one memory allocate for whole 512 bits, 256 for program, 128 each for stack and data
-#define PROGRAM_MEMORY 256
-#define STACK_MEMORY 128
-#define DATA_MEMORY 128
-#define MEMORY_SIZE STACK_MEMORY+PROGRAM_MEMORY+DATA_MEMORY
-#define MEMORY_CELL 8
-#define ADDRESS_SIZE 32
+#define PROGRAM_MEMORY 64 //64 cells of 32 bits each. 256 bytes
+#define STACK_MEMORY 32 //32 cells of 32 bits each. 128 bytes
+#define DATA_MEMORY 32 //32 cells of 32 bits each. 128 bytes
+#define MEMORY_SIZE STACK_MEMORY+PROGRAM_MEMORY+DATA_MEMORY //128 cells of 32 bits each. 512 bytes
+#define MEMORY_CELL 32 //32 bits
+#define ADDRESS_SIZE 32 //32 bits
 #define PROGRAM_ADDRESS_START 0 // 0x00000000
 #define PROGRAM_ADDRESS_END 255 // 0x000000FF
 #define STACK_ADDRESS_START 256 // 0x00000100 
@@ -23,8 +23,8 @@ JUST SOMEBODY: A memory block is just a 512 byte storage with 256 byte for progr
 
 typedef struct
 {
-    Bit address[32];
-    Bit bits[8];
+    Bit address[ADDRESS_SIZE];
+    Bit bits[MEMORY_CELL];
 } MemoryCell;
 
 typedef struct
