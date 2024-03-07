@@ -16,11 +16,10 @@ int main()
 If you give more than 1 as a value, the bit is considered set.
 */
 
-typedef struct Bit
+typedef struct 
 {
     bool value : 1;
 } Bit;
 
 // - - - - - - - - - - 
 #endif //BIT_H
- 

@@ -8,12 +8,13 @@
 #define REGISTER_SIZE 32
 
 /*
-JUST SOMEBODY: A register is just a 32 bit storage with an ABI name
+JUST SOMEBODY: A register is just a 32 bit storage with an ABI name and a 5 bit address. Since an adress cannot be changed, it is a const array.
 */
 
 typedef struct
 {
     Bit bits[32];
+    Bit address[5];
     char* abi;
 } Register;
 
@@ -31,6 +32,7 @@ typedef struct
 JUST SOMEBODY: Here is how init and deallocate will work: take a register file, and then initialise all bits in all registers to 0. We will use only 1 malloc to create all registers
 free all registers.
 Getting a register by its ABI is as simple as a map.
+Also we can get the address of a register too.
 */
 RegisterFile* init();
 
@@ -38,7 +40,19 @@ void deallocateRegisters(RegisterFile *REGISTER_FILE);
 
 Register* getRegister(RegisterFile *REGISTER_FILE, const char* ABI);
 
+const char* getABI(RegisterFile *REGISTER_FILE, unsigned int index);
+
+const Bit* getAddress(RegisterFile *REGISTER_FILE, const char* ABI);
+
 unsigned int hash(const char* abiName);
+
+void setRegisterValue(Register *REGISTER, const Bit *BIT);
+
+void setBit(Register *REGISTER, unsigned int INDEX, const Bit *BIT);
+
+void printRegister(const Register *REGISTER);
+
+void printRegisterFile(const RegisterFile *REGISTER_FILE);
 
 // - - - - - - - - - -
 #endif // REGISTERS_H
