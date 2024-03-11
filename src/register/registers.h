@@ -46,7 +46,7 @@ const Bit* getAddress(RegisterFile *REGISTER_FILE, const char* ABI);
 
 unsigned int hash(const char* abiName);
 
-void setRegisterValue(Register *REGISTER, const Bit *BIT);
+void setRegisterValue(Register *REGISTER, const Bit BITS[REGISTER_SIZE]);
 
 void setBit(Register *REGISTER, unsigned int INDEX, const Bit *BIT);
 
