@@ -93,7 +93,7 @@ const Bit* getAddress(RegisterFile *REGISTER_FILE, const char* ABI)
 
 // - - - - - - - - - - - 
 
-void setRegisterValue(Register *REGISTER, const Bit *BITS)
+void setRegisterValue(Register *REGISTER, const Bit BITS[REGISTER_SIZE])
 {
     for (int i = 0; i < REGISTER_SIZE; ++i)
     {
@@ -105,7 +105,7 @@ void setRegisterValue(Register *REGISTER, const Bit *BITS)
 
 void setBit(Register *REGISTER, unsigned int INDEX, const Bit *BIT)
 {
-    if (INDEX >= REGISTER_SIZE)
+    if (INDEX >= REGISTER_SIZE || INDEX < 0)
     {
         perror("Error: Index out of bounds to set bit\nOperation: setBit");
         exit(EXIT_FAILURE);

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 // - - - - - - - - -
 
-Memory* allocateMemory()
+Memory* allocateMemory(Register* STACK_POINTER)
 {
     //Allocate memory for the memory
     Memory* memory = (Memory*)malloc(sizeof(Memory));
@@ -13,11 +13,19 @@ Memory* allocateMemory()
         exit(EXIT_FAILURE);
     }
 
+    //Set the stackPointer and initialise to 0
+    memory->stackPointer = STACK_POINTER;
+    Bit zeroBits[REGISTER_SIZE];
+    for (int i = 0; i < REGISTER_SIZE; ++i)
+    {
+        zeroBits[i].value = 0;
+    }
+    setRegisterValue(memory->stackPointer, zeroBits);
+
     //Initialise all bits of all memory cells to 0 and give them their address
-    
     for (int i = 0; i < PROGRAM_MEMORY; ++i)
     {
-        for (int j = 0; j < MEMORY_CELL; ++j)
+        for (int j = 0; j < MEMORY_CELL_SIZE; ++j)
         {
             memory->programMemory[i].bits[j].value = 0;
         }
@@ -30,7 +38,7 @@ Memory* allocateMemory()
 
     for (int i = 0; i < STACK_MEMORY; ++i)
     {
-        for (int j = 0; j < MEMORY_CELL; ++j)
+        for (int j = 0; j < MEMORY_CELL_SIZE; ++j)
         {
             memory->stackMemory[i].bits[j].value = 0;
         }
@@ -42,7 +50,7 @@ Memory* allocateMemory()
 
     for (int i = 0; i < DATA_MEMORY; ++i)
     {
-        for (int j = 0; j < MEMORY_CELL; ++j)
+        for (int j = 0; j < MEMORY_CELL_SIZE; ++j)
         {
             memory->dataMemory[i].bits[j].value = 0;
         }
@@ -93,7 +101,7 @@ void printMemoryCell(const MemoryCell* MEMORYCELL)
         printf("%d", MEMORYCELL->address[i].value);
     }
     printf(" , Value: ");
-    for (int i = 0; i < MEMORY_CELL; ++i)
+    for (int i = 0; i < MEMORY_CELL_SIZE; ++i)
     {
         printf("%d", MEMORYCELL->bits[i].value);
     }
@@ -135,4 +143,9 @@ void printDataMemory(const Memory* MEMORY)
     }
 }
 
-// - - - - - - - - 
+// - - - - - - - -
+
+void decreaseStackPointer(Memory* MEMORY)
+{
+
+}
