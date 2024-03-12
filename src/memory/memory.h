@@ -16,7 +16,7 @@
 #define STACK_ADDRESS_START 256 // 0x00000100 
 #define STACK_ADDRESS_END  STACK_ADDRESS_START + STACK_MEMORY/8 * 32// 0x0000017F
 #define DATA_ADDRESS_START 1048576 // 0x00100000
-#define DATA_ADDRESS_END DATA_ADDRESS_END + DATA_MEMORY/8 * 32 // 0x0010007F
+#define DATA_ADDRESS_END DATA_ADDRESS_START + DATA_MEMORY/8 * 32 // 0x0010007F
 
 /* 
 JUST SOMEBODY: A memory block is just a 512 byte storage with 256 byte for program. 128 bytes for stack and 128 bytes for data . A memory cell is just a storage of 1 byte with an address
@@ -47,9 +47,15 @@ Memory* allocateMemory(Register* STACK_POINTER);
 
 void deallocateMemory(Memory* MEMORY);
 
+static bool isAddressInRange(const Bit ADDRESS[ADDRESS_SIZE], int start, int end);
+
+int calculateMemoryIndex(const Bit ADDRESS[ADDRESS_SIZE]);
+
 MemoryCell* getProgramMemory(Memory* MEMORY);
 
-void printMemoryCell(const MemoryCell* MEMORYCELL);
+MemoryCell* getMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE]);
+
+void printMemoryCell(const MemoryCell *MEMORYCELL);
 
 //JUST_SOMEBODY: Handling stack memory- - - - - - - - -
 
@@ -61,7 +67,7 @@ void decreaseStackPointer(Memory* MEMORY);
 
 void increaseStackPointer(Memory* MEMORY);
 
-void pushStackMemory(Memory* MEMORY, const Bit BITS[MEMORY_CELL_SIZE]);
+void pushStackMemory(Memory* MEMORY, const Register* REGISTER);
 
 Bit* popStackMemory(Memory* MEMORY);
 
@@ -69,9 +75,15 @@ Bit* popStackMemory(Memory* MEMORY);
 
 MemoryCell* getDataMemory(Memory* MEMORY);
 
-void printProgramMemory(const Memory* MEMORY);
-
 void printDataMemory(const Memory* MEMORY);
+
+void setDataMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE], const Bit VALUE[MEMORY_CELL_SIZE]);
+
+//JUST_SOMEBODY: Handling Program memory- - - - - - -
+
+void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH);
+
+void printProgramMemory(const Memory* MEMORY);
 
 // - - - - - - - - -
 
