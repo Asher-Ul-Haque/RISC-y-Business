@@ -13,15 +13,6 @@ Memory* allocateMemory(Register* STACK_POINTER)
         exit(EXIT_FAILURE);
     }
 
-    //Set the stackPointer and initialise to 0
-    memory->stackPointer = STACK_POINTER;
-    Bit zeroBits[REGISTER_SIZE];
-    for (int i = 0; i < REGISTER_SIZE; ++i)
-    {
-        zeroBits[i].value = 0;
-    }
-    setRegisterValue(memory->stackPointer, zeroBits);
-
     //Initialise all bits of all memory cells to 0 and give them their address
     for (int i = 0; i < PROGRAM_MEMORY; ++i)
     {
@@ -59,6 +50,10 @@ Memory* allocateMemory(Register* STACK_POINTER)
             memory->dataMemory[i].address[k].value = ((i + DATA_ADDRESS_START) >> (ADDRESS_SIZE - k - 1)) & 1;
         }
     }
+
+    //Set the stackPointer and initialise to the address of the first cell in stack memory
+    memory->stackPointer = STACK_POINTER;
+    setRegisterValue(memory->stackPointer, memory->stackMemory[0].address);
 
     return memory;
 }

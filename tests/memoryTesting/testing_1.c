@@ -19,25 +19,24 @@ int main() {
 
     // Test program memory access
     MemoryCell* programMemory = getProgramMemory(memory);
-    printf("Program Memory:\n");
     printProgramMemory(memory);
 
     // Test stack memory operations
-    printf("\nStack Memory:\n");
     printStackMemory(memory);
+    printRegister(memory->stackPointer);
+    printf("\n");
     pushStackMemory(memory, &testRegister);
+
     printf("After Push:\n");
     printStackMemory(memory);
+    printRegister(memory->stackPointer);
     Bit* poppedBits = popStackMemory(memory);
     printf("After Pop:\n");
     printStackMemory(memory);
-
+    printRegister(memory->stackPointer);
     // Test data memory access
     MemoryCell* dataMemory = getDataMemory(memory);
-    printf("\nData Memory:\n");
-    for (int i = 0; i < DATA_MEMORY; ++i) {
-        printMemoryCell(&dataMemory[i]);
-    }
+    printDataMemory(memory);
 
     // Deallocate memory
     deallocateMemory(memory);
