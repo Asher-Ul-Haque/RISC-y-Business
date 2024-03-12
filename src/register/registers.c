@@ -95,7 +95,7 @@ const Bit* getAddress(RegisterFile *REGISTER_FILE, const char* ABI)
 
 void setRegisterValue(Register *REGISTER, const Bit BITS[REGISTER_SIZE])
 {
-    for (int i = REGISTER_SIZE; i > 0; --i)
+    for (int i = 0; i < REGISTER_SIZE; ++i)
     {
         REGISTER->bits[i].value = BITS[i].value;
     }
@@ -124,7 +124,7 @@ void printRegister(const Register *REGISTER)
         printf("%d", REGISTER->address[i].value);
     }
     printf(" , Value: ");
-    for (int i = REGISTER_SIZE - 1; i >= 0; --i)
+    for (int i = 0; i < REGISTER_SIZE; ++i)
     {
         printf("%d", REGISTER->bits[i].value);
     }

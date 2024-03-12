@@ -53,7 +53,17 @@ Memory* allocateMemory(Register* STACK_POINTER)
 
     //Set the stackPointer and initialise to the address of the first cell in stack memory
     memory->stackPointer = STACK_POINTER;
-    setRegisterValue(memory->stackPointer, memory->stackMemory[0].address);
+    Bit stackPointerAddress[REGISTER_SIZE];
+    for (int i = 0; i < REGISTER_SIZE-ADDRESS_SIZE; ++i)
+    {
+        stackPointerAddress[i].value = 0;
+    }
+    for (int i = REGISTER_SIZE-ADDRESS_SIZE; i < REGISTER_SIZE; ++i)
+    {
+        stackPointerAddress[i].value = memory->stackMemory[0].address[i-(REGISTER_SIZE-ADDRESS_SIZE)].value;
+    }
+    setRegisterValue(memory->stackPointer, stackPointerAddress);
+
 
     return memory;
 }
@@ -143,7 +153,7 @@ void printDataMemory(const Memory* MEMORY)
 void decreaseStackPointer(Memory* MEMORY)
 {
     //JUST_SOMEBODY: Throw error on underflow;
-    if (toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) < STACK_ADDRESS_START)
+    if (toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) <= STACK_ADDRESS_START)
     {
         perror("Stack Underflow");
         exit(EXIT_FAILURE);
@@ -185,13 +195,28 @@ static bool isAddressInRange(const Bit ADDRESS[ADDRESS_SIZE], int start, int end
 
 int calculateMemoryIndex(const Bit ADDRESS[ADDRESS_SIZE])
 {
-    int index = 0;
+    //Just somebody: this function returns the index of the memory cell in the memory array of the specific memory type
+    //So if the address is 0000000, the index points to the first cell in the program memory array and we will return 0;
+    //So if the address is 1000001, the index points to the second cell in the stack memory array and we will return 1;
 
+    int index = 0;
     for (int i = 0; i < ADDRESS_SIZE; ++i)
     {
-        index = (index << 1) | ADDRESS[i].value;
+        index += ADDRESS[i].value << (ADDRESS_SIZE - 1 - i);
+        if (index < 0)
+        {
+            perror("Error: Index out of bounds\nOperation: calculateMemoryIndex");
+            exit(EXIT_FAILURE);
+        }
+        if (index == 64)
+        {
+            index = 0; //Switched to stack memory 
+        }
+        if (index == 96)
+        {
+            index = 0; //Switched to data memory
+        }
     }
-
     return index;
 }
 
@@ -227,9 +252,11 @@ void pushStackMemory(Memory* MEMORY, const Register* REGISTER)
 
     MemoryCell* stackTopCell = getMemoryCell(MEMORY, MEMORY->stackPointer->bits);
 
+    int index = toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) % 32;
+    printf("Index: %d\n", index);
     for (int i = 0; i < MEMORY_CELL_SIZE; ++i)
     {
-        stackTopCell->bits[i].value = REGISTER->bits[i].value;
+        MEMORY->stackMemory[index].bits[i].value = REGISTER->bits[i].value;
     }
 
     increaseStackPointer(MEMORY);
@@ -239,14 +266,20 @@ void pushStackMemory(Memory* MEMORY, const Register* REGISTER)
 
 Bit* popStackMemory(Memory* MEMORY)
 {
-    if (toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) < STACK_ADDRESS_START)
+    if (toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) <= STACK_ADDRESS_START)
     {
         perror("Stack Underflow");
         exit(EXIT_FAILURE);
     }
 
-    MemoryCell* stackTopCell = getMemoryCell(MEMORY, MEMORY->stackPointer->bits);
     decreaseStackPointer(MEMORY);
+    MemoryCell* stackTopCell = getMemoryCell(MEMORY, MEMORY->stackPointer->bits);
+    //Reset the top of the stack memory to 0
+    int index = toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) % 32;
+    for (int i = 0; i < MEMORY_CELL_SIZE; ++i)
+    {
+        MEMORY->stackMemory[index].bits[i].value = 0;
+    }
     return stackTopCell->bits;
 }
 

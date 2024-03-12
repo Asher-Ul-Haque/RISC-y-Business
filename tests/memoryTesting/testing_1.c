@@ -21,19 +21,34 @@ int main() {
     MemoryCell* programMemory = getProgramMemory(memory);
     printProgramMemory(memory);
 
+    //Test ability to affect memory
+    int index = calculateMemoryIndex(memory->stackMemory[16].address);
+    printf("Index: %d\n", index);
+    memory->stackMemory[0].bits[0].value = 1;
+
     // Test stack memory operations
-    printStackMemory(memory);
+    printf("Stack Pointer:\n");
     printRegister(memory->stackPointer);
+    printStackMemory(memory);
     printf("\n");
     pushStackMemory(memory, &testRegister);
 
-    printf("After Push:\n");
+    pushStackMemory(memory, &testRegister);
+    pushStackMemory(memory, &testRegister);
+
+    printf("After 3 Push:\n");
     printStackMemory(memory);
     printRegister(memory->stackPointer);
     Bit* poppedBits = popStackMemory(memory);
     printf("After Pop:\n");
     printStackMemory(memory);
     printRegister(memory->stackPointer);
+
+    //After 2 more pops
+    poppedBits = popStackMemory(memory);
+    poppedBits = popStackMemory(memory);
+    printf("After 2 more Pops:\n");
+    printStackMemory(memory);
     // Test data memory access
     MemoryCell* dataMemory = getDataMemory(memory);
     printDataMemory(memory);

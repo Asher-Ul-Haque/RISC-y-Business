@@ -306,14 +306,14 @@ void decrementBitArray(Bit* BIT_ARRAY, unsigned short SIZE)
     
     for (int i = SIZE - 1; i >= 0; --i)
     {
-        if (BIT_ARRAY[i].value == 0)
+        if (BIT_ARRAY[i].value == 1)
         {
-            BIT_ARRAY[i].value = 1;
+            BIT_ARRAY[i].value = 0;
             break;
         }
         else 
         {
-            BIT_ARRAY[i].value = 0;        
+            BIT_ARRAY[i].value = 1;        
         }
     }
 }
