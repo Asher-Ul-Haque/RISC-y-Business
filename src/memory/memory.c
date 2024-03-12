@@ -199,25 +199,13 @@ int calculateMemoryIndex(const Bit ADDRESS[ADDRESS_SIZE])
     //So if the address is 0000000, the index points to the first cell in the program memory array and we will return 0;
     //So if the address is 1000001, the index points to the second cell in the stack memory array and we will return 1;
 
-    int index = 0;
-    for (int i = 0; i < ADDRESS_SIZE; ++i)
+    int index = toDecimal(ADDRESS, REGISTER_SIZE, false);
+    if (index >= PROGRAM_MEMORY)
     {
-        index += ADDRESS[i].value << (ADDRESS_SIZE - 1 - i);
-        if (index < 0)
-        {
-            perror("Error: Index out of bounds\nOperation: calculateMemoryIndex");
-            exit(EXIT_FAILURE);
-        }
-        if (index == 64)
-        {
-            index = 0; //Switched to stack memory 
-        }
-        if (index == 96)
-        {
-            index = 0; //Switched to data memory
-        }
+        index = index % ADDRESS_SIZE;
     }
-    return index;
+   
+    return index - 1; //Because indexing starts at 0;
 }
 
 // - - - - - - - - - -
@@ -252,8 +240,8 @@ void pushStackMemory(Memory* MEMORY, const Register* REGISTER)
 
     MemoryCell* stackTopCell = getMemoryCell(MEMORY, MEMORY->stackPointer->bits);
 
-    int index = toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) % 32;
-    printf("Index: %d\n", index);
+//    int index = toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) % STACK_MEMORY;
+    int index = calculateMemoryIndex(MEMORY->stackPointer->bits);
     for (int i = 0; i < MEMORY_CELL_SIZE; ++i)
     {
         MEMORY->stackMemory[index].bits[i].value = REGISTER->bits[i].value;
@@ -275,7 +263,8 @@ Bit* popStackMemory(Memory* MEMORY)
     decreaseStackPointer(MEMORY);
     MemoryCell* stackTopCell = getMemoryCell(MEMORY, MEMORY->stackPointer->bits);
     //Reset the top of the stack memory to 0
-    int index = toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) % 32;
+    //int index = toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) % 32;
+    int index = calculateMemoryIndex(MEMORY->stackPointer->bits);
     for (int i = 0; i < MEMORY_CELL_SIZE; ++i)
     {
         MEMORY->stackMemory[index].bits[i].value = 0;

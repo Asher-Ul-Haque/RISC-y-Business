@@ -382,7 +382,7 @@ Bit* toSignedBitArray(int decimal, unsigned short SIZE)
 
 // - - - - - - - -
 
-int toDecimal(Bit* BIT_ARRAY, unsigned short SIZE, bool IS_SIGNED)
+int toDecimal(const Bit* BIT_ARRAY, unsigned short SIZE, bool IS_SIGNED)
 {
     int decimal = 0;
 
