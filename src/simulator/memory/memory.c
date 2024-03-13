@@ -1,6 +1,7 @@
 #include "memory.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 // - - - - - - - - -
 
 Memory* allocateMemory(Register* STACK_POINTER)
@@ -305,35 +306,35 @@ void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH)
     char line[MEMORY_CELL_SIZE + 1]; //JUST SOMEBODY: plus one for the \n character.
 
     //JUST SOMEBODY: Reading each line and storing it in the programMemory for the simulator to execute
-    for (int i = 0; i < PROGRAM_MEMORY; ++i)
-    {
-        if (fgets(line, sizeof(line), file) == NULL) //JUST SOMEBODY: @Kepi, fgets can get a set number of characters if we want
-        {
-            break; //REACHED END OF FILE
-        }
-        
-        Bit* programMemoryBits[MEMORY_CELL_SIZE];
 
-        for (int j = 0; j < MEMORY_CELL_SIZE; ++j)
+    int i = 0; // Initialize i outside the loop
+    while (fgets(line, sizeof(line), file) != NULL && i < PROGRAM_MEMORY) // Stop when end of file is reached or PROGRAM_MEMORY lines are read
+    {
+        
+        if (strlen(line) <= 1) // Check if the line is too short
+        {
+            continue;
+        }
+
+        for (int j = 0; j < MEMORY_CELL_SIZE && line[j] != '\n'; ++j) // Avoid processing newline characters
         {
             switch(line[j])
             {
                 case '0':
-                    programMemoryBits[j]->value = 0;
+                    MEMORY->programMemory[i].bits[j].value = 0;
+                    break;
                 case '1':
-                    programMemoryBits[j]->value = 1;
+                    MEMORY->programMemory[i].bits[j].value = 1;
+                    break;
                 default:
-                    perror("Encountered a non-binary character while reading the file");
+                    printf("Encountered a non-binary character  '%c' while reading the file\n", line[j]);
+                    perror("\n");
                     exit(EXIT_FAILURE);
             }
         }
-
-        MemoryCell* programMemoryCell = &MEMORY->programMemory[i];
-        for (int j = 0; j < MEMORY_CELL_SIZE; ++j)
-        {
-            programMemoryCell->bits[j].value = programMemoryBits[j]->value;
-        }
-
+        i++; // Increment i only when a line is successfully read and stored
     }
+
     fclose(file);
+    printf("Successfully read and closed file\n");
 }
