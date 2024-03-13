@@ -1,8 +1,6 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
-#include "../memory/memory.h"
-#include "../register/registers.h"
-#include "../../include/bit.h"
+#include "memory/memory.h"
 // - - - - - - - - - -
 
 /*
@@ -23,12 +21,19 @@ typedef struct {
 // JUST SOMEBODY: Function prototypes. I want others to review this and add more if needed
 
 Simulator* initializeSimulator(const char* BINARY_FILE_PATH);
+
 void loadProgram(Simulator* SIMULATOR);
+
 void executeInstruction(Simulator* SIMULATOR);
-void updateProgramCounter(Simulator* SIMULATOR);
+
+void updateProgramCounter(Simulator* SIMULATOR, unsigned short VALUE);
+
 void printRegisters(const Simulator* SIMULATOR);
+
 void printMemory(const Simulator* SIMULATOR);
+
 void runSimulation(Simulator* SIMULATOR);
+
 void deinitializeSimulator(Simulator* SIMULATOR);
 
 // - - - - - - - - - - - -
