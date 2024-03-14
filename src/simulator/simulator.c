@@ -1,7 +1,5 @@
 #include "simulator.h"
 #include "instructionExecutor/executorManager/executorManager.h"
-#include "memory/memory.h"
-#include "register/registers.h"
 #include <stdio.h>
 #include <stdlib.h>
 // - - - - - - - - -
@@ -10,13 +8,57 @@
 
 Simulator* initializeSimulator(const char* BINARY_FILE_PATH)
 {
+    //Allocate memory for the Simulator struct
     printf("Creating simulator\n");
     Simulator* simulator = (Simulator*) malloc(sizeof(Simulator));
+    
+    if (simulator == NULL)
+    {
+        perror("Error: Failed to allocate memory for Simulator\n");
+        exit(EXIT_FAILURE);
+    }
+
+    //Initialize the register file
     simulator->registerFile = initializeRegisters();
+    if (simulator->registerFile == NULL)
+    {
+        perror("Error: Failed to initialize Register File\n");
+        free(simulator);
+        exit(EXIT_FAILURE);
+    }
+
+    //Initialize the memory manager
     simulator->memoryManager = allocateMemory(getRegister(simulator->registerFile, "sp"));
-    simulator->programCounter = 0;
+    if (simulator->memoryManager == NULL)
+    {
+        perror("Error: Failed to initialize memory manager");
+        free(simulator->registerFile);
+        free(simulator);
+        return NULL;
+    }
+
+    //Initialize the program counter
+    *simulator->programCounter = 0;
+    if (simulator->programCounter == NULL)
+    {
+        perror("Error: Failed to initialize program counter");
+        free(simulator->memoryManager);
+        free(simulator->registerFile);
+        free(simulator);
+        return NULL;
+    }
+
+    simulator->executionManager = initializeExecutorManager(simulator->memoryManager, simulator->registerFile, simulator->programCounter);
+    if (simulator->executionManager == NULL)
+    {
+        perror("Error: Failed to initialize executor manager");
+        free(simulator->programCounter);
+        free(simulator->memoryManager);
+        free(simulator->registerFile);
+        free(simulator);
+    }
+
     simulator->binaryFilePath = BINARY_FILE_PATH;
-    simulator->executionManager = initializeExecutorManager(simulator->memoryManager, simulator->registerFile, &simulator->programCounter);
     printf("Simulator created\n");
     loadProgram(simulator);
     printf("%s", "Ready to execute"); 
@@ -35,7 +77,12 @@ void loadProgram(Simulator *SIMULATOR)
 
 void deinitializeSimulator(Simulator *SIMULATOR)
 {
+    free(SIMULATOR->executionManager);
+    free(SIMULATOR->programCounter);
+    free(SIMULATOR->memoryManager);
+    free(SIMULATOR->registerFile);
     free(SIMULATOR);
+
     printf("Program successfully terminated");
     exit(EXIT_SUCCESS);
 }
@@ -64,9 +111,9 @@ void printMemory(const Simulator *SIMULATOR)
 
 void runSimulation(Simulator *SIMULATOR)
 {
-    while (!(SIMULATOR->programCounter >= PROGRAM_MEMORY))
+    while (!(*SIMULATOR->programCounter >= PROGRAM_MEMORY))
     {
-        Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[SIMULATOR->programCounter].bits)->bits;
+        Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter].bits)->bits;
         findAndExecute(instruction);
         printRegisters(SIMULATOR);
     }

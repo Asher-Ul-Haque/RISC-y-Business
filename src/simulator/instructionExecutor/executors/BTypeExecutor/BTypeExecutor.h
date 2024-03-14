@@ -1,6 +1,6 @@
 #ifndef B_TYPE_EXECUTOR
 #define B_TYPE_EXECUTOR
-#include "../../memory/memory.h"
+#include "../../../memory/memory.h"
 // - - - - - - - - -
 
 #define INSTRUCTION_SIZE 32

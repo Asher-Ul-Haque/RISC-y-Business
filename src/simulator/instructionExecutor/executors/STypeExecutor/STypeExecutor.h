@@ -1,6 +1,6 @@
 #ifndef S_TYPE_EXECUTOR
 #define S_TYPE_EXECUTOR
-#include "../../memory/memory.h"
+#include "../../../memory/memory.h"
 // - - - - - - - - -
 
 #define INSTRUCTION_SIZE 32

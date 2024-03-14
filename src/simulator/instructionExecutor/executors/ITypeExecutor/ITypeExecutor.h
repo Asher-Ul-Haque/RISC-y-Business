@@ -1,6 +1,6 @@
 #ifndef I_TYPE_EXECUTOR
 #define I_TYPE_EXECUTOR
-#include "../../memory/memory.h"
+#include "../../../memory/memory.h"
 // - - - - - - - - -
 
 #define INSTRUCTION_SIZE 32
@@ -25,6 +25,7 @@ void executeITypeLWInstruction(iTypeExecutor* I_TYPE_EXECUTOR, Bit Instruction[I
 void executeITypeDefaultInstruction(iTypeExecutor* I_TYPE_EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
 void executeITypeJumpInstruction(iTypeExecutor* I_TYPE_EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
+
 // - - - - - - - -
 
 #endif // I_TYPE_EXECUTOR

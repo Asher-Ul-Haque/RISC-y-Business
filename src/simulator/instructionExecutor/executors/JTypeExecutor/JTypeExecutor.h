@@ -1,6 +1,6 @@
 #ifndef J_TYPE_EXECUTOR
 #define J_TYPE_EXECUTOR
-#include "../../memory/memory.h"
+#include "../../../memory/memory.h"
 // - - - - - - - - -
 
 #define INSTRUCTION_SIZE 32

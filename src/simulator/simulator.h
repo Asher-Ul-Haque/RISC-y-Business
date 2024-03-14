@@ -15,8 +15,8 @@ typedef struct
     Memory* memoryManager;
     RegisterFile* registerFile;
     const char* binaryFilePath;
-    unsigned short programCounter;
-    executorManager* executionManager;
+    unsigned short* programCounter;
+    ExecutorManager* executionManager;
 } Simulator;
 
 // - - - - - - - - - - - -
@@ -26,8 +26,6 @@ typedef struct
 Simulator* initializeSimulator(const char* BINARY_FILE_PATH);
 
 void loadProgram(Simulator* SIMULATOR);
-
-void updateProgramCounter(Simulator* SIMULATOR, unsigned short VALUE);
 
 void printRegisters(const Simulator* SIMULATOR);
 

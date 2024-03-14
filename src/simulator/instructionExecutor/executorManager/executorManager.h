@@ -1,12 +1,12 @@
 #ifndef EXECUTOR_MANAGER
 #define EXECUTOR_MANAGER
 #include "../../memory/memory.h"
-#include "../RTypeExecutor/RTypeExecutor.h"
-#include "../ITypeExecutor/ITypeExecutor.h"
-#include "../STypeExecutor/STypeExecutor.h"
-#include "../BTypeExecutor/BTypeExecutor.h"
-#include "../UTypeExecutor/UTypeExecutor.h"
-#include "../JTypeExecutor/JTypeExecutor.h"
+#include "../executors/RTypeExecutor/RTypeExecutor.h"
+#include "../executors/ITypeExecutor/ITypeExecutor.h"
+#include "../executors/STypeExecutor/STypeExecutor.h"
+#include "../executors/BTypeExecutor/BTypeExecutor.h"
+#include "../executors/UTypeExecutor/UTypeExecutor.h"
+#include "../executors/JTypeExecutor/JTypeExecutor.h"
 
 // - - - - - - - - - - - - -
 
@@ -45,15 +45,16 @@ typedef struct
     rTypeExecutor* rTypeExecutor;
     iTypeExecutor* iTypeExecutor;
     sTypeExecutor* sTypeExecutor;
+    bTypeExecutor* bTypeExecutor;
     uTypeExecutor* uTypeExecutor;
     jTypeExecutor* jTypeExecutor;
-} executorManager;
+} ExecutorManager;
 
-executorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* PROGRAM_COUNTER);
+ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* PROGRAM_COUNTER);
 
 void findAndExecute(Bit INSTRUCTION[INSTRUCTION_SIZE]);
 
-void destroyExecutorManager(executorManager* EXECUTOR_MANAGER);
+void destroyExecutorManager(ExecutorManager* EXECUTOR_MANAGER);
 
 // - - - - - - - -
 
