@@ -1,4 +1,5 @@
 #include "simulator.h"
+#include "instructionExecutor/executorManager/executorManager.h"
 #include "memory/memory.h"
 #include "register/registers.h"
 #include <stdio.h>
@@ -15,6 +16,7 @@ Simulator* initializeSimulator(const char* BINARY_FILE_PATH)
     simulator->memoryManager = allocateMemory(getRegister(simulator->registerFile, "sp"));
     simulator->programCounter = 0;
     simulator->binaryFilePath = BINARY_FILE_PATH;
+    simulator->executionManager = initializeExecutorManager(simulator->memoryManager, simulator->registerFile, &simulator->programCounter);
     printf("Simulator created\n");
     loadProgram(simulator);
     printf("%s", "Ready to execute"); 
@@ -60,4 +62,16 @@ void printMemory(const Simulator *SIMULATOR)
 
 // - - - - - - - - - - -
 
+void runSimulation(Simulator *SIMULATOR)
+{
+    while (!(SIMULATOR->programCounter >= PROGRAM_MEMORY))
+    {
+        Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[SIMULATOR->programCounter].bits)->bits;
+        findAndExecute(instruction);
+        printRegisters(SIMULATOR);
+    }
+    printMemory(SIMULATOR);
+}
+
+// - - - - - - - - - -
 

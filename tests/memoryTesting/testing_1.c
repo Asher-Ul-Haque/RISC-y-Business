@@ -1,5 +1,4 @@
-#include "../../src/memory/memory.h"
-#include "../../src/register/registers.h"
+#include "../../src/simulator/memory/memory.h"
 #include <stdio.h>
 
 int main() {

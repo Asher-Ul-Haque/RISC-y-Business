@@ -154,7 +154,7 @@ void printDataMemory(const Memory* MEMORY)
 void decreaseStackPointer(Memory* MEMORY)
 {
     //JUST_SOMEBODY: Throw error on underflow;
-    if (toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) <= STACK_ADDRESS_START)
+    if (toDecimal(MEMORY->stackPointer->bits, 0, REGISTER_SIZE, false) <= STACK_ADDRESS_START)
     {
         perror("Stack Underflow");
         exit(EXIT_FAILURE);
@@ -168,7 +168,7 @@ void decreaseStackPointer(Memory* MEMORY)
 void increaseStackPointer(Memory* MEMORY)
 {
     //JUST_SOMEBODY: Throw error on underflow;
-    if (toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) > STACK_ADDRESS_END)
+    if (toDecimal(MEMORY->stackPointer->bits, 0, REGISTER_SIZE, false) > STACK_ADDRESS_END)
     {
         perror("Stack Overflow! Very punny!");
         exit(EXIT_FAILURE);
@@ -200,7 +200,7 @@ int calculateMemoryIndex(const Bit ADDRESS[ADDRESS_SIZE])
     //So if the address is 0000000, the index points to the first cell in the program memory array and we will return 0;
     //So if the address is 1000001, the index points to the second cell in the stack memory array and we will return 1;
 
-    int index = toDecimal(ADDRESS, REGISTER_SIZE, false);
+    int index = toDecimal(ADDRESS, 0, REGISTER_SIZE, false);
     if (index >= PROGRAM_MEMORY)
     {
         index = index % ADDRESS_SIZE;
@@ -233,7 +233,7 @@ MemoryCell* getMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE])
 
 void pushStackMemory(Memory* MEMORY, const Register* REGISTER)
 {
-    if (toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) > STACK_ADDRESS_END)
+    if (toDecimal(MEMORY->stackPointer->bits, 0, REGISTER_SIZE, false) > STACK_ADDRESS_END)
     {
         perror("Stack Overflow! Very punny");
         exit(EXIT_FAILURE);
@@ -255,7 +255,7 @@ void pushStackMemory(Memory* MEMORY, const Register* REGISTER)
 
 Bit* popStackMemory(Memory* MEMORY)
 {
-    if (toDecimal(MEMORY->stackPointer->bits, REGISTER_SIZE, false) <= STACK_ADDRESS_START)
+    if (toDecimal(MEMORY->stackPointer->bits, 0, REGISTER_SIZE, false) <= STACK_ADDRESS_START)
     {
         perror("Stack Underflow");
         exit(EXIT_FAILURE);
