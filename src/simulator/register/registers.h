@@ -6,6 +6,7 @@
 //JUST SOMEBODY: We will have 32 registers of 32 bits each
 #define REGISTER_COUNT 32
 #define REGISTER_SIZE 32
+#define REGISTER_ADDRESS_SIZE 5
 
 /*
 JUST SOMEBODY: A register is just a 32 bit storage with an ABI name and a 5 bit address. Since an adress cannot be changed, it is a const array.
@@ -13,8 +14,8 @@ JUST SOMEBODY: A register is just a 32 bit storage with an ABI name and a 5 bit 
 
 typedef struct
 {
-    Bit bits[32];
-    Bit address[5];
+    Bit bits[REGISTER_SIZE];
+    Bit address[REGISTER_ADDRESS_SIZE];
     char* abi;
 } Register;
 
@@ -39,6 +40,8 @@ RegisterFile* initializeRegisters();
 void deallocateRegisters(RegisterFile *REGISTER_FILE);
 
 Register* getRegister(RegisterFile *REGISTER_FILE, const char* ABI);
+
+Register* getRegisterByIndex(RegisterFile* REGISTER_FILE, char index);
 
 const char* getABI(RegisterFile *REGISTER_FILE, unsigned int index);
 

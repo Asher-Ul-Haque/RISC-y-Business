@@ -18,7 +18,7 @@ Bit* makeBit(bool VALUE)
 
 // - - - - - - - - - -
 
-Bit* createBitArray(unsigned short SIZE)
+Bit* createBitArray(unsigned char SIZE)
 {
     //JUST_SOMEBODY: I discourage using this function since malloc == slow
     if (SIZE > 32 || SIZE < 1)
@@ -103,7 +103,7 @@ Bit NOT(const Bit *BIT)
 
 // - - - - - - - - -
 
-Bit* bitwiseOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned short SIZE)
+Bit* bitwiseOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned char SIZE)
 {
 
     if (SIZE > 32 || SIZE < 1)
@@ -113,7 +113,7 @@ Bit* bitwiseOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned short SI
     }
 
     Bit* result = createBitArray(SIZE);
-    for (unsigned short i = 0; i < SIZE; ++i)
+    for (unsigned char i = 0; i < SIZE; ++i)
     {
         result[i] = OR(&BIT_ARRAY_1[i], &BIT_ARRAY_2[i]);
     }
@@ -122,7 +122,7 @@ Bit* bitwiseOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned short SI
 
 // - - - - - - - - -
 
-Bit* bitwiseXOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned short SIZE) 
+Bit* bitwiseXOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned char SIZE) 
 {
     if (SIZE > 32 || SIZE < 1)
     {
@@ -131,7 +131,7 @@ Bit* bitwiseXOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned short S
     }
 
     Bit* result = createBitArray(SIZE);
-    for (unsigned short i = 0; i < SIZE; ++i) 
+    for (unsigned char i = 0; i < SIZE; ++i) 
     {
         result[i] = XOR(&BIT_ARRAY_1[i], &BIT_ARRAY_2[i]);
     }
@@ -140,7 +140,7 @@ Bit* bitwiseXOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned short S
 
 // - - - - - - - - -
 
-Bit* bitwiseNOT(const Bit* BIT_ARRAY, unsigned short SIZE) 
+Bit* bitwiseNOT(const Bit* BIT_ARRAY, unsigned char SIZE) 
 {
     if (SIZE > 32 || SIZE < 1)
     {
@@ -149,7 +149,7 @@ Bit* bitwiseNOT(const Bit* BIT_ARRAY, unsigned short SIZE)
     }
 
     Bit* result = createBitArray(SIZE);
-    for (unsigned short i = 0; i < SIZE; ++i) 
+    for (unsigned char i = 0; i < SIZE; ++i) 
     {
         result[i] = NOT(&BIT_ARRAY[i]);
     }
@@ -160,7 +160,7 @@ Bit* bitwiseNOT(const Bit* BIT_ARRAY, unsigned short SIZE)
 
 //JUST_SOMEBODY: THE ARITHMETIC OPERATIONS, NOT RECOMMENDED TO USE
 
-Bit* ADD(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, unsigned short OUTPUT_ARRAY_SIZE)
+Bit* ADD(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, unsigned char OUTPUT_ARRAY_SIZE)
 {
     if (INPUT_ARRAY_SIZE > 32 || OUTPUT_ARRAY_SIZE < 1)
     {
@@ -176,7 +176,7 @@ Bit* ADD(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, un
     Bit carry;
     carry.value = 0;
 
-    for (unsigned short i = 0; i < INPUT_ARRAY_SIZE; ++i)
+    for (unsigned char i = 0; i < INPUT_ARRAY_SIZE; ++i)
     {
         Bit temp = XOR(&BIT_ARRAY_1[i], &BIT_ARRAY_2[i]);
         result[i] = XOR(&temp, &carry);
@@ -193,7 +193,7 @@ Bit* ADD(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, un
 // - - - - - - - - -
 
 
-Bit* SUB(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, unsigned short OUTPUT_ARRAY_SIZE) {
+Bit* SUB(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, unsigned char OUTPUT_ARRAY_SIZE) {
     if (INPUT_ARRAY_SIZE > 32 || OUTPUT_ARRAY_SIZE < 1)
     {
         perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
@@ -209,7 +209,7 @@ Bit* SUB(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, un
     Bit borrow;
     borrow.value = 0;
 
-    for (unsigned short i = 0; i < INPUT_ARRAY_SIZE; ++i) {
+    for (unsigned char i = 0; i < INPUT_ARRAY_SIZE; ++i) {
         Bit temp = XOR(&BIT_ARRAY_1[i], &BIT_ARRAY_2[i]);
         result[i] = XOR(&temp, &borrow);
         Bit temp1 = NOT(&temp);
@@ -230,7 +230,7 @@ Bit* SUB(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, un
 // - - - - - - - - - -
 
 
-Bit* MUL(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, unsigned short OUTPUT_ARRAY_SIZE) {
+Bit* MUL(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, unsigned char OUTPUT_ARRAY_SIZE) {
     if (INPUT_ARRAY_SIZE > 32 || OUTPUT_ARRAY_SIZE < 1)
     {
         perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
@@ -243,17 +243,17 @@ Bit* MUL(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, un
 
     Bit* result = createBitArray(OUTPUT_ARRAY_SIZE);
 
-    for (unsigned short i = 0; i < INPUT_ARRAY_SIZE; ++i) {
+    for (unsigned char i = 0; i < INPUT_ARRAY_SIZE; ++i) {
         Bit multiplierBit = BIT_ARRAY_2[i];
         Bit* tempResult = createBitArray(OUTPUT_ARRAY_SIZE);
 
-        for (unsigned short j = 0; j < INPUT_ARRAY_SIZE; ++j) {
+        for (unsigned char j = 0; j < INPUT_ARRAY_SIZE; ++j) {
             Bit temp = AND(&BIT_ARRAY_1[j], &multiplierBit);
             tempResult[j] = temp;
         }
 
         // Shift left based on the position of the multiplier bit
-        for (unsigned short k = OUTPUT_ARRAY_SIZE - 1; k > i; --k) {
+        for (unsigned char k = OUTPUT_ARRAY_SIZE - 1; k > i; --k) {
             tempResult[k] = tempResult[k - i];
         }
 
@@ -270,7 +270,7 @@ Bit* MUL(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, un
 
 //JUST SOMEBODY: Increment and decrement functions
 
-void incrementBitArray(Bit* BIT_ARRAY, unsigned short SIZE)
+void incrementBitArray(Bit* BIT_ARRAY, unsigned char SIZE)
 {
     //JUST SOMEBODY: YOU MAY OVERFLOW IF NOT CAREFUL
     if (SIZE > 32 || SIZE < 1)
@@ -295,7 +295,7 @@ void incrementBitArray(Bit* BIT_ARRAY, unsigned short SIZE)
 
 // - - - - - - - -
 
-void decrementBitArray(Bit* BIT_ARRAY, unsigned short SIZE)
+void decrementBitArray(Bit* BIT_ARRAY, unsigned char SIZE)
 {
     //JUST SOMEBODY: YOU MAY OVERFLOW IF NOT CAREFUL
     if (SIZE > 32 || SIZE < 1)
@@ -321,7 +321,7 @@ void decrementBitArray(Bit* BIT_ARRAY, unsigned short SIZE)
 // - - - - - - - - - - - -
 //JUST SOMEBODY: THE DECIMAL OPERATIONS
 
-Bit* toUnsignedBitArray(int decimal, unsigned short SIZE)
+Bit* toUnsignedBitArray(int decimal, unsigned char SIZE)
 {
     if (SIZE > 32 || SIZE < 1)
     {
@@ -339,7 +339,7 @@ Bit* toUnsignedBitArray(int decimal, unsigned short SIZE)
     return bitArray;
 }
 
-Bit* toSignedBitArray(int decimal, unsigned short SIZE)
+Bit* toSignedBitArray(int decimal, unsigned char SIZE)
 {
     if (SIZE > 32 || SIZE < 1)
     {
@@ -382,7 +382,7 @@ Bit* toSignedBitArray(int decimal, unsigned short SIZE)
 
 // - - - - - - - -
 
-int toDecimal(const Bit* BIT_ARRAY, unsigned short ARRAY_START, unsigned short ARRAY_END, bool IS_SIGNED)
+int toDecimal(const Bit* BIT_ARRAY, unsigned char ARRAY_START, unsigned char ARRAY_END, bool IS_SIGNED)
 {
     int decimal = 0;
 
@@ -400,3 +400,46 @@ int toDecimal(const Bit* BIT_ARRAY, unsigned short ARRAY_START, unsigned short A
 }
 
 // - - - - - - - -
+
+short signExtend(const Bit* BIT_ARRAY, unsigned char SIZE)
+{
+    if (SIZE > 32 || SIZE < 1)
+    {
+        perror("Attempted to sign extend an array of invalid size. Can only handle arrays upto 32 bits and atleast 1 bit.");
+        exit(EXIT_FAILURE);
+    }
+    
+    //JUST SOMEBODY: I am not sure if this is the correct way to sign extend
+    //This is how I think it should be done: add (32 - SIZE) bits to the left of the array, each bit being the sign bit
+    
+    Bit temporary[32];
+    for (int i = 0; i < SIZE; ++i)
+    {
+        temporary[32 - SIZE + i] = BIT_ARRAY[i];
+    }
+
+    for (int i = 0; i < 32 - SIZE; ++i)
+    {
+        temporary[i].value = BIT_ARRAY[0].value; // Set to MSB
+    }
+
+    return toDecimal(temporary, 0, 32, true);
+}
+
+// - - - - - - - - -
+
+Bit* bitwiseAND(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned char SIZE)
+{
+    if (SIZE > 32 || SIZE < 1)
+    {
+        perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
+        exit(EXIT_FAILURE);
+    }
+
+    Bit* result = createBitArray(SIZE);
+    for (unsigned char i = 0; i < SIZE; ++i)
+    {
+        result[i] = AND(&BIT_ARRAY_1[i], &BIT_ARRAY_2[i]);
+    }
+    return result;
+}

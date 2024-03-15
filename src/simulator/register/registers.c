@@ -141,3 +141,18 @@ void printRegisterFile(const RegisterFile *REGISTER_FILE)
         printf("\n");
     }
 }
+
+// - - - - - - - - -
+
+Register* getRegisterByAddress(RegisterFile* REGISTER_FILE, Bit ADDRESS[REGISTER_ADDRESS_SIZE])
+{
+    char index = toDecimal(ADDRESS, 0, REGISTER_ADDRESS_SIZE - 1, false);
+    return &REGISTER_FILE->registers[index];
+}
+
+// - - - - - - - - -
+
+Register* getRegisterByIndex(RegisterFile* REGISTER_FILE, char index)
+{
+    return &REGISTER_FILE->registers[index];
+}

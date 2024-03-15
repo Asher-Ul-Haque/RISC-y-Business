@@ -24,7 +24,7 @@ typedef struct
 
 Bit* makeBit(bool VALUE);
 
-Bit* createBitArray(unsigned short SIZE);
+Bit* createBitArray(unsigned char SIZE);
 
 Bit AND(const Bit* BIT_1, const Bit* BIT_2);
 
@@ -38,26 +38,31 @@ Bit NOR(const Bit* BIT_1, const Bit* BIT_2);
 
 Bit NOT(const Bit* BIT);
 
-Bit* bitwiseOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned short SIZE);
+Bit* bitwiseOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned char SIZE);
 
-Bit* bitwiseXOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned short SIZE);
+Bit* bitwiseXOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned char SIZE);
 
-Bit* bitwiseNOT(const Bit* BIT_ARRAY, unsigned short SIZE);
+Bit* bitwiseNOT(const Bit* BIT_ARRAY, unsigned char SIZE);
 
-void incrementBitArray(Bit* BIT_ARRAY, unsigned short SIZE);
+Bit* bitwiseAND(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned char SIZE);
 
-void decrementBitArray(Bit* BIT_ARRAY, unsigned short SIZE);
+void incrementBitArray(Bit* BIT_ARRAY, unsigned char SIZE);
 
-Bit* ADD(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, unsigned short OUTPUT_ARRAY_SIZE); 
+void decrementBitArray(Bit* BIT_ARRAY, unsigned char SIZE);
 
-Bit* SUB(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, unsigned short OUTPUT_ARRAY_SIZE); 
+Bit* ADD(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, unsigned char OUTPUT_ARRAY_SIZE); 
 
-Bit* MUL(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned short INPUT_ARRAY_SIZE, unsigned short OUTPUT_ARRAY_SIZE); 
+Bit* SUB(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, unsigned char OUTPUT_ARRAY_SIZE); 
 
-Bit* toUnsignedBitArray(int decimal, unsigned short SIZE);
+Bit* MUL(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, unsigned char OUTPUT_ARRAY_SIZE); 
 
-Bit* toSignedBitArray(int decimal, unsigned short SIZE);
+Bit* toUnsignedBitArray(int decimal, unsigned char SIZE);
 
-int toDecimal(const Bit* BIT_ARRAY, unsigned short ARRAY_START, unsigned short ARRAY_END, bool IS_SIGNED);
+Bit* toSignedBitArray(int decimal, unsigned char SIZE);
+
+int toDecimal(const Bit* BIT_ARRAY, unsigned char ARRAY_START, unsigned char ARRAY_END, bool IS_SIGNED);
+
+short signExtend(const Bit* BIT_ARRAY, unsigned char SIZE);
+
 // - - - - - - - - - - 
 #endif //BIT_H

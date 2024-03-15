@@ -18,7 +18,7 @@ ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile*
     executorManager->programCounter = PROGRAM_COUNTER;
 
     //Assign all types of execution managers
-    executorManager->rTypeExecutor = initialiseRTypeExecutor(executorManager->memoryManager, executorManager->registerFile, executorManager->programCounter);
+    executorManager->rTypeExecutor = initialiseRTypeExecutor(executorManager->memoryManager, executorManager->registerFile);
     if (executorManager->rTypeExecutor == NULL)
     {
         perror("Error: failed to attach R Type executor");
@@ -88,13 +88,15 @@ void destroyExecutorManager(ExecutorManager * EXECUTION_MANAGER)
 // - - - - - - - - - - - - -
 
 void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCTION_SIZE])
-{ /*
+{ 
     unsigned char opcode = toDecimal(INSTRUCTION, OPCODE_START, OPCODE_END, false);
     switch(opcode)
     {
         case R_TYPE:
             executeRTypeInstruction(EXECUTION_MANAGER->rTypeExecutor, INSTRUCTION);
+            EXECUTION_MANAGER->programCounter++;
             break;
+        /*
         case I_TYPE_LW:
             executeITypeLWInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
             break;
@@ -119,6 +121,7 @@ void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCT
         case J_TYPE:
             executeJTypeInstruction(EXECUTION_MANAGER->jTypeExecutor, INSTRUCTION);
             break;
+        */
         case HALT:
             printf("Execution Complete\n");
             exit(EXIT_SUCCESS);
@@ -126,6 +129,5 @@ void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCT
             perror("Error: unknown opcode");
             exit(EXIT_FAILURE);
     }
-    */
 }
 
