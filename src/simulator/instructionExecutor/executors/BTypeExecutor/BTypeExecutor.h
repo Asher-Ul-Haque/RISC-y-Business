@@ -18,9 +18,9 @@ typedef struct
 
 bTypeExecutor* initialiseBTypeExecutor(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* programCounter);
 
-void destroyBTypeExecutor(bTypeExecutor* B_TYPE_EXECUTOR);
+void destroyBTypeExecutor(bTypeExecutor* EXECUTOR);
 
-void executeBTypeInstruction(bTypeExecutor* B_TYPE_EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
+void executeBTypeInstruction(bTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
 // - - - - - - - -
 

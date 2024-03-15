@@ -52,9 +52,9 @@ typedef struct
 
 ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* PROGRAM_COUNTER);
 
-void findAndExecute(Bit INSTRUCTION[INSTRUCTION_SIZE]);
+void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCTION_SIZE]);
 
-void destroyExecutorManager(ExecutorManager* EXECUTOR_MANAGER);
+void destroyExecutorManager(ExecutorManager* EXECUTION_MANAGER);
 
 // - - - - - - - -
 

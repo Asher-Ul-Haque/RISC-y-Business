@@ -18,11 +18,11 @@ typedef struct
 
 uTypeExecutor* initialiseUTypeExecutor(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* programCounter);
 
-void destroyUTypeExecutor(uTypeExecutor* U_TYPE_EXECUTOR);
+void destroyUTypeExecutor(uTypeExecutor* EXECUTOR);
 
-void executeUType1Instruction(uTypeExecutor* U_TYPE_EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
+void executeUType1Instruction(uTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
-void executeUType2Instruction(uTypeExecutor* U_TYPE_EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
+void executeUType2Instruction(uTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
 // - - - - - - - -
 

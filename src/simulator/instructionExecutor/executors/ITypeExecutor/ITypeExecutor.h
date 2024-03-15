@@ -18,13 +18,13 @@ typedef struct
 
 iTypeExecutor* initialiseITypeExecutor(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* programCounter);
 
-void destroyITypeExecutor(iTypeExecutor* I_TYPE_EXECUTOR);
+void destroyITypeExecutor(iTypeExecutor* EXECUTOR);
 
-void executeITypeLWInstruction(iTypeExecutor* I_TYPE_EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
+void executeITypeLWInstruction(iTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
-void executeITypeDefaultInstruction(iTypeExecutor* I_TYPE_EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
+void executeITypeDefaultInstruction(iTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
-void executeITypeJumpInstruction(iTypeExecutor* I_TYPE_EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
+void executeITypeJumpInstruction(iTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
 // - - - - - - - -
 

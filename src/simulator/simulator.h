@@ -1,6 +1,5 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
-#include "memory/memory.h"
 #include "instructionExecutor/executorManager/executorManager.h"
 // - - - - - - - - - -
 

@@ -65,3 +65,67 @@ ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile*
 
 // - - - - - - - - - - - - -
 
+void destroyExecutorManager(ExecutorManager * EXECUTION_MANAGER)
+{
+    if (EXECUTION_MANAGER == NULL)
+    {
+        perror("Error: failed to destroy execution manager");
+        exit(EXIT_FAILURE);
+    }
+
+    //Destroy all types of execution managers
+    destroyRTypeExecutor(EXECUTION_MANAGER->rTypeExecutor);
+    destroyITypeExecutor(EXECUTION_MANAGER->iTypeExecutor);
+    destroySTypeExecutor(EXECUTION_MANAGER->sTypeExecutor);
+    destroyBTypeExecutor(EXECUTION_MANAGER->bTypeExecutor);
+    destroyUTypeExecutor(EXECUTION_MANAGER->uTypeExecutor);
+    destroyJTypeExecutor(EXECUTION_MANAGER->jTypeExecutor);
+
+    //Free memory
+    free(EXECUTION_MANAGER);
+}
+
+// - - - - - - - - - - - - -
+
+void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCTION_SIZE])
+{ /*
+    unsigned char opcode = toDecimal(INSTRUCTION, OPCODE_START, OPCODE_END, false);
+    switch(opcode)
+    {
+        case R_TYPE:
+            executeRTypeInstruction(EXECUTION_MANAGER->rTypeExecutor, INSTRUCTION);
+            break;
+        case I_TYPE_LW:
+            executeITypeLWInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
+            break;
+        case I_TYPE_DEFAULT:
+            executeITypeDefaultInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
+            break;
+        case I_TYPE_JUMP:
+            executeITypeJumpInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
+            break;
+        case S_TYPE:
+            executeSTypeInstruction(EXECUTION_MANAGER->sTypeExecutor, INSTRUCTION);
+            break;
+        case B_TYPE:
+            executeBTypeInstruction(EXECUTION_MANAGER->bTypeExecutor, INSTRUCTION);
+            break;
+        case U_TYPE_1:
+            executeUType1Instruction(EXECUTION_MANAGER->uTypeExecutor, INSTRUCTION);
+            break;
+        case U_TYPE_2:
+            executeUType2Instruction(EXECUTION_MANAGER->uTypeExecutor, INSTRUCTION);
+            break;
+        case J_TYPE:
+            executeJTypeInstruction(EXECUTION_MANAGER->jTypeExecutor, INSTRUCTION);
+            break;
+        case HALT:
+            printf("Execution Complete\n");
+            exit(EXIT_SUCCESS);
+        default:
+            perror("Error: unknown opcode");
+            exit(EXIT_FAILURE);
+    }
+    */
+}
+

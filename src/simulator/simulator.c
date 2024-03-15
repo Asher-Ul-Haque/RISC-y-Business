@@ -17,7 +17,7 @@ Simulator* initializeSimulator(const char* BINARY_FILE_PATH)
         perror("Error: Failed to allocate memory for Simulator\n");
         exit(EXIT_FAILURE);
     }
-
+    
     //Initialize the register file
     simulator->registerFile = initializeRegisters();
     if (simulator->registerFile == NULL)
@@ -38,7 +38,8 @@ Simulator* initializeSimulator(const char* BINARY_FILE_PATH)
     }
 
     //Initialize the program counter
-    *simulator->programCounter = 0;
+    unsigned short programCounter = 0; //define the program counter in the stack instead of the heap
+    simulator->programCounter = &programCounter;
     if (simulator->programCounter == NULL)
     {
         perror("Error: Failed to initialize program counter");
@@ -47,12 +48,13 @@ Simulator* initializeSimulator(const char* BINARY_FILE_PATH)
         free(simulator);
         return NULL;
     }
+    *simulator->programCounter = 0;
+    printf("program counter created\n");
 
     simulator->executionManager = initializeExecutorManager(simulator->memoryManager, simulator->registerFile, simulator->programCounter);
     if (simulator->executionManager == NULL)
     {
         perror("Error: Failed to initialize executor manager");
-        free(simulator->programCounter);
         free(simulator->memoryManager);
         free(simulator->registerFile);
         free(simulator);
@@ -78,7 +80,6 @@ void loadProgram(Simulator *SIMULATOR)
 void deinitializeSimulator(Simulator *SIMULATOR)
 {
     free(SIMULATOR->executionManager);
-    free(SIMULATOR->programCounter);
     free(SIMULATOR->memoryManager);
     free(SIMULATOR->registerFile);
     free(SIMULATOR);
@@ -114,7 +115,7 @@ void runSimulation(Simulator *SIMULATOR)
     while (!(*SIMULATOR->programCounter >= PROGRAM_MEMORY))
     {
         Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter].bits)->bits;
-        findAndExecute(instruction);
+        findAndExecute(SIMULATOR->executionManager, instruction);
         printRegisters(SIMULATOR);
     }
     printMemory(SIMULATOR);

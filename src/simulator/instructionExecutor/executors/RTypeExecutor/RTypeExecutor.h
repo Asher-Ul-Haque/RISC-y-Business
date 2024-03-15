@@ -16,11 +16,11 @@ typedef struct
 
 // - - - - - - - - -
 
-rTypeExecutor* initialiseRTypeExecutor(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* programCounter);
+rTypeExecutor* initialiseRTypeExecutor(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* PROGRAM_cOUNTER);
 
-void destroyRTypeExecutor(rTypeExecutor* R_TYPE_EXECUTOR);
+void destroyRTypeExecutor(rTypeExecutor* EXECUTOR);
 
-void executeRTypeInstruction(rTypeExecutor* R_TYPE_EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
+void executeRTypeInstruction(rTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
 // - - - - - - - -
 
