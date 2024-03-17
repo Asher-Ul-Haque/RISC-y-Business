@@ -31,10 +31,6 @@
 #define J_TYPE 111
 // - - - - - -
 #define HALT 0
-
-#define FUNCT3_START 7
-#define FUNCT3_END FUNCT3_START + 3;
-
 // - - - - - - - -
 
 typedef struct

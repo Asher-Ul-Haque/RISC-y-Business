@@ -32,7 +32,7 @@ ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile*
         exit(EXIT_FAILURE);
     }
 
-    executorManager->sTypeExecutor = initialiseSTypeExecutor(executorManager->memoryManager, executorManager->registerFile, executorManager->programCounter);
+    executorManager->sTypeExecutor = initialiseSTypeExecutor(executorManager->memoryManager, executorManager->registerFile);
     if (executorManager->sTypeExecutor == NULL)
     {
         perror("Error: failed to attach S Type executor");
@@ -94,9 +94,9 @@ void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCT
     {
         case R_TYPE:
             executeRTypeInstruction(EXECUTION_MANAGER->rTypeExecutor, INSTRUCTION);
-            EXECUTION_MANAGER->programCounter++;
+            EXECUTION_MANAGER->programCounter+= 4;
             break;
-        /*
+        
         case I_TYPE_LW:
             executeITypeLWInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
             break;
@@ -106,22 +106,27 @@ void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCT
         case I_TYPE_JUMP:
             executeITypeJumpInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
             break;
+
         case S_TYPE:
             executeSTypeInstruction(EXECUTION_MANAGER->sTypeExecutor, INSTRUCTION);
+            EXECUTION_MANAGER->programCounter+= 4;
             break;
+        
         case B_TYPE:
             executeBTypeInstruction(EXECUTION_MANAGER->bTypeExecutor, INSTRUCTION);
             break;
+
         case U_TYPE_1:
             executeUType1Instruction(EXECUTION_MANAGER->uTypeExecutor, INSTRUCTION);
             break;
         case U_TYPE_2:
             executeUType2Instruction(EXECUTION_MANAGER->uTypeExecutor, INSTRUCTION);
             break;
+        
         case J_TYPE:
             executeJTypeInstruction(EXECUTION_MANAGER->jTypeExecutor, INSTRUCTION);
             break;
-        */
+    
         case HALT:
             printf("Execution Complete\n");
             exit(EXIT_SUCCESS);

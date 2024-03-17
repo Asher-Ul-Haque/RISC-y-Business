@@ -338,3 +338,19 @@ void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH)
     fclose(file);
     printf("Successfully read and closed file\n");
 }
+
+// - - - - - - - - - - - - - - - - - - - - - -
+
+void setDataMemoryCellByIndex(Memory *MEMORY, int INDEX, const Bit *VALUE)
+{
+    if (INDEX < 0 || INDEX >= DATA_MEMORY)
+    {
+        perror("Invalid data memory index\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < MEMORY_CELL_SIZE; ++i)
+    {
+        MEMORY->dataMemory[INDEX].bits[i].value = VALUE[i].value;
+    }
+}

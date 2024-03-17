@@ -26,21 +26,29 @@ void executeSTypeInstruction(sTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTIO
     unsigned char rs2 = toDecimal(Instruction, RS2_START, RS2_END, false);
     short firstHalfImmediate = toDecimal(Instruction, FIRST_HALF_IMMEDIATE_START, FIRST_HALF_IMMEDIATE_END, true);
     short secondHalfImmediate = toDecimal(Instruction, SECOND_HALF_IMMEDIATE_START, SECOND_HALF_IMMEDIATE_END, true);
-    short immediate = (secondHalfImmediate << FIRST_HALF_IMMEDIATE_SIZE) | firstHalfImmediate; 
-    //We know that the only memory we can access to is the data memory and the stack memory, so first we find if we are in the range
-    int address = toDecimal(Instruction, RS1_START, RS2_END, false) + immediate / SCALE_FACTOR;
+    short immediate = (secondHalfImmediate << FIRST_HALF_IMMEDIATE_SIZE) | firstHalfImmediate;
+
+    int address = toDecimal(Instruction, RS2_START, RS2_END, true) + immediate / SCALE_FACTOR; // I am allowing it to be negative but throwing an error if it is negative
+
     if (address >= VIRTUAL_STACK_ADDRESS_START && address <= VIRTUAL_STACK_ADDRESS_END)
     {
         address -= STACK_OFFSET;
-        setRegisterValue(&EXECUTOR->registerFile->registers[rs2], EXECUTOR->memoryManager->stackMemory[address].bits);
+        for (int i = 0; i < REGISTER_SIZE; ++i)
+        {
+            EXECUTOR->memoryManager->stackMemory[address].bits[i].value = EXECUTOR->registerFile->registers[rs2].bits[i].value;
+        }
         return;
     }
+
     if (address >= VIRTUAL_DATA_ADDRESS_START && address <= VIRTUAL_DATA_ADDRESS_END)
     {
         address -= DATA_OFFSET;
-        setRegisterValue(&EXECUTOR->registerFile->registers[rs2], EXECUTOR->memoryManager->dataMemory[address].bits);
+        setDataMemoryCellByIndex(EXECUTOR->memoryManager, address, EXECUTOR->registerFile->registers[rs2].bits);
         return;
     }
+
     perror("Invalid memory access\n");
     exit(EXIT_FAILURE);
 }
+
+// - - - - - - - - - - - - -

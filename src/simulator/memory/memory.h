@@ -78,6 +78,8 @@ void printDataMemory(const Memory* MEMORY);
 
 void setDataMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE], const Bit VALUE[MEMORY_CELL_SIZE]);
 
+void setDataMemoryCellByIndex(Memory* MEMORY, int INDEX, const Bit VALUE[MEMORY_CELL_SIZE]);
+
 //JUST_SOMEBODY: Handling Program memory- - - - - - -
 
 void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH);

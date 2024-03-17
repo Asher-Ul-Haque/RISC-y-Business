@@ -6,7 +6,7 @@
 
 //Initialise and deinitialise functions
 
-Simulator* initializeSimulator(const char* BINARY_FILE_PATH)
+Simulator* initializeSimulator()
 {
     //Allocate memory for the Simulator struct
     printf("Creating simulator\n");
@@ -60,17 +60,15 @@ Simulator* initializeSimulator(const char* BINARY_FILE_PATH)
         free(simulator);
     }
 
-    simulator->binaryFilePath = BINARY_FILE_PATH;
     printf("Simulator created\n");
-    loadProgram(simulator);
-    printf("%s", "Ready to execute"); 
     return simulator;
 }
 
 // - - - - - - - - -
 
-void loadProgram(Simulator *SIMULATOR)
+void loadProgram(Simulator *SIMULATOR, const char* BINARY_FILE_PATH)
 {
+    SIMULATOR->binaryFilePath = BINARY_FILE_PATH;
     printf("Loading program into memory\n");
     loadBinaryToProgramMemory(SIMULATOR->memoryManager, SIMULATOR->binaryFilePath);
 }
@@ -114,7 +112,7 @@ void runSimulation(Simulator *SIMULATOR)
 {
     while (!(*SIMULATOR->programCounter >= PROGRAM_MEMORY))
     {
-        Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter].bits)->bits;
+        Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
         findAndExecute(SIMULATOR->executionManager, instruction);
         printRegisters(SIMULATOR);
     }
