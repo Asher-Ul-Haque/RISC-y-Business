@@ -555,6 +555,6 @@ void read_file(const std::string &file_name) {
 //-------------------------------------------------MAIN-------------------------------------------------//
 
 int main() {
-  read_file("src/instruction/text.txt");
+  read_file("text.txt");
   return 0;
 }
