@@ -10,7 +10,7 @@ include_directories(include)
 # Add source files
 set(SOURCE_FILES
     build/executables/simulator/simulatorCLI.c
-    include/bit.c
+    include/bit/bit.c
     src/simulator/simulator.c
     src/simulator/register/registers.c
     src/simulator/memory/memory.c

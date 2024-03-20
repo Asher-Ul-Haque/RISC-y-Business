@@ -1,6 +1,6 @@
 #ifndef REGISTERS_H
 #define REGISTERS_H
-#include "../../../include/bit.h"
+#include "../../../include/bit/bit.h"
 // - - - - - - - - - -
 
 //JUST SOMEBODY: We will have 32 registers of 32 bits each
