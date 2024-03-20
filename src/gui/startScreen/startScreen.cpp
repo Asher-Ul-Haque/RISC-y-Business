@@ -7,6 +7,7 @@ StartScreen::StartScreen()
     guiUtilities guiUtilities;
 
     window.create(sf::VideoMode(1000, 750), "Welcome to RISC-Y Business");
+    window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width / 2 - window.getSize().x / 2, sf::VideoMode::getDesktopMode().height / 2 - window.getSize().y / 2));
     window.setFramerateLimit(60);
 
     if (!logoTexture.loadFromFile(textureDirectoryPath + "logo.png"))

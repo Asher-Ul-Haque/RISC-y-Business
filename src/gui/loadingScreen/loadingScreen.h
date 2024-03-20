@@ -26,6 +26,8 @@ class LoadingScreen
         // - - - - - - -
         void update();
         void render();
+        void animateTitle(std::string loadingText, unsigned char delay = 100);
+        void makeFolder();
 };
 
 #endif // LOADINGSCREEN_H

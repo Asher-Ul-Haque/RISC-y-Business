@@ -1,9 +1,11 @@
 #include "loadingScreen.h"
+#include <filesystem>
 #include <iostream>
 
 LoadingScreen::LoadingScreen()
 {
     window.create(sf::VideoMode(650, 400), "RISC-Y Business", sf::Style::Close);
+    window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width / 2 - window.getSize().x / 2, sf::VideoMode::getDesktopMode().height / 2 - window.getSize().y / 2));
     window.setFramerateLimit(60);
     window.clear(backgroundColor);
     window.display();
@@ -24,20 +26,52 @@ LoadingScreen::LoadingScreen()
         std::cout << "Error loading JetBrainsMono-ExtraBold.ttf" << std::endl;
     }
     title.setFont(font);
-    title.setString("Loading...");
     title.setCharacterSize(50);
     title.setFillColor(sf::Color::Black);
-    title.setOrigin(title.getLocalBounds().width / 2, title.getLocalBounds().height / 2);
-    title.setPosition(logoPosition.x + 102, logoPosition.y + logoSize.y + 50);
+    title.setString("RISCY Business");
+    title.setPosition((window.getSize().x - title.getGlobalBounds().width) / 2, logoPosition.y + logoSize.y + 50);
+}
+
+void LoadingScreen::animateTitle(std::string loadingText, unsigned char delay)
+{
+    sf::sleep(sf::seconds(1));
+
+    for (unsigned char i = 0; i < loadingText.size(); ++i)
+    {
+        title.setString(title.getString() + loadingText[i]);
+        title.setPosition((window.getSize().x - title.getGlobalBounds().width) / 2, title.getPosition().y);
+        render();
+        sf::sleep(sf::milliseconds(delay));
+    }
+
+    sf::sleep(sf::seconds(1));
+
+    for (unsigned char i = 0; i < loadingText.size(); ++i)
+    {
+        title.setString(title.getString().substring(0, title.getString().getSize() - 1));
+        render();
+        sf::sleep(sf::milliseconds(delay/2));
+    }
 }
 
 void LoadingScreen::run()
 {
-    while (window.isOpen())
-    {
-        update();
-        render();
-    }
+    render();
+    makeFolder();
+    sf::sleep(sf::seconds(1));
+    title.setString("");
+    animateTitle("beq r1, r2, 0x4", 50);
+    animateTitle("000100001001100", 50);
+    title.setString("Execution Complete");
+    title.setPosition((window.getSize().x - title.getGlobalBounds().width) / 2, logoPosition.y + logoSize.y + 50);
+    render();
+    sf::sleep(sf::seconds(1));
+    title.setString("Segmentation Fault");
+    title.setPosition((window.getSize().x - title.getGlobalBounds().width) / 2, logoPosition.y + logoSize.y + 50);
+    render();
+    sf::sleep(sf::seconds(0.01));
+    window.close();
+
 }
 
 void LoadingScreen::update()
@@ -72,4 +106,12 @@ void LoadingScreen::render()
     window.display();
 }
 
-
+void LoadingScreen::makeFolder()
+{
+    std::string projectsDirectory = std::getenv("HOME");
+    projectsDirectory += "/RISCY Projects";
+    if (!std::filesystem::exists(projectsDirectory))
+    {
+        std::filesystem::create_directory(projectsDirectory);
+    }
+}
