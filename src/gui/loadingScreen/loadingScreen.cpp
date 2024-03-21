@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <iostream>
 
-LoadingScreen::LoadingScreen()
+LoadingScreen::LoadingScreen(): soundEffects(soundDirectoryPath + typeSoundFilePath, 50)
 {
     window.create(sf::VideoMode(650, 400), "RISC-Y Business", sf::Style::Close);
     window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width / 2 - window.getSize().x / 2, sf::VideoMode::getDesktopMode().height / 2 - window.getSize().y / 2));
@@ -34,8 +34,10 @@ LoadingScreen::LoadingScreen()
 
 void LoadingScreen::animateTitle(std::string loadingText, unsigned char delay)
 {
+    soundEffects.setPath(soundDirectoryPath + typeSoundFilePath);
     sf::sleep(sf::seconds(1));
 
+    soundEffects.playSoundEffect();
     for (unsigned char i = 0; i < loadingText.size(); ++i)
     {
         title.setString(title.getString() + loadingText[i]);
@@ -43,15 +45,19 @@ void LoadingScreen::animateTitle(std::string loadingText, unsigned char delay)
         render();
         sf::sleep(sf::milliseconds(delay));
     }
+    soundEffects.stopSoundEffect();
 
     sf::sleep(sf::seconds(1));
 
+    soundEffects.setPath(soundDirectoryPath + backspaceSoundFilePath);
+    soundEffects.playSoundEffect();
     for (unsigned char i = 0; i < loadingText.size(); ++i)
     {
         title.setString(title.getString().substring(0, title.getString().getSize() - 1));
         render();
         sf::sleep(sf::milliseconds(delay/2));
     }
+    soundEffects.stopSoundEffect();
 }
 
 void LoadingScreen::run()

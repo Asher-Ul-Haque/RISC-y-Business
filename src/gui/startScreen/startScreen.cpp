@@ -1,11 +1,9 @@
 #include "startScreen.h"
-#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Graphics.hpp>
 #include <iostream>
 
-StartScreen::StartScreen()
+StartScreen::StartScreen() : clickSound(soundDirectoryPath + clickSoundFilePath, 50)
 {
-    guiUtilities guiUtilities;
-
     window.create(sf::VideoMode(1000, 750), "Welcome to RISC-Y Business");
     window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width / 2 - window.getSize().x / 2, sf::VideoMode::getDesktopMode().height / 2 - window.getSize().y / 2));
     window.setFramerateLimit(60);
@@ -70,6 +68,7 @@ void StartScreen::update()
                 break;
 
             case sf::Event::Closed:
+                clickSound.playSoundEffect();
                 window.close();
                 break;
 
@@ -77,15 +76,18 @@ void StartScreen::update()
                 switch (event.mouseButton.button)
                 {
                     case sf::Mouse::Left:
-                        if (guiUtilities::isMouseInRectangle(openButtonPosition, buttonSize, &window))
+                        if (MouseUtilities::isMouseInRectangle(openButtonPosition, buttonSize, &window))
                         {
+                            clickSound.playSoundEffect();
                             std::cout << "Open file" << std::endl;
                         }
-                        if (guiUtilities::isMouseInRectangle(newButtonPosition, buttonSize, &window))
+                        if (MouseUtilities::isMouseInRectangle(newButtonPosition, buttonSize, &window))
                         {
+                            clickSound.playSoundEffect();
                             std::cout << "New file" << std::endl;
                         }
                         break;
+                    
                     case sf::Mouse::Right:
                         std::cout << "Right mouse button pressed!" << std::endl;
                         break;
@@ -113,7 +115,7 @@ void StartScreen::update()
 
             case sf::Event::MouseMoved:
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                if (guiUtilities::isMouseInRectangle(openButtonPosition, buttonSize, &window))
+                if (MouseUtilities::isMouseInRectangle(openButtonPosition, buttonSize, &window))
                 {
                     while (openSprite.getScale().x < 1.1)
                     {
@@ -127,7 +129,7 @@ void StartScreen::update()
                         openSprite.setScale(openSprite.getScale().x - 0.0001, openSprite.getScale().y - 0.0001);
                     }
                 }
-                if (guiUtilities::isMouseInRectangle(newButtonPosition, buttonSize, &window))
+                if (MouseUtilities::isMouseInRectangle(newButtonPosition, buttonSize, &window))
                 {
                     while (newSprite.getScale().x < 1.1)
                     {
