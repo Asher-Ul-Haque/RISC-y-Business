@@ -2,6 +2,7 @@
 #define STARTSCREEN_H
 #include "../../../include/utility/mouseUtilities.h"
 #include "../../../include/utility/soundUtilities.h"
+#include "../../../include/utility/animationUtilities.h"
 // - - - - - - - - -
 
 class StartScreen 
@@ -11,7 +12,19 @@ class StartScreen
         void run();
 
     private:
+        enum class ButtonAnimationState
+        {
+            Hidden,
+            SlidingIn,
+            Visible
+        };
+        // - - - - - -  - - -
         sf::Color backgroundColor = sf::Color(255, 255, 255, 255);
+        int screenWidth = 1000;
+        int screenHeight = 750;
+        int iconWidth = 521;
+        int iconHeight = 479;
+        float slideInDuration = 0.5f;
         // - - - - - -  - - -
         std::string textureDirectoryPath = "../../include/resources/textures/";
         std::string fontDirectoryPath = "../../include/resources/fonts/";
@@ -25,8 +38,8 @@ class StartScreen
         sf::Texture openTexture;
         sf::Texture newTexture;
         // - - - - - - - 
-        sf::Vector2f logoPosition = sf::Vector2f(398, 50);
         sf::Vector2f logoSize = sf::Vector2f(204, 188);
+        sf::Vector2f logoPosition = sf::Vector2f(screenWidth/2 - logoSize.x/2 , 50);
         sf::Texture logoTexture;
         sf::Sprite logoSprite;
         sf::Text title;
@@ -36,8 +49,9 @@ class StartScreen
         // - - - - - - -
         std::string clickSoundFilePath = "click.wav";
         SoundUtilities clickSound;
-
         // - - - - - - -
+        AnimationUtilities animation; 
+
         void update();
         void render();
 };

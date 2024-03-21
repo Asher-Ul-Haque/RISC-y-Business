@@ -4,7 +4,7 @@
 
 LoadingScreen::LoadingScreen(): soundEffects(soundDirectoryPath + typeSoundFilePath, 50)
 {
-    window.create(sf::VideoMode(650, 400), "RISC-Y Business", sf::Style::Close);
+    window.create(sf::VideoMode(screenWidth, screenHeight), "RISC-Y Business", sf::Style::Close);
     window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width / 2 - window.getSize().x / 2, sf::VideoMode::getDesktopMode().height / 2 - window.getSize().y / 2));
     window.setFramerateLimit(60);
     window.clear(backgroundColor);
@@ -15,7 +15,7 @@ LoadingScreen::LoadingScreen(): soundEffects(soundDirectoryPath + typeSoundFileP
         std::cout << "Error loading logo.png" << std::endl;
     }
     logoTexture.setSmooth(true);
-    window.setIcon(521, 479, logoTexture.copyToImage().getPixelsPtr());
+    window.setIcon(iconWidth, iconHeight, logoTexture.copyToImage().getPixelsPtr());
 
     logoSprite.setTexture(logoTexture);
     logoSprite.setScale(logoSize.x / logoTexture.getSize().x, logoSize.y / logoTexture.getSize().y);

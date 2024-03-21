@@ -17,8 +17,12 @@ class LoadingScreen
         std::string fontDirectoryPath = "../../include/resources/fonts/";
         std::string soundDirectoryPath = "../../include/resources/sounds/";
         // - - - - - -  - - -
-        sf::Vector2f logoPosition = sf::Vector2f(223, 50);
+        int screenWidth = 650;
+        int screenHeight = 400;
+        int iconWidth = 521;
+        int iconHeight = 479;
         sf::Vector2f logoSize = sf::Vector2f(204, 188);
+        sf::Vector2i logoPosition = sf::Vector2i((screenWidth - logoSize.x)/2 , 50);
         sf::Texture logoTexture;
         sf::Sprite logoSprite;
         sf::Text title;

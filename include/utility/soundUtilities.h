@@ -14,7 +14,7 @@ class SoundUtilities
         void setPath(std::string soundFilePath);
 
     private:
-        sf::Sound soundEffect;
-        sf::SoundBuffer soundBuffer;
+        sf::Sound sSoundEffect;
+        sf::SoundBuffer sSoundBuffer;
 };
 #endif // SOUNDUTILITIES_H

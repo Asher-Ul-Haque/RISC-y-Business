@@ -3,47 +3,47 @@
 
 SoundUtilities::SoundUtilities(std::string soundFilePath, float volume)
 {
-    if (!soundBuffer.loadFromFile(soundFilePath))
+    if (!sSoundBuffer.loadFromFile(soundFilePath))
     {
         std::cout << "Error loading " << soundFilePath << std::endl;
     }
-    soundEffect.setBuffer(soundBuffer);
-    soundEffect.setVolume(volume);
+    sSoundEffect.setBuffer(sSoundBuffer);
+    sSoundEffect.setVolume(volume);
 }
 
 void SoundUtilities::playSoundEffect()
 {
-    soundEffect.play();
+    sSoundEffect.play();
 }
 
 void SoundUtilities::setVolume(float volume)
 {
-    soundEffect.setVolume(volume);
+    sSoundEffect.setVolume(volume);
 }
 
 void SoundUtilities::pauseSoundEffect()
 {
-    soundEffect.pause();
+    sSoundEffect.pause();
 }
 
 void SoundUtilities::stopSoundEffect()
 {
-    soundEffect.stop();
+    sSoundEffect.stop();
 }
 
 void SoundUtilities::setPath(std::string soundFilePath)
 {
-    if (!soundBuffer.loadFromFile(soundFilePath))
+    if (!sSoundBuffer.loadFromFile(soundFilePath))
     {
         std::cout << "Error loading " << soundFilePath << std::endl;
     }
-    soundEffect.setBuffer(soundBuffer);
+    sSoundEffect.setBuffer(sSoundBuffer);
 }
 
 void SoundUtilities::playSoundEffectUntilFinished()
 {
-    soundEffect.play();
-    while (soundEffect.getStatus() == sf::Sound::Playing)
+    sSoundEffect.play();
+    while (sSoundEffect.getStatus() == sf::Sound::Playing)
     {
     }
 }
