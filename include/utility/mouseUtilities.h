@@ -1,3 +1,5 @@
+#ifndef MOUSEUTILITIES_H
+#define MOUSEUTILITIES_H
 #include <SFML/Graphics.hpp>
 
 class MouseUtilities
@@ -14,3 +16,5 @@ public:
     static bool isMousePressedInRectangle(sf::Vector2f CENTER, sf::Vector2f SIZE, sf::Event* EVENT);
     static bool isMousePressedInCircle(sf::Vector2f CENTER, float RADIUS, sf::Event* EVENT);
 };
+
+#endif // MOUSEUTILITIES_H

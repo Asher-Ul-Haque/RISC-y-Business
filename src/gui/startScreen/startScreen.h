@@ -3,6 +3,7 @@
 #include "../../../include/utility/mouseUtilities.h"
 #include "../../../include/utility/soundUtilities.h"
 #include "../../../include/utility/animationUtilities.h"
+#include "../dialogBox/dialogBox.h"
 // - - - - - - - - -
 
 class StartScreen 
@@ -12,12 +13,6 @@ class StartScreen
         void run();
 
     private:
-        enum class ButtonAnimationState
-        {
-            Hidden,
-            SlidingIn,
-            Visible
-        };
         // - - - - - -  - - -
         sf::Color backgroundColor = sf::Color(255, 255, 255, 255);
         int screenWidth = 1000;
@@ -50,8 +45,14 @@ class StartScreen
         std::string clickSoundFilePath = "click.wav";
         SoundUtilities clickSound;
         // - - - - - - -
-        AnimationUtilities animation; 
-
+        AnimationUtilities animation;
+        bool wasMouseInsideOpenButton = false;
+        bool wasMouseInsideNewButton = false;
+        bool animatingNewButton = false;
+        bool animatingOpenButton = false;
+        // - - - - - - -
+        DialogBox dialogBox;
+        // - - - - - - -
         void update();
         void render();
 };

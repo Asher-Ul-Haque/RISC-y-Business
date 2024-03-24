@@ -106,7 +106,7 @@ void LoadingScreen::update()
 
 void LoadingScreen::render()
 {
-    window.clear(backgroundColor);
+    window.clear(sf::Color(239, 239, 239, 255));
     window.draw(logoSprite);
     window.draw(title);
     window.display();

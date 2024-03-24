@@ -1,7 +1,7 @@
 #include "startScreen.h"
 #include <iostream>
 
-StartScreen::StartScreen() : clickSound(soundDirectoryPath + clickSoundFilePath, 50), animation()
+StartScreen::StartScreen() : clickSound(soundDirectoryPath + clickSoundFilePath, 50), animation([this](){render();}), dialogBox(true, false)
 {
     window.create(sf::VideoMode(1000, 750), "Welcome to RISC-Y Business");
     window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width / 2 - window.getSize().x / 2, sf::VideoMode::getDesktopMode().height / 2 - window.getSize().y / 2));
@@ -61,30 +61,47 @@ void StartScreen::update()
     sf::Event event;
     while (window.pollEvent(event))
     {
-        switch (event.type)
+        // - - - - - - -
+        switch (event.type) //Switch events
         {
             default:
                 break;
-
+            // - - - - - - -
             case sf::Event::Closed:
                 clickSound.playSoundEffect();
                 window.close();
                 break;
-
-            case sf::Event::MouseButtonPressed:
+            // - - - - - - -
+            case sf::Event::MouseButtonPressed: //Switch mouse button pressed events
                 switch (event.mouseButton.button)
                 {
                     case sf::Mouse::Left:
-                        if (MouseUtilities::isMouseInRectangle(openButtonPosition, buttonSize, &window))
+                        switch (MouseUtilities::isMouseInRectangle(openButtonPosition, buttonSize, &window))
                         {
-                            clickSound.playSoundEffect();
-                            std::cout << "Open file" << std::endl;
+                            case true:
+                                clickSound.playSoundEffect();
+                                //Slide the button out of view
+                                std::cout << "Open file" << std::endl;
+                                dialogBox.toggleTextbox(false);
+                                dialogBox.run("Open Project");
+                                break;
+                            case false:
+                                break;
                         }
-                        if (MouseUtilities::isMouseInRectangle(newButtonPosition, buttonSize, &window))
+
+                        switch (MouseUtilities::isMouseInRectangle(newButtonPosition, buttonSize, &window))
                         {
-                            clickSound.playSoundEffect();
-                            std::cout << "New file" << std::endl;
+                            case true:
+                                clickSound.playSoundEffect();
+                                //Slide the button out of view
+                                std::cout << "New file" << std::endl;
+                                dialogBox.toggleTextbox(true);
+                                dialogBox.run("Create Project");
+                                break;
+                            case false:
+                                break;
                         }
+
                         break;
                     
                     case sf::Mouse::Right:
@@ -96,17 +113,20 @@ void StartScreen::update()
                 break;
 
             case sf::Event::KeyPressed:
-                switch (event.key.code)
+                switch (event.key.code) //Switch key pressed events
                 {
                     case sf::Keyboard::Escape:
                         window.close();
                         break;
+
                     case sf::Keyboard::O:
                         std::cout << "Open file" << std::endl;
                         break;
+
                     case sf::Keyboard::N:
                         std::cout << "New file" << std::endl;
                         break;
+
                     default:
                         break;
                 }
@@ -114,21 +134,57 @@ void StartScreen::update()
 
             case sf::Event::MouseMoved:
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                if (MouseUtilities::isMouseInRectangle(openButtonPosition, buttonSize, &window))
+                switch(MouseUtilities::isMouseInRectangle(openButtonPosition, buttonSize, &window)) 
                 {
-                    animation.scale(openSprite, sf::Vector2f(1, 1), sf::Vector2f(1.1, 1.1), 0.0001);
+                    case true:
+                        switch(animatingOpenButton)
+                        {
+                            case false:
+                                animation.scale(openSprite, sf::Vector2f(1, 1), sf::Vector2f(1.1, 1.1), 0.1);
+                                animatingOpenButton = true;
+                                break;
+                            case true:
+                                break;
+                        }
+                        break;
+
+                    case false:
+                        switch(animatingOpenButton)
+                        {
+                            case true:
+                                animation.scale(openSprite, sf::Vector2f(1.1, 1.1), sf::Vector2f(1, 1), 0.1);
+                                animatingOpenButton = false;
+                                break;
+                            case false:
+                                break;
+                        }
+                        break;
                 }
-                else
+                switch(MouseUtilities::isMouseInRectangle(newButtonPosition, buttonSize, &window))
                 {
-                    animation.scale(openSprite, sf::Vector2f(1.1, 1.1), sf::Vector2f(1, 1), 0.0001);
-                }
-                if (MouseUtilities::isMouseInRectangle(newButtonPosition, buttonSize, &window))
-                {
-                    animation.scale(newSprite, sf::Vector2f(1, 1), sf::Vector2f(1.1, 1.1), 0.0001);
-                }
-                else
-                {
-                    animation.scale(newSprite, sf::Vector2f(1.1, 1.1), sf::Vector2f(1, 1), 0.0001);
+                    case true:
+                        switch(animatingNewButton)
+                        {
+                            case false:
+                                animation.scale(newSprite, sf::Vector2f(1, 1), sf::Vector2f(1.1, 1.1), 0.1);
+                                animatingNewButton = true;
+                                break;
+                            case true:
+                                break;
+                        }
+                        break;
+
+                    case false:
+                        switch(animatingNewButton)
+                        {
+                            case true:
+                                animation.scale(newSprite, sf::Vector2f(1.1, 1.1), sf::Vector2f(1, 1), 0.1);
+                                animatingNewButton = false;
+                                break;
+                            case false:
+                                break;
+                        }
+                        break;
                 }
                 break;
         }
