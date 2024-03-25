@@ -1,5 +1,6 @@
 #include "soundUtilities.h"
 #include <iostream>
+// - - - - - - - - -
 
 SoundUtilities::SoundUtilities(std::string soundFilePath, float volume)
 {
@@ -11,25 +12,35 @@ SoundUtilities::SoundUtilities(std::string soundFilePath, float volume)
     sSoundEffect.setVolume(volume);
 }
 
+// - - - - - - - - -
+
 void SoundUtilities::playSoundEffect()
 {
     sSoundEffect.play();
 }
+
+// - - - - - - - - -
 
 void SoundUtilities::setVolume(float volume)
 {
     sSoundEffect.setVolume(volume);
 }
 
+// - - - - - - - - -
+
 void SoundUtilities::pauseSoundEffect()
 {
     sSoundEffect.pause();
 }
 
+// - - - - - - - - -
+
 void SoundUtilities::stopSoundEffect()
 {
     sSoundEffect.stop();
 }
+
+// - - - - - - - - -
 
 void SoundUtilities::setPath(std::string soundFilePath)
 {
@@ -40,6 +51,8 @@ void SoundUtilities::setPath(std::string soundFilePath)
     sSoundEffect.setBuffer(sSoundBuffer);
 }
 
+// - - - - - - - - -
+
 void SoundUtilities::playSoundEffectUntilFinished()
 {
     sSoundEffect.play();
@@ -48,4 +61,5 @@ void SoundUtilities::playSoundEffectUntilFinished()
     }
 }
 
+// - - - - - - - - -
 

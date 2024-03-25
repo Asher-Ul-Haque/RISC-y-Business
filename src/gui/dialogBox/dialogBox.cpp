@@ -1,7 +1,7 @@
 #include "dialogBox.h"
 #include <iostream>
 
-DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN) : soundEffects(soundDirectoryPath + successSoundFilePath, 50), animation([this](){render();}), textBox(window, sf::Vector2f(50, 50), sf::Vector2f(200, 50))
+DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN) : soundEffects(soundDirectoryPath + successSoundFilePath, 50), animation([this](){render();}), textBox(&window, sf::Vector2f(50, 50), sf::Vector2f(200, 50))
 {
     textbox = TEXTBOX;
     dropdown = DROPDOWN;
@@ -14,7 +14,11 @@ void DialogBox::run(std::string TITLE)
     {
         update();
         render();
-        textBox.render();
+        if (textbox)
+        {
+            textBox.render();
+        }
+        std::cout << "Running" << std::endl;
     }
 }
 

@@ -1,8 +1,11 @@
 #include "animationUtilities.h"
+// - - - - - - - - -
 
 AnimationUtilities::AnimationUtilities(std::function<void()> renderFunction) : renderFunction(renderFunction)
 {
 }
+
+// - - - - - - - - -
 
 void AnimationUtilities::slide(sf::Transformable& TARGET, const sf::Vector2f& START, const sf::Vector2f& END, float DURATION) 
 {   
@@ -22,8 +25,11 @@ void AnimationUtilities::slide(sf::Transformable& TARGET, const sf::Vector2f& ST
             break;
         }
     }
+
     TARGET.setPosition(END);
 }
+
+// - - - - - - - - -
 
 void AnimationUtilities::scale(sf::Transformable& TARGET, const sf::Vector2f& START, const sf::Vector2f& END, float DURATION) 
 {
@@ -46,4 +52,4 @@ void AnimationUtilities::scale(sf::Transformable& TARGET, const sf::Vector2f& ST
     TARGET.setScale(END);
 }
 
-
+// - - - - - - - - -
