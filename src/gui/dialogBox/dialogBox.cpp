@@ -1,7 +1,7 @@
 #include "dialogBox.h"
 #include <iostream>
 
-DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN) : soundEffects(soundDirectoryPath + successSoundFilePath, 50), animation([this](){render();}), textBox(&window, sf::Vector2f(50, 50), sf::Vector2f(200, 50))
+DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN) : soundEffects(soundDirectoryPath + successSoundFilePath, 50), animation([this](){render();}), textBox(&window, sf::Vector2f(325, 300), sf::Vector2f(400, 50))
 {
     textbox = TEXTBOX;
     dropdown = DROPDOWN;
@@ -18,7 +18,7 @@ void DialogBox::run(std::string TITLE)
         {
             textBox.render();
         }
-        std::cout << "Running" << std::endl;
+        window.display();
     }
 }
 
@@ -27,7 +27,6 @@ void DialogBox::update()
     sf::Event event;
     while (window.pollEvent(event))
     {
-        textBox.handleInput(event);
         switch (event.type) //Switch events
         {
             default:
@@ -46,7 +45,6 @@ void DialogBox::update()
                             case true:
                                 soundEffects.setPath(soundDirectoryPath + successSoundFilePath);
                                 soundEffects.playSoundEffect();
-                                //Slide the button out of view
                                 std::cout << "Ok" << std::endl;
                                 break;
                             case false:
@@ -63,12 +61,12 @@ void DialogBox::update()
                             case false:
                                 break;
                         }
-
                         break;
                     
                     case sf::Mouse::Right:
                         std::cout << "Right mouse button pressed!" << std::endl;
                         break;
+
                     default:
                         break;
                 }
@@ -142,6 +140,7 @@ void DialogBox::update()
                             case true:
                                 animation.scale(cancelSprite, sf::Vector2f(0.75, 0.75), sf::Vector2f(0.65, 0.65), 0.1);
                                 animatingCancelButton = false;
+                                std::cout << "Heiya" << std::endl;
                                 break;
                             case false:
                                 break;
@@ -161,7 +160,6 @@ void DialogBox::render()
     window.draw(okSprite);
     window.draw(cancelSprite);
     window.draw(divider);
-    window.display();
 }
 
 void DialogBox::toggleTextbox(bool TOGGLE)

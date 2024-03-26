@@ -2,45 +2,44 @@
 #include "soundUtilities.h"
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Window/Event.hpp>
 // - - - - - - - - -
 
 TextBox::TextBox(sf::RenderWindow* WINDOW, sf::Vector2f POSITION, sf::Vector2f SIZE) : window(WINDOW), position(POSITION), size(SIZE), soundEffects(soundDirectoryPath + keypressSoundFilePath, 50)
 {
     textBox.setSize(size);
     textBox.setPosition(position);
-    textBox.setFillColor(sf::Color(239, 239, 239, 255));
+    textBox.setFillColor(sf::Color::White);
     textBox.setOutlineThickness(2);
-    textBox.setOutlineColor(sf::Color::Black);
+    textBox.setOutlineColor(sf::Color(201, 205, 215));
+    textBox.setOrigin(textBox.getSize().x/2, textBox.getSize().y/2);
 
     font.loadFromFile(fontDirectoryPath + "JetBrainsMono-ExtraBold.ttf");
     text.setCharacterSize(20);
     text.setFillColor(sf::Color::Black);
-    text.setPosition(position.x + 5, position.y + 5);
+    text.setPosition(position.x + 5 - size.x/2, position.y - 15);
+    text.setOrigin(0, text.getGlobalBounds().height / 2);
     text.setFont(font);
 
     cursor.setSize(sf::Vector2f(2, 20));
     cursor.setFillColor(sf::Color::Black);
-    cursor.setPosition(text.getPosition().x + text.getGlobalBounds().width + 5, text.getPosition().y);
-
-    testRect.setSize(size);
-    testRect.setFillColor(sf::Color(239, 239, 239, 255));
-    testRect.setOutlineThickness(2);
-    testRect.setOutlineColor(sf::Color::Black);
-    testRect.setPosition(position);
+    cursor.setOrigin(1, cursor.getSize().y / 2);
+    cursor.setPosition(text.getPosition().x + text.getGlobalBounds().width + 5, text.getPosition().y + 10);
 }
 
 // - - - - - - - - -
 
 void TextBox::handleInput(sf::Event* EVENT)
 {
-    std::string input = "";
     switch(EVENT->type)
     {
         case sf::Event::TextEntered:
-            switch(EVENT->text.unicode >= 32 && EVENT->text.unicode <=126)
+            switch(EVENT->text.unicode >= 32 && EVENT->text.unicode <= 126 && text.getGlobalBounds().width < textBox.getSize().x - 20)
             {
                 case true:
-                    input += (char) EVENT->text.unicode;
+                    input += static_cast<char>(EVENT->text.unicode);
+                    text.setString(input);
+                    updateCursorPosition();
                     break;
 
                 case false:
@@ -57,24 +56,10 @@ void TextBox::handleInput(sf::Event* EVENT)
                     }
                     break;
             }
-        case sf::Event::KeyPressed:
-            switch(EVENT->key.code)
-            {
-                case sf::Keyboard::BackSpace:
-                    if(input.size() > 0)
-                    {
-                        input.pop_back();
-                        text.setString(input);
-                        updateCursorPosition();
-                    }
-                    break;
+            break;
 
-                case sf::Keyboard::Return:
-                    break;
-
-                default:
-                    input += (char) EVENT->text.unicode;
-            }
+        default:
+            break;
     }
 }
 
@@ -90,7 +75,6 @@ void TextBox::updateCursorPosition()
 
 void TextBox::render()
 {
-    text.setString("test");
     window->draw(textBox);
     window->draw(text);
     if(showCursor)

@@ -9,9 +9,8 @@
 class TextBox
 {
 
-std::string textString = "";
-std::string fontDirectoryPath = "../resources/fonts/";
-std::string soundDirectoryPath = "../resources/sounds/";
+std::string fontDirectoryPath = "../../include/resources/fonts/";
+std::string soundDirectoryPath = "../../include/resources/sounds/";
 std::string keypressSoundFilePath = "keypress.wav";
 std::string backspaceSoundFilePath = "backspace.wav";
 // - - - - - - - - -
@@ -27,13 +26,11 @@ void updateCursorPosition();
 sf::RenderWindow* window;
 sf::Vector2f position;
 sf::Vector2f size;
-
-sf::RectangleShape testRect;
-
 // - - - - - - - - -
 
 public:
 
+std::string input = "";
 TextBox(sf::RenderWindow* WINDOW, sf::Vector2f POSITION, sf::Vector2f SIZE);
 void handleInput(sf::Event* EVENT);
 void render();
