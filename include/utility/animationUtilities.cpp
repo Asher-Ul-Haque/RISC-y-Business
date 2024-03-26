@@ -40,7 +40,6 @@ void AnimationUtilities::scale(sf::Transformable& TARGET, const sf::Vector2f& ST
     
     while (elapsedTime < totalDuration)
     {
-        std::cout << "Heiya" << std::endl;
         elapsedTime = aClock.getElapsedTime().asSeconds();
         float progress = std::min(1.0f, elapsedTime / totalDuration);
         sf::Vector2f interpolatedScale = START + (END - START) * progress;

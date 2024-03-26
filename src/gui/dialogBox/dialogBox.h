@@ -58,6 +58,7 @@ class DialogBox
         void update();
         void render();
         void createWindow(std::string TITLE);
+        void createProject();
         // - - - - - - -
         TextBox textBox;
 }; 

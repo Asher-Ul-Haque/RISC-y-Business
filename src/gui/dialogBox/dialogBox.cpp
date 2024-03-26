@@ -1,7 +1,8 @@
 #include "dialogBox.h"
+#include <filesystem>
 #include <iostream>
 
-DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN) : soundEffects(soundDirectoryPath + successSoundFilePath, 50), animation([this](){render();}), textBox(&window, sf::Vector2f(325, 300), sf::Vector2f(400, 50))
+DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN) : soundEffects(soundDirectoryPath + successSoundFilePath, 50), animation([this](){render();}), textBox(&window, sf::Vector2f(325, 250), sf::Vector2f(400, 30))
 {
     textbox = TEXTBOX;
     dropdown = DROPDOWN;
@@ -13,26 +14,31 @@ void DialogBox::run(std::string TITLE)
     while (window.isOpen())
     {
         update();
-        render();
+        window.clear(sf::Color(239, 239, 239, 255));
         if (textbox)
         {
             textBox.render();
         }
+        render();
         window.display();
     }
 }
-
 void DialogBox::update()
 {
     sf::Event event;
     while (window.pollEvent(event))
     {
+        if (textbox)
+        {
+            textBox.handleInput(&event);
+        }
         switch (event.type) //Switch events
         {
             default:
                 break;
             // - - - - - - -
             case sf::Event::Closed:
+                soundEffects.setPath(soundDirectoryPath + failureSoundFilePath);
                 window.close();
                 break;
             // - - - - - - -
@@ -43,10 +49,9 @@ void DialogBox::update()
                         switch (MouseUtilities::isMouseInRectangle(okButtonPosition, buttonSize, &window))
                         {
                             case true:
-                                soundEffects.setPath(soundDirectoryPath + successSoundFilePath);
-                                soundEffects.playSoundEffect();
-                                std::cout << "Ok" << std::endl;
+                                createProject();
                                 break;
+
                             case false:
                                 break;
                         }
@@ -55,18 +60,18 @@ void DialogBox::update()
                         {
                             case true:
                                 soundEffects.setPath(soundDirectoryPath + failureSoundFilePath);
-                                soundEffects.playSoundEffectUntilFinished();
+                                soundEffects.playSoundEffect();
                                 window.close();
                                 break;
+
                             case false:
                                 break;
                         }
                         break;
-                    
+
                     case sf::Mouse::Right:
                         std::cout << "Right mouse button pressed!" << std::endl;
                         break;
-
                     default:
                         break;
                 }
@@ -79,8 +84,8 @@ void DialogBox::update()
                         window.close();
                         break;
 
-                    case sf::Keyboard::O:
-                        std::cout << "Ok file" << std::endl;
+                    case sf::Keyboard::Return:
+                        createProject();
                         break;
 
                     case sf::Keyboard::N:
@@ -103,6 +108,7 @@ void DialogBox::update()
                                 animation.scale(okSprite, sf::Vector2f(0.65, 0.65), sf::Vector2f(0.75, 0.75), 0.1);
                                 animatingOkButton = true;
                                 break;
+
                             case true:
                                 break;
                         }
@@ -115,6 +121,7 @@ void DialogBox::update()
                                 animation.scale(okSprite, sf::Vector2f(0.75, 0.75), sf::Vector2f(0.65, 0.65), 0.1);
                                 animatingOkButton = false;
                                 break;
+
                             case false:
                                 break;
                         }
@@ -129,6 +136,7 @@ void DialogBox::update()
                                 animation.scale(cancelSprite, sf::Vector2f(0.65, 0.65), sf::Vector2f(0.75, 0.75), 0.1);
                                 animatingCancelButton = true;
                                 break;
+
                             case true:
                                 break;
                         }
@@ -140,8 +148,8 @@ void DialogBox::update()
                             case true:
                                 animation.scale(cancelSprite, sf::Vector2f(0.75, 0.75), sf::Vector2f(0.65, 0.65), 0.1);
                                 animatingCancelButton = false;
-                                std::cout << "Heiya" << std::endl;
                                 break;
+
                             case false:
                                 break;
                         }
@@ -154,12 +162,12 @@ void DialogBox::update()
 
 void DialogBox::render()
 {
-    window.clear(sf::Color(239, 239, 239, 255));
     window.draw(logoSprite);
     window.draw(text);
     window.draw(okSprite);
     window.draw(cancelSprite);
     window.draw(divider);
+    window.display();
 }
 
 void DialogBox::toggleTextbox(bool TOGGLE)
@@ -207,7 +215,24 @@ void DialogBox::createWindow(std::string TITLE)
     // - - - - - - - - -
     divider.setSize(sf::Vector2f(screenWidth, 2));
     divider.setFillColor(sf::Color(208, 224, 240));
-    divider.setPosition(0, okButtonPosition.y - 30);;
-    // - - - - - - - - -
+    divider.setPosition(0, okButtonPosition.y - 30);
+}
 
+void DialogBox::createProject()
+{
+    std::string projectsDirectory = std::getenv("HOME");
+    projectsDirectory += "/RISCY Projects/" + textBox.getInput();
+    if (std::filesystem::exists(projectsDirectory))
+    {
+        textBox.error();
+        return;
+    }
+    if (!std::filesystem::create_directory(projectsDirectory)) 
+    {
+        textBox.error();
+        return;
+    }
+    soundEffects.setPath(soundDirectoryPath + successSoundFilePath);
+    soundEffects.playSoundEffect();
+    window.close();
 }
