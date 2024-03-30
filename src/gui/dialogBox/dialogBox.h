@@ -61,6 +61,7 @@ class DialogBox
         void createProject();
         // - - - - - - -
         TextBox textBox;
+        DropDown dropDown;
 }; 
 
 // - - - - - - - - -

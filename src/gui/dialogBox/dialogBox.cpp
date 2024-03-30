@@ -2,7 +2,12 @@
 #include <filesystem>
 #include <iostream>
 
-DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN) : soundEffects(soundDirectoryPath + successSoundFilePath, 50), animation([this](){render();}), textBox(&window, sf::Vector2f(325, 250), sf::Vector2f(400, 30))
+DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN) 
+    : 
+    soundEffects(soundDirectoryPath + successSoundFilePath, 50), 
+    animation([this](){render();}), 
+    textBox(&window, sf::Vector2f(325, 250)), 
+    dropDown(&window, sf::Vector2f(325, 220))
 {
     textbox = TEXTBOX;
     dropdown = DROPDOWN;
@@ -19,6 +24,10 @@ void DialogBox::run(std::string TITLE)
         {
             textBox.render();
         }
+        if (dropdown)
+        {
+            dropDown.render();
+        }
         render();
         window.display();
     }
@@ -31,6 +40,10 @@ void DialogBox::update()
         if (textbox)
         {
             textBox.handleInput(&event);
+        }
+        if (dropdown)
+        {
+            dropDown.handleInput(&event);
         }
         switch (event.type) //Switch events
         {

@@ -3,7 +3,7 @@
 
 StartScreen::StartScreen() : clickSound(soundDirectoryPath + clickSoundFilePath, 50), animation([this](){render();}), dialogBox(true, false)
 {
-    window.create(sf::VideoMode(1000, 750), "Welcome to RISC-Y Business");
+    window.create(sf::VideoMode(1000, 750), "Welcome to RISC-Y Business", sf::Style::Close);
     window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width / 2 - window.getSize().x / 2, sf::VideoMode::getDesktopMode().height / 2 - window.getSize().y / 2));
     window.setFramerateLimit(60);
 
@@ -93,7 +93,6 @@ void StartScreen::update()
                         {
                             case true:
                                 clickSound.playSoundEffect();
-                                //Slide the button out of view
                                 std::cout << "New file" << std::endl;
                                 dialogBox.toggleTextbox(true);
                                 dialogBox.run("Create Project");
