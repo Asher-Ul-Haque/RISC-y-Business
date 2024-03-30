@@ -1,7 +1,9 @@
 #ifndef IDE_H
 #define IDE_H
 #include <SFML/Graphics.hpp>
-
+#include "../../../include/utility/soundUtilities.h"
+#include "../../../include/utility/mouseUtilities.h"
+#include "../../../include/utility/animationUtilities.h"
 
 // - - - - - - - -
 
@@ -18,18 +20,25 @@ class IDE
     //TextEditor* textEditor;
     sf::Font font;
     sf::Text title;
+    sf::Texture topBarTexture;
     sf::Texture buttonTextures[4];
     sf::Sprite buttons[4];
 
-    std::string textureDirectoryPath = "../../include/resources/textures/";
-    std::string fontDirectoryPath = "../../include/resources/fonts/";
-    std::string soundDirectoryPath = "../../include/resources/sounds/";
+    std::string textureDirectoryPath = "../../../include/resources/textures/";
+    std::string fontDirectoryPath = "../../../include/resources/fonts/";
+    std::string soundDirectoryPath = "../../../include/resources/sounds/";
     // - - - - - - - -
     std::string titleText = "RISC-Y Business";
-    std::string buttonTexturePaths[4] = {"save.png", "assemble.png", "simulate.png", "run.png"};
+    std::string topBarTexturePath = "topbar.png";
+    std::string buttonTexturePaths[4] = {"run.png", "simulate.png", "assemble.png", "save.png"};
 
     sf::RectangleShape topBar;
     sf::RectangleShape lineNumbers;
+
+    SoundUtilities soundEffects;
+    AnimationUtilities animation;
+
+    bool isAnimating[4] = {false, false, false, false};
     
 public:
     IDE();

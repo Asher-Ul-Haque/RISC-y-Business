@@ -326,7 +326,6 @@ void DropDown::render()
             highlight.setPosition(optionTexts[selectedIndex].getPosition().x, optionTexts[selectedIndex].getPosition().y + 3);
             window->draw(highlight);
         }
-        //int endIndex = max(min((options.size()) - 1, selectedIndex + 1), 2); 
 
         for (int i = startIndex; i <= endIndex; i++) 
         {
