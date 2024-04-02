@@ -31,7 +31,6 @@ std::string DialogBox::run(std::string TITLE)
         render();
         window.display();
     }
-    
     return projectDirectoryPath;
 }
 
@@ -66,10 +65,6 @@ void DialogBox::update()
                         {
                             case true:
                                 createProject();
-                                if (dropdown)
-                                {
-                                    projectDirectoryPath =  dropDown.getSelectedOption();
-                                }
                                 break;
 
                             case false:
@@ -241,23 +236,23 @@ void DialogBox::createWindow(std::string TITLE)
 void DialogBox::createProject()
 {
     std::string projectsDirectory = std::getenv("HOME");
-    projectsDirectory += "/RISCY Projects/" + textBox.getInput();
-    if (std::filesystem::exists(projectsDirectory))
+    projectsDirectory += "/RISCY Projects/";
+    projectDirectoryPath = projectsDirectory + textBox.getInput();
+    if (std::filesystem::exists(projectDirectoryPath) && textbox)
     {
         textBox.error();
         return;
     }
-    if (!std::filesystem::create_directory(projectsDirectory)) 
+    if (!std::filesystem::create_directory(projectDirectoryPath) && textbox) 
     {
         textBox.error();
         return;
     }
     soundEffects.setPath(soundDirectoryPath + successSoundFilePath);
     soundEffects.playSoundEffect();
-    projectDirectoryPath = projectsDirectory;
     if (dropdown)
     {
-        projectDirectoryPath =  dropDown.getSelectedOption() == "Select Option" ? "" : "/RISCY Projects/" + dropDown.getSelectedOption();
+        projectDirectoryPath =  dropDown.getSelectedOption() == "Select Option" ? "" : projectsDirectory + dropDown.getSelectedOption();
     }
     window.close();
 }

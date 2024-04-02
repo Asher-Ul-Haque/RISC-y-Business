@@ -354,7 +354,7 @@ void DropDown::setOptions(const std::vector<std::string>& OPTIONS)
 
 std::string DropDown::getSelectedOption() const
 {
-    return projectsDirectoryPath + selectedText.getString();
+    return selectedText.getString();
 }
 
 // - - - - - - - - -

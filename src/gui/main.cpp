@@ -4,7 +4,7 @@
 int main()
 {
     LoadingScreen loadingScreen;
-    loadingScreen.run();
+    //loadingScreen.run();
     StartScreen startScreen;
     startScreen.run();
     return 0;
