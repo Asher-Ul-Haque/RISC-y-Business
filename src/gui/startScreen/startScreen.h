@@ -4,6 +4,7 @@
 #include "../../../include/utility/soundUtilities.h"
 #include "../../../include/utility/animationUtilities.h"
 #include "../dialogBox/dialogBox.h"
+#include "../editor/editor.h"
 // - - - - - - - - -
 
 class StartScreen 
@@ -50,8 +51,10 @@ class StartScreen
         bool wasMouseInsideNewButton = false;
         bool animatingNewButton = false;
         bool animatingOpenButton = false;
+        std::string temp;
         // - - - - - - -
         DialogBox dialogBox;
+        IDE ide;
         // - - - - - - -
         void update();
         void render();

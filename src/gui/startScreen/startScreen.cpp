@@ -80,11 +80,16 @@ void StartScreen::update()
                         {
                             case true:
                                 clickSound.playSoundEffect();
-                                //Slide the button out of view
-                                std::cout << "Open file" << std::endl;
                                 dialogBox.toggleTextbox(false);
-                                dialogBox.run("Open Project");
+                                temp = dialogBox.run("Open Project");
+                                if (temp != "")
+                                {
+                                    ide.setProject(temp);
+                                    window.close();
+                                    ide.run();
+                                }
                                 break;
+
                             case false:
                                 break;
                         }
@@ -93,10 +98,16 @@ void StartScreen::update()
                         {
                             case true:
                                 clickSound.playSoundEffect();
-                                std::cout << "New file" << std::endl;
                                 dialogBox.toggleTextbox(true);
-                                dialogBox.run("Create Project");
+                                temp = dialogBox.run("Create Project");
+                                if (temp != "")
+                                {
+                                    ide.setProject(temp);
+                                    window.close();
+                                    ide.run();
+                                }
                                 break;
+
                             case false:
                                 break;
                         }
@@ -104,8 +115,8 @@ void StartScreen::update()
                         break;
                     
                     case sf::Mouse::Right:
-                        std::cout << "Right mouse button pressed!" << std::endl;
                         break;
+
                     default:
                         break;
                 }
@@ -119,11 +130,27 @@ void StartScreen::update()
                         break;
 
                     case sf::Keyboard::O:
-                        std::cout << "Open file" << std::endl;
+                        clickSound.playSoundEffect();
+                        dialogBox.toggleTextbox(false);
+                        temp = dialogBox.run("Open Project");
+                        if (temp != "")
+                        {
+                            ide.setProject(temp);
+                            window.close();
+                            ide.run();
+                        }
                         break;
 
                     case sf::Keyboard::N:
-                        std::cout << "New file" << std::endl;
+                        clickSound.playSoundEffect();
+                        dialogBox.toggleTextbox(true);
+                        temp = dialogBox.run("Create Project");
+                        if (temp != "")
+                        {
+                            ide.setProject(temp);
+                            window.close();
+                            ide.run();
+                        }
                         break;
 
                     default:

@@ -10,7 +10,7 @@ class DialogBox
 {
     public:
         DialogBox(bool TEXTBOX, bool DROPDOWN);
-        void run(std::string TITLE);
+        std::string run(std::string TITLE);
         void toggleTextbox(bool TOGGLE);
 
     private:
@@ -18,6 +18,7 @@ class DialogBox
         int screenHeight = 400;
         sf::Color backgroundColor = sf::Color(255, 255, 255, 255);
         // - - - - - - - - -
+        std::string projectDirectoryPath;
         std::string textureDirectoryPath = "../../include/resources/textures/";
         std::string fontDirectoryPath = "../../include/resources/fonts/";
         std::string soundDirectoryPath = "../../include/resources/sounds/";

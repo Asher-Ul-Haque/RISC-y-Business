@@ -13,7 +13,7 @@ DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN)
     dropdown = DROPDOWN;
 }
 
-void DialogBox::run(std::string TITLE)
+std::string DialogBox::run(std::string TITLE)
 {
     createWindow(TITLE);
     while (window.isOpen())
@@ -31,7 +31,10 @@ void DialogBox::run(std::string TITLE)
         render();
         window.display();
     }
+    
+    return projectDirectoryPath;
 }
+
 void DialogBox::update()
 {
     sf::Event event;
@@ -63,6 +66,10 @@ void DialogBox::update()
                         {
                             case true:
                                 createProject();
+                                if (dropdown)
+                                {
+                                    projectDirectoryPath =  dropDown.getSelectedOption();
+                                }
                                 break;
 
                             case false:
@@ -75,6 +82,7 @@ void DialogBox::update()
                                 soundEffects.setPath(soundDirectoryPath + failureSoundFilePath);
                                 soundEffects.playSoundEffect();
                                 window.close();
+                                projectDirectoryPath = "";
                                 break;
 
                             case false:
@@ -83,8 +91,8 @@ void DialogBox::update()
                         break;
 
                     case sf::Mouse::Right:
-                        std::cout << "Right mouse button pressed!" << std::endl;
                         break;
+
                     default:
                         break;
                 }
@@ -102,7 +110,6 @@ void DialogBox::update()
                         break;
 
                     case sf::Keyboard::N:
-                        std::cout << "Cancel file" << std::endl;
                         break;
 
                     default:
@@ -247,5 +254,10 @@ void DialogBox::createProject()
     }
     soundEffects.setPath(soundDirectoryPath + successSoundFilePath);
     soundEffects.playSoundEffect();
+    projectDirectoryPath = projectsDirectory;
+    if (dropdown)
+    {
+        projectDirectoryPath =  dropDown.getSelectedOption() == "Select Option" ? "" : "/RISCY Projects/" + dropDown.getSelectedOption();
+    }
     window.close();
 }

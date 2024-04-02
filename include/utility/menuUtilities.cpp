@@ -289,7 +289,7 @@ void DropDown::handleInput(const sf::Event* event)
             }
             for (int i = 0; i < optionTexts.size(); i++)
             {
-                switch(MouseUtilities::isMousePressedInRectangle(optionTexts[i].getPosition(), sf::Vector2f(optionTexts[i].getGlobalBounds().width, optionTexts[i].getGlobalBounds().height), event))
+                switch(MouseUtilities::isMousePressedInRectangle(optionTexts[i].getPosition(), sf::Vector2f(highlight.getGlobalBounds().width, highlight.getGlobalBounds().height), event))
                 {
                     case true:
                         selectedText.setString(optionTexts[i].getString());
@@ -354,9 +354,7 @@ void DropDown::setOptions(const std::vector<std::string>& OPTIONS)
 
 std::string DropDown::getSelectedOption() const
 {
-    return selectedText.getString();
+    return projectsDirectoryPath + selectedText.getString();
 }
 
 // - - - - - - - - -
-
-
