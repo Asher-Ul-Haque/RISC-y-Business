@@ -3,7 +3,7 @@
 
 int main()
 {
-    LoadingScreen loadingScreen;
+    //LoadingScreen loadingScreen;
     //loadingScreen.run();
     StartScreen startScreen;
     startScreen.run();

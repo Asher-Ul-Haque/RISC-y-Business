@@ -34,11 +34,11 @@ class IDE
 
     sf::RectangleShape topBar;
     sf::RectangleShape lineNumbers;
-    sf::RectangleShape files;
     sf::Sprite fileButtons[3];
     std::string fileButtonsTexturePath[3] = {"assemblyButton.png", "binaryButton.png", "reportButton.png"};
     sf::Texture fileButtonsTextures[3];
-    bool buttonClickable[3] = {true, false, false};
+    bool fileButtonAnimation[3] = {true, true, true};
+    bool buttonClickable[3] = {true, true, true};
     
     sf::Text hoverText;
     bool showText = false;
