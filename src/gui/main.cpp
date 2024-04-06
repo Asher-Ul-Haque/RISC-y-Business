@@ -3,8 +3,8 @@
 
 int main()
 {
-    //LoadingScreen loadingScreen;
-    //loadingScreen.run();
+    LoadingScreen loadingScreen;
+    loadingScreen.run();
     StartScreen startScreen;
     startScreen.run();
     return 0;

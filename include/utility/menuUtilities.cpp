@@ -237,6 +237,8 @@ void DropDown::handleInput(const sf::Event* event)
                     break;
 
                 case sf::Keyboard::Down:
+					soundEffects.setPath(soundDirectoryPath + "toggle.wav");
+					soundEffects.playSoundEffect();
                     if (!isOpen)
                     {
                         return;
@@ -250,6 +252,8 @@ void DropDown::handleInput(const sf::Event* event)
                     break;
 
                 case sf::Keyboard::Up:
+					soundEffects.setPath(soundDirectoryPath + "toggle.wav");
+					soundEffects.playSoundEffect();
                     if (!isOpen)
                     {
                         return;

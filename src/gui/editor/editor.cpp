@@ -261,7 +261,7 @@ void IDE::setProject(std::string PROJECTPATH)
     title.setString(projectDirectoryPath);
     title.setPosition((screenWidth - title.getGlobalBounds().width) / 2, 15);
 
-    window.create(sf::VideoMode::getFullscreenModes()[0], "RISC-Y Business", sf::Style::Close);
+    window.create(sf::VideoMode::getDesktopMode(), "RISC-Y Business", sf::Style::Default);
     window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width / 2 - window.getSize().x / 2, sf::VideoMode::getDesktopMode().height / 2 - window.getSize().y / 2));
     window.setFramerateLimit(60);
     sf::Texture logoTexture;

@@ -12,8 +12,8 @@ class TextEditor;
 class IDE 
 {
 
-    int screenWidth = 1920;
-    int screenHeight = 1080;
+    int screenWidth = sf::VideoMode::getDesktopMode().width;
+    int screenHeight = sf::VideoMode::getDesktopMode().height;
     sf::Color backgroundColor = sf::Color(239, 239, 239, 255);
 
     sf::RenderWindow window;
