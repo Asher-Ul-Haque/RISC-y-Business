@@ -42,7 +42,7 @@ IDE::IDE()
     topBar.setTexture(&topBarTexture);
     topBar.setSize(sf::Vector2f(screenWidth, 50));
     topBar.setPosition(0, 0);
-
+    
     lineNumbers.setSize(sf::Vector2f(50, screenHeight));
     lineNumbers.setFillColor(backgroundColor);
     lineNumbers.setPosition(0, 50);
