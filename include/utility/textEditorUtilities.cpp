@@ -12,33 +12,33 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW) : window(WIND
 	
 	cursor.setSize(sf::Vector2f(2, size));
 	cursor.setFillColor(sf::Color::Black);
-	cursor.setOrigin(sf::Vector2f(1, 6));
 	
 	window->setView(scroller);
-	clock.restart();
 }
 
-/*
-void TextEditorUtitilies::scrollUp()
+
+void TextEditorUtilities::scrollUp()
 {
-	scroller.move(0, -size);
+	viewArea = viewArea - sf::Vector2f(0, size);
 }
 
-void TextEditorUtitilies::scrollDown()
+void TextEditorUtilities::scrollDown()
 {
-	scroller.move(0, size);
+	viewArea = viewArea - sf::Vector2f(0, size);
 }
-*/
+
+void TextEditorUtilities::setCursorPosition()
+{
+	cursor.setPosition(textContent[cursorLine].getPosition().x + (5 * cursorPos) + 7, cursorLine * 7 + textContent[0].getPosition().y);
+}
+
 void TextEditorUtilities::render()
 {
 	for (int i = 0; i < textContent.size(); ++i)
 	{
 		window->draw(textContent[i]);
 	}
-	if (showCursor)
-	{
-		window->draw(cursor);
-	}
+	window->draw(cursor);
 }
 
 void TextEditorUtilities::setFilePath(std::string& PATH)
@@ -79,136 +79,165 @@ void TextEditorUtilities::readFromFile()
 	}
 	
 	infile.close();	
-	cursor.setPosition(sf::Vector2f(cursorLine + 30, cursorPos + 30));
-
 }
-/*	
-void writeToFile()
-{
-	switch(isEdited)
-	{
-		case false:
-			return;
-			break;
-	}
 	
+void TextEditorUtilities::writeToFile()
+{
 	std::ofstream outputFile(filePath);
 	switch (outputFile.is_open())
 	{
 		case true:
 			break;
-			
+					
 		case false:
 			std::cerr << "Could not open file for writing" << std::endl;
+			break;
+	}
+				
+	for (const auto& lineText : textContent)
+	{
+		outputFile << lineText.getString().toAnsiString() << "\n";
+	}
+			
+	outputFile.close();
+	isEdited = false;
+	switch(isEdited)
+	{
+		case false:
 			return;
+			break;
+
+		case true:
 			break;
 	}
 	
-	for (const auto& lineText : textContent)
-	{
-		outputFile << text.getString().toAnsiString() << "\n";
-	}
-	
-	outputFile.close();
-	isEdited = false;
 }	
-	
-void TextEditorUtitilies::moveCursorDown()
+
+void TextEditorUtilities::moveCursorDown()
 {
 	if (cursorLine > 0)
 	{
 		--cursorLine;
+		setCursorPosition();
 		return;
 	}
 }
 
-void TextEditorUtitilies::moveCursorUp()
+void TextEditorUtilities::moveCursorUp()
 {
 	if (cursorLine < textContent.size() - 1)
 	{
 		++cursorLine;
+		setCursorPosition();
 		return;
 	}
 }
 
-void TextEditorUtitilies::moveCursorLeft()
+
+void TextEditorUtilities::moveCursorLeft()
 {
 	if (cursorPos > 0)
 	{
 		--cursorPos;
+		setCursorPosition();
 		return;
 	}
 	moveCursorUp();
 }
 
-void TextEditorUtitilies::moveCursorRight()
+void TextEditorUtilities::moveCursorRight()
 {
-	if (cursorPos < textContent[cursorLine].size() - 1)
+	if (cursorPos < textContent[cursorLine].getString().toAnsiString().length() - 1)
 	{
 		++cursorPos;
+		setCursorPosition();
 		return;
 	}
 	moveCursorDown();
 }
 
-void TextEditorUtitilies::insertChar(char C)
+void TextEditorUtilities::makeANewLine()
+{
+	sf::Text newLine;
+	newLine.setFont(font);
+	newLine.setCharacterSize(size);
+	newLine.setFillColor(sf::Color::Black);
+	textContent.insert(textContent.begin() + cursorLine + 1, newLine);
+	++cursorLine;
+	cursorPos = 0;
+}
+
+void TextEditorUtilities::addACharacter(char C)
+{
+	sf::Text& line = textContent[cursorLine];
+	std::string lineText = line.getString().toAnsiString();
+	lineText.insert(cursorPos, 1, C);
+	line.setString(lineText);
+	++cursorPos;
+}
+
+void TextEditorUtilities::insertChar(char C)
 {
 	switch(C == '\n')
 	{
 		case true:
-			sf::Text newLine;
-			newLine.setFont(font);
-			newLine.setCharacterSize(size);
-			newLine.setFillColor(sf::Color::Black);
-			textContent.insert(textContent.begin() + cursorline + 1, newLine);
-			++cursorLine;
-			cursorPos = 0;
+			makeANewLine();
 			break;
 			
 		case false:
-			std::Text& line = textContent[cursorLine];
-			std::string& lineText = line.getSring();
-			lineText.insert(cursorPos, 1, C);
-			line.setString(lineText);
-			++cursorPos;
+			addACharacter(C);
 			break;
 	}
 	
 	isEdited = true;
 }
 
-void TextEditorUtitilies::deleteChar()
+void TextEditorUtilities::deleteChar()
 {
 	sf::Text& line = textContent[cursorLine];
-	std::string& lineText = line.getString();
+	std::string lineText = line.getString().toAnsiString();
 	switch(cursorPos > 0)
 	{
 		case true:
 			lineText.erase(cursorPos -1, 1);
-			currentLine.setString(lineText);
+			line.setString(lineText);
 			--cursorPos;
 			isEdited = true;
 			break;
 			
 		case false:
-			switch(cursor.line > 0)
+			switch(cursorLine > 0)
 			{
 				case false:
 					break;
 					
 				case true:
-					std::string& previousLine = textContent[cursorLine -1].getString();
+					std::string previousLine = textContent[cursorLine -1].getString().toAnsiString();
 					previousLine += lineText;
 					textContent.erase(textContent.begin() + cursorLine);
 					--cursorLine;
 					cursorPos = previousLine.length();
 					isEdited = true;
-					BREAK;
+					break;
 			}
 			break;
 	}
 }
-*/
+
+void TextEditorUtilities::scrollDownLogic()
+{
+	float totalLinesHeight = textContent.size() * (textContent[0].getGlobalBounds().height + linePadding);
+	float windowHeight = window->getSize().y;
+	switch(totalLinesHeight - viewArea.y > window->getSize().y)
+	{
+		case true:
+			scrollDown();
+			break;
+							
+		case false:
+			break;
+	}
+}
 
 void TextEditorUtilities::update(const sf::Event* EVENT)
 {
@@ -258,22 +287,12 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 							break;
 					}
 					break;
-				/*	
+				
 				case sf::Keyboard::Down:
 					moveCursorDown();
-					float totalLinesHeight = textContent.size() * (textContent[0].getGlobalBounds().height + linePadding);
-					float windowHeight = window->getSize().y;
-					switch(totalLinesHeight - viewArea.y > window->getSize().y)
-					{
-						case true:
-							scrollDown();
-							break;
-							
-						case false:
-							break;
-					}
+					scrollDownLogic();
 					break;
-				/*	
+				
 				case sf::Keyboard::S:
 					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 					{
@@ -285,7 +304,7 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 							break;
 					}
 					break;
-					*/
+					
 			}
 			break;
 			

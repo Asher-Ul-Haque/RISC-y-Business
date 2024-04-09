@@ -2,6 +2,7 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include "../../../include/utility/textEditorUtilities.h"
 
 IDE::IDE() 
     : soundEffects(soundDirectoryPath + "click.wav", 50),
@@ -34,7 +35,7 @@ IDE::IDE()
         buttonTextures[i].setSmooth(true);
         buttons[i].setTexture(buttonTextures[i]);
         buttons[i].setOrigin(buttonTextures[i].getSize().x / 2, buttonTextures[i].getSize().y / 2);
-        buttons[i].setPosition(screenWidth - 50 * (i + 1), 25);
+        buttons[i].setPosition(screenWidth - 50 * (i + 1) - 50, 25);
         buttons[i].setScale(1.2, 1.2);
     }
     

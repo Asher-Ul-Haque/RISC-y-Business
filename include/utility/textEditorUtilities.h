@@ -19,7 +19,6 @@ class TextEditorUtilities
 	sf::View scroller;
 	unsigned char size = 12;
 
-	sf::Clock clock;
 	bool showCursor = false;
 	
 	bool isEdited = false;
@@ -41,6 +40,14 @@ class TextEditorUtilities
 	void moveCursorDown();
 	
 	void moveCursorUp();
+
+	void setCursorPosition();
+
+	void addACharacter(char C);
+
+	void makeANewLine();
+
+	void scrollDownLogic();
 	
 public:
 	TextEditorUtilities(sf::RenderWindow* WINDOW);

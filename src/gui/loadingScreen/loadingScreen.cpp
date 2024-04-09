@@ -46,8 +46,11 @@ void LoadingScreen::animateTitle(std::string loadingText, unsigned char delay)
         sf::sleep(sf::milliseconds(delay));
     }
     soundEffects.stopSoundEffect();
+    sf::Event event;
+    window.pollEvent(event);
 
     sf::sleep(sf::seconds(1));
+    window.pollEvent(event);
 
     soundEffects.setPath(soundDirectoryPath + backspaceSoundFilePath);
     soundEffects.playSoundEffect();

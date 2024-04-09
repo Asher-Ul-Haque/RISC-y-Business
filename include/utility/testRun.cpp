@@ -1,4 +1,5 @@
 #include "textEditorUtilities.h"
+#include <iostream>
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Text Editor Test");
@@ -9,10 +10,17 @@ int main() {
     textEditor.setFilePath(file);
     textEditor.readFromFile();
 
+    file = "textfile2.txt";
+    textEditor.setFilePath(file);
+    textEditor.writeToFile();
+    std::cout << "Executed!" << std::endl;
+
     while (window.isOpen()) {
         sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+        while (window.pollEvent(event)) 
+        {
+            if (event.type == sf::Event::Closed) 
+            {
                 window.close();
             } 
             textEditor.update(&event);
