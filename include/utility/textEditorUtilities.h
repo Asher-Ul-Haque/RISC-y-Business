@@ -4,7 +4,7 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
-class TextEditorUtitilies
+class TextEditorUtilities
 {
 	std::string filePath;
 	std::vector<sf::Text> textContent;
@@ -18,7 +18,10 @@ class TextEditorUtitilies
 	unsigned char cursorPos = 0;
 	sf::View scroller;
 	unsigned char size = 12;
-	void setFilePath(std::string& PATH);
+
+	sf::Clock clock;
+	bool showCursor = false;
+	
 	bool isEdited = false;
 	sf::Vector2f viewArea = sf::Vector2f(800, 600);
 	int linePadding = 2;
@@ -40,9 +43,11 @@ class TextEditorUtitilies
 	void moveCursorUp();
 	
 public:
-	TextEditorUtitilies(sf::RenderWindow* WINDOW){};
+	TextEditorUtilities(sf::RenderWindow* WINDOW);
+
+	void setFilePath(std::string& PATH);
 		
-	void writeToPath();
+	void writeToFile();
 	
 	void readFromFile();
 	

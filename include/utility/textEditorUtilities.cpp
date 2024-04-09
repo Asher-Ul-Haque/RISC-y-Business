@@ -1,21 +1,24 @@
 #include "textEditorUtilities.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
-TextEditorUtitilies::TextEditorUtitilies(sf::RenderWindow* WINDOW) : window(WINDOW)
+TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW) : window(WINDOW)
 {
 	font.loadFromFile(fontDirectoryPath + "JetBrainsMono-Light.ttf");
 	
 	scroller.setSize(viewArea);
-	scoller.setCenter(viewArea / 2);
+	scroller.setCenter(viewArea / 2.f);
 	
 	cursor.setSize(sf::Vector2f(2, size));
 	cursor.setFillColor(sf::Color::Black);
-	cursor.setPosition(0, 0);
+	cursor.setOrigin(sf::Vector2f(1, 6));
 	
 	window->setView(scroller);
+	clock.restart();
 }
 
+/*
 void TextEditorUtitilies::scrollUp()
 {
 	scroller.move(0, -size);
@@ -25,16 +28,28 @@ void TextEditorUtitilies::scrollDown()
 {
 	scroller.move(0, size);
 }
-
-void TextEditorUtitilies::render()
+*/
+void TextEditorUtilities::render()
 {
-	window.draw(text);
+	for (int i = 0; i < textContent.size(); ++i)
+	{
+		window->draw(textContent[i]);
+	}
+	if (showCursor)
+	{
+		window->draw(cursor);
+	}
 }
 
-void TextEditorUtitilies::readFromFile()
+void TextEditorUtilities::setFilePath(std::string& PATH)
+{
+	filePath = PATH;
+}
+
+void TextEditorUtilities::readFromFile()
 {
 	std::ifstream infile(filePath);
-	switch (infile.isOpen())
+	switch (infile.is_open())
 	{
 		case true:
 			break;
@@ -45,25 +60,29 @@ void TextEditorUtitilies::readFromFile()
 			break;
 	}
 	
-	writeToFile();
 	textContent.clear();
 	
 	std::string line;
+	int i = 2;
 	while (std::getline(infile, line))
 	{
 		std::istringstream iss(line);
 		sf::Text text;
 		text.setFont(font);
 		text.setFillColor(sf::Color::Black);
-		text.setFontSize(size);
+		text.setCharacterSize(size);
 		text.setString(line);
+		text.setPosition(sf::Vector2f(40, i*size));
+		++i;
 		
 		textContent.push_back(text);
 	}
 	
-	inputFile.close();	
+	infile.close();	
+	cursor.setPosition(sf::Vector2f(cursorLine + 30, cursorPos + 30));
+
 }
-	
+/*	
 void writeToFile()
 {
 	switch(isEdited)
@@ -189,8 +208,9 @@ void TextEditorUtitilies::deleteChar()
 			break;
 	}
 }
+*/
 
-void update(const sf::Event* EVENT)
+void TextEditorUtilities::update(const sf::Event* EVENT)
 {
 	switch(EVENT->type)
 	{
@@ -198,7 +218,7 @@ void update(const sf::Event* EVENT)
 			switch(EVENT->text.unicode >= 32 && EVENT->text.unicode <127 || EVENT->text.unicode == '\n')
 			{
 				case true:
-					insertChar(static_cast<char>(event.text.unicode);				
+					insertChar(static_cast<char>(EVENT->text.unicode));				
 					break;
 					
 				case false:
@@ -238,12 +258,12 @@ void update(const sf::Event* EVENT)
 							break;
 					}
 					break;
-					
+				/*	
 				case sf::Keyboard::Down:
 					moveCursorDown();
-					float totalLinesHeight = textContent.size() * (textContent[0].getGlobalBounds.height + linePadding);
-					float windowHeight = window.getSize().y;
-					switch(totalLinesHeight - viewArea.y > window.getSize().y)
+					float totalLinesHeight = textContent.size() * (textContent[0].getGlobalBounds().height + linePadding);
+					float windowHeight = window->getSize().y;
+					switch(totalLinesHeight - viewArea.y > window->getSize().y)
 					{
 						case true:
 							scrollDown();
@@ -253,7 +273,7 @@ void update(const sf::Event* EVENT)
 							break;
 					}
 					break;
-					
+				/*	
 				case sf::Keyboard::S:
 					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 					{
@@ -265,6 +285,7 @@ void update(const sf::Event* EVENT)
 							break;
 					}
 					break;
+					*/
 			}
 			break;
 			
