@@ -10,11 +10,6 @@ int main() {
     textEditor.setFilePath(file);
     textEditor.readFromFile();
 
-    file = "textfile2.txt";
-    textEditor.setFilePath(file);
-    textEditor.writeToFile();
-    std::cout << "Executed!" << std::endl;
-
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) 

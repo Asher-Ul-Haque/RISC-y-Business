@@ -39,16 +39,6 @@ void TextEditorUtilities::render()
 	{
 		window->draw(textContent[i]);
 	}
-	std::string YData = "Cursor Y: " + std::to_string(cursorLine);
-	std::string XData = "Cursor X: " + std::to_string(cursorPos);
-	std::string Data = XData + "\n" + YData;
-	sf::Text DataDisplay;
-	DataDisplay.setFillColor(sf::Color::Green);
-	DataDisplay.setCharacterSize(size*2);
-	DataDisplay.setFont(font);
-	DataDisplay.setPosition(500, 100);
-	DataDisplay.setString(Data);
-	window->draw(DataDisplay);
 }
 
 void TextEditorUtilities::setFilePath(std::string& PATH)
@@ -87,7 +77,7 @@ void TextEditorUtilities::readFromFile()
 		
 		textContent.push_back(text);
 	}
-	
+	setCursorPosition();	
 	infile.close();	
 }
 	
@@ -359,7 +349,7 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 
 				case sf::Keyboard::Delete:
 					cursorPos++;
-					if (cursorPos >= textContent[cursorLine].getString().toAnsiString().length())
+					if (cursorPos >= textContent[cursorLine].getString().toAnsiString().length() && textContent.size() - 1 > cursorLine)
 					{
 						cursorLine++;
 						cursorPos = 0;
