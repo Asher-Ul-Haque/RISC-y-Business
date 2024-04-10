@@ -64,6 +64,11 @@ void TextEditorUtilities::readFromFile()
 	
 	std::string line;
 	int i = 2;
+	if (infile.peek() == std::ifstream::traits_type::eof()) 
+	{
+        infile.close();
+        return;  // Return if the file is empty
+    }
 	while (std::getline(infile, line))
 	{
 		std::istringstream iss(line);
@@ -270,6 +275,53 @@ void TextEditorUtilities::scrollDownLogic()
 	}
 }
 
+void TextEditorUtilities::undo()
+{
+	switch(undoStack.empty()) 
+	{
+		case true:
+			std::cout << "Undo stack is empty!" << std::endl;
+			break;
+
+		case false:
+            redoStack.push(latest);
+            latest = undoStack.top();
+            undoStack.pop();
+
+            cursorLine = latest.cursorLine;
+            cursorPos = latest.cursorPos;
+
+            int startLine = cursorLine > 2 ? cursorLine - 2 : 0;
+            int endLine = cursorLine + 2 < textContent.size() ? cursorLine + 2 : textContent.size() - 1;
+            for (int i = startLine; i <= endLine; ++i) 
+			{
+                textContent[i] = latest.theText[i - startLine];
+            }
+
+    }
+}
+
+void TextEditorUtilities::redo()
+{
+	
+}
+
+void TextEditorUtilities::updateSnapshot()
+{
+	Snapshot newSnap;
+    newSnap.cursorLine = cursorLine;
+    newSnap.cursorPos = cursorPos;
+
+    int startLine = cursorLine > 2 ? cursorLine - 2 : 0;
+    int endLine = cursorLine + 2 < textContent.size() ? cursorLine + 2 : textContent.size() - 1;
+    for (int i = startLine; i <= endLine; ++i) 
+	{
+		newSnap.theText[i - startLine] = textContent[i];
+    }
+
+    latest = newSnap;
+}
+
 void TextEditorUtilities::update(const sf::Event* EVENT)
 {
 	switch(EVENT->type)
@@ -323,9 +375,15 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					moveCursorDown();
 					scrollDownLogic();
 					break;
-				
+
+				case sf::Keyboard::PageUp:
+					updateSnapshot();
+					undoStack.push(latest);
+					std::cout << "Push to undo stack complete" << std::endl;
+					break;
+
 				case sf::Keyboard::S:
-					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
 					{
 						case true:
 							writeToFile();
@@ -333,6 +391,20 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 						
 						case false:
 							break;
+					}
+					break;
+
+				case sf::Keyboard::Z:
+					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+					{
+						case true:
+							std::cout << "Undo call detected" << std::endl;
+							undo();
+							break;
+
+						case false:
+							break;
+							redo();
 					}
 					break;
 					

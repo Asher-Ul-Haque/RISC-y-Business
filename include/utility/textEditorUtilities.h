@@ -2,6 +2,7 @@
 #define TEXTEDITORUTILITIES_H
 #include <vector>
 #include <string>
+#include <stack>
 #include <SFML/Graphics.hpp>
 
 class TextEditorUtilities
@@ -16,15 +17,31 @@ class TextEditorUtilities
 	sf::RectangleShape cursor;
 	unsigned char cursorLine = 0;
     unsigned char cursorPos = 0;
+	unsigned char previousCursorLine = 0;
+	bool specialKeyPressed = false;
+
 	sf::View scroller;
 	unsigned char size = 12;
 
 	bool showCursor = false;
-	
+
+	typedef struct 
+	{
+		unsigned char cursorLine;
+		unsigned char cursorPos;
+		sf::Text theText[5];
+	} Snapshot;
+
+	std::stack<Snapshot> undoStack;
+	std::stack<Snapshot> redoStack;
+	Snapshot latest;
+
 	bool isEdited = false;
 	sf::Vector2f viewArea = sf::Vector2f(800, 600);
 	int linePadding = 2;
 
+	void updateSnapshot();
+	
 	void insertChar(char C);
 	
 	void deleteChar();
@@ -62,7 +79,9 @@ public:
 	
 	void render();
 	
-	
+	void undo();
+
+	void redo();	
 };
 
 #endif //TEXTEDITORUTILITIES_H
