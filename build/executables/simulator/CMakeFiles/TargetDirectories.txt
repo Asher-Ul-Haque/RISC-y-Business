@@ -1,3 +1,0 @@
-/home/somebody/Documents/RISC-y-Business/build/executables/simulator/CMakeFiles/simulator.dir
-/home/somebody/Documents/RISC-y-Business/build/executables/simulator/CMakeFiles/edit_cache.dir
-/home/somebody/Documents/RISC-y-Business/build/executables/simulator/CMakeFiles/rebuild_cache.dir

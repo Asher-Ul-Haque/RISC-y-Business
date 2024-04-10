@@ -383,9 +383,11 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					break;
 
 				case sf::Keyboard::S:
-					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+					std::cout << "S pressed" << std::endl;
+					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
 					{
 						case true:
+						std::cout << "Writing to File" << std::endl;
 							writeToFile();
 							break;
 						
@@ -395,7 +397,7 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					break;
 
 				case sf::Keyboard::Z:
-					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
 					{
 						case true:
 							std::cout << "Undo call detected" << std::endl;
