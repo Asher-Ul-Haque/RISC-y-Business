@@ -15,7 +15,7 @@ class TextEditorUtilities
 	sf::Font font;
 	sf::RectangleShape cursor;
 	unsigned char cursorLine = 0;
-	unsigned char cursorPos = 0;
+    unsigned char cursorPos = 0;
 	sf::View scroller;
 	unsigned char size = 12;
 

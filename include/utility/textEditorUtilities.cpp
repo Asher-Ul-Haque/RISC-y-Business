@@ -10,8 +10,8 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW) : window(WIND
 	scroller.setSize(viewArea);
 	scroller.setCenter(viewArea / 2.f);
 	
-	cursor.setSize(sf::Vector2f(2, size));
-	cursor.setFillColor(sf::Color::Black);
+	cursor.setSize(sf::Vector2f(5, size));
+	cursor.setFillColor(sf::Color(100, 0, 0, 100));
 	
 	window->setView(scroller);
 }
@@ -29,16 +29,26 @@ void TextEditorUtilities::scrollDown()
 
 void TextEditorUtilities::setCursorPosition()
 {
-	cursor.setPosition(textContent[cursorLine].getPosition().x + (5 * cursorPos) + 7, cursorLine * 7 + textContent[0].getPosition().y);
+	cursor.setPosition(textContent[cursorLine].getPosition().x + (7 * cursorPos), cursorLine * 12 + textContent[0].getPosition().y);
 }
 
 void TextEditorUtilities::render()
 {
+	window->draw(cursor);
 	for (int i = 0; i < textContent.size(); ++i)
 	{
 		window->draw(textContent[i]);
 	}
-	window->draw(cursor);
+	std::string YData = "Cursor Y: " + std::to_string(cursorLine);
+	std::string XData = "Cursor X: " + std::to_string(cursorPos);
+	std::string Data = XData + "\n" + YData;
+	sf::Text DataDisplay;
+	DataDisplay.setFillColor(sf::Color::Green);
+	DataDisplay.setCharacterSize(size*2);
+	DataDisplay.setFont(font);
+	DataDisplay.setPosition(500, 100);
+	DataDisplay.setString(Data);
+	window->draw(DataDisplay);
 }
 
 void TextEditorUtilities::setFilePath(std::string& PATH)
@@ -113,21 +123,23 @@ void TextEditorUtilities::writeToFile()
 	
 }	
 
-void TextEditorUtilities::moveCursorDown()
+void TextEditorUtilities::moveCursorUp()
 {
 	if (cursorLine > 0)
 	{
 		--cursorLine;
+		cursorPos = (cursorPos > textContent[cursorLine].getString().toAnsiString().length()) ? textContent[cursorLine].getString().toAnsiString().length() : cursorPos;
 		setCursorPosition();
 		return;
 	}
 }
 
-void TextEditorUtilities::moveCursorUp()
+void TextEditorUtilities::moveCursorDown()
 {
 	if (cursorLine < textContent.size() - 1)
 	{
 		++cursorLine;
+		cursorPos = (cursorPos > textContent[cursorLine].getString().toAnsiString().length()) ? textContent[cursorLine].getString().toAnsiString().length() : cursorPos;
 		setCursorPosition();
 		return;
 	}
@@ -142,16 +154,24 @@ void TextEditorUtilities::moveCursorLeft()
 		setCursorPosition();
 		return;
 	}
+	if (cursorLine > 0)
+	{
+		cursorPos = textContent[cursorLine - 1].getString().toAnsiString().length();
+	}
 	moveCursorUp();
 }
 
 void TextEditorUtilities::moveCursorRight()
 {
-	if (cursorPos < textContent[cursorLine].getString().toAnsiString().length() - 1)
+	if (cursorPos < textContent[cursorLine].getString().toAnsiString().length())
 	{
 		++cursorPos;
 		setCursorPosition();
 		return;
+	}
+	if (cursorLine < textContent.size() -1)
+	{
+		cursorPos = 0;
 	}
 	moveCursorDown();
 }
@@ -164,7 +184,20 @@ void TextEditorUtilities::makeANewLine()
 	newLine.setFillColor(sf::Color::Black);
 	textContent.insert(textContent.begin() + cursorLine + 1, newLine);
 	++cursorLine;
+	std::string previousLine = textContent[cursorLine -1].getString().toAnsiString();
+	std::string whatGoesBefore  = previousLine.substr(0, cursorPos);
+	std::string whatGoesAfter = previousLine.substr(cursorPos);
+	textContent[cursorLine - 1].setString(whatGoesBefore);
+	textContent[cursorLine].setString(whatGoesAfter);
 	cursorPos = 0;
+	for (int i = cursorLine; i < textContent.size(); ++i)
+	{
+		textContent[i].setPosition(sf::Vector2f(40, (i + 2) * size));
+	}
+	
+	isEdited = true;
+
+	setCursorPosition();
 }
 
 void TextEditorUtilities::addACharacter(char C)
@@ -174,6 +207,7 @@ void TextEditorUtilities::addACharacter(char C)
 	lineText.insert(cursorPos, 1, C);
 	line.setString(lineText);
 	++cursorPos;
+	setCursorPosition();
 }
 
 void TextEditorUtilities::insertChar(char C)
@@ -203,6 +237,7 @@ void TextEditorUtilities::deleteChar()
 			line.setString(lineText);
 			--cursorPos;
 			isEdited = true;
+			setCursorPosition();
 			break;
 			
 		case false:
@@ -213,11 +248,17 @@ void TextEditorUtilities::deleteChar()
 					
 				case true:
 					std::string previousLine = textContent[cursorLine -1].getString().toAnsiString();
+					cursorPos = previousLine.length();
 					previousLine += lineText;
 					textContent.erase(textContent.begin() + cursorLine);
+					textContent[cursorLine - 1].setString(previousLine);
 					--cursorLine;
-					cursorPos = previousLine.length();
+					for (int i = cursorLine; i < textContent.size(); ++i)
+					{
+						textContent[i].setPosition(sf::Vector2f(40, (i + 2) * size));
+					}
 					isEdited = true;
+					setCursorPosition();
 					break;
 			}
 			break;
@@ -244,7 +285,7 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 	switch(EVENT->type)
 	{
 		case sf::Event::TextEntered:
-			switch(EVENT->text.unicode >= 32 && EVENT->text.unicode <127 || EVENT->text.unicode == '\n')
+			switch(EVENT->text.unicode >= 32 && EVENT->text.unicode <127)
 			{
 				case true:
 					insertChar(static_cast<char>(EVENT->text.unicode));				
@@ -305,6 +346,36 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					}
 					break;
 					
+				case sf::Keyboard::Return:
+					makeANewLine();
+					break;
+
+				case sf::Keyboard::Tab:
+					for (int i = 0; i < 4; ++i)
+					{
+						insertChar(' ');
+					}
+					break;
+
+				case sf::Keyboard::Delete:
+					cursorPos++;
+					if (cursorPos >= textContent[cursorLine].getString().toAnsiString().length())
+					{
+						cursorLine++;
+						cursorPos = 0;
+					}
+					deleteChar();
+					break;
+
+				case sf::Keyboard::Home:
+					cursorPos = 0;
+					setCursorPosition();
+					break;
+
+				case sf::Keyboard::End:
+					cursorPos = textContent[cursorLine].getString().toAnsiString().length();
+					setCursorPosition();
+					break;
 			}
 			break;
 			
