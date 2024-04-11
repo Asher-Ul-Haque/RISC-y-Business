@@ -2,13 +2,14 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <cstdlib>
 
 TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW) : window(WINDOW)
 {
 	font.loadFromFile(fontDirectoryPath + "JetBrainsMono-Light.ttf");
 	
-	scroller.setSize(viewArea);
-	scroller.setCenter(viewArea / 2.f);
+	viewArea = sf::Vector2f(1000.f, 1000.f);
+	scroller = sf::View(sf::FloatRect(0, 0, 800, 600));
 	
 	cursor.setSize(sf::Vector2f(5, size));
 	cursor.setFillColor(sf::Color(100, 0, 0, 100));
@@ -20,11 +21,13 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW) : window(WIND
 void TextEditorUtilities::scrollUp()
 {
 	viewArea = viewArea - sf::Vector2f(0, size);
+	scroller.setCenter(viewArea);
 }
 
 void TextEditorUtilities::scrollDown()
 {
 	viewArea = viewArea - sf::Vector2f(0, size);
+	scroller.setCenter(viewArea);
 }
 
 void TextEditorUtilities::setCursorPosition()
@@ -34,11 +37,17 @@ void TextEditorUtilities::setCursorPosition()
 
 void TextEditorUtilities::render()
 {
+	scroller.move(100.f, 100.f);
 	window->draw(cursor);
 	for (int i = 0; i < textContent.size(); ++i)
 	{
 		window->draw(textContent[i]);
 	}
+	sf::RectangleShape testRect;
+	testRect.setFillColor(sf::Color::Red);
+	testRect.setSize(sf::Vector2f(100, 100));
+	testRect.setPosition(400, 500);
+	window->draw(testRect);
 }
 
 void TextEditorUtilities::setFilePath(std::string& PATH)
@@ -303,7 +312,27 @@ void TextEditorUtilities::undo()
 
 void TextEditorUtilities::redo()
 {
-	
+	switch(redoStack.empty()) 
+	{
+		case true:
+			std::cout << "Redo stack is empty!" << std::endl;
+			break;
+
+		case false:
+            latest = redoStack.top();
+            redoStack.pop();
+
+            cursorLine = latest.cursorLine;
+            cursorPos = latest.cursorPos;
+
+            int startLine = cursorLine > 2 ? cursorLine - 2 : 0;
+            int endLine = cursorLine + 2 < textContent.size() ? cursorLine + 2 : textContent.size() - 1;
+            for (int i = startLine; i <= endLine; ++i) 
+			{
+                textContent[i] = latest.theText[i - startLine];
+            }
+
+    }
 }
 
 void TextEditorUtilities::updateSnapshot()
@@ -324,6 +353,34 @@ void TextEditorUtilities::updateSnapshot()
 
 void TextEditorUtilities::update(const sf::Event* EVENT)
 {
+	switch(abs(previousCursorLine - cursorLine) < 5)
+	{
+		case true:
+			break;
+			
+		case false:
+			previousCursorLine = cursorLine;
+			if (lastKeyPress == sf::Keyboard::Down || lastKeyPress == sf::Keyboard::Up || lastKeyPress == sf::Keyboard::Left || lastKeyPress == sf::Keyboard::Right || lastKeyPress == sf::Keyboard::Home || lastKeyPress == sf::Keyboard::End)
+			{
+				previousCursorLine = cursorLine;
+				updateSnapshot();
+				undoStack.push(latest);
+			}
+			break;
+	}
+	
+	switch(specialKeyPressed)
+	{
+		case true:
+			updateSnapshot();
+			undoStack.push(latest);
+			specialKeyPressed = false;
+			break;
+			
+		case false:
+			break;
+	}
+	
 	switch(EVENT->type)
 	{
 		case sf::Event::TextEntered:
@@ -374,16 +431,15 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 				case sf::Keyboard::Down:
 					moveCursorDown();
 					scrollDownLogic();
+					scroller.move(0.f, 10.f);
 					break;
 
 				case sf::Keyboard::PageUp:
 					updateSnapshot();
 					undoStack.push(latest);
-					std::cout << "Push to undo stack complete" << std::endl;
 					break;
 
 				case sf::Keyboard::S:
-					std::cout << "S pressed" << std::endl;
 					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
 					{
 						case true:
@@ -400,21 +456,28 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
 					{
 						case true:
-							std::cout << "Undo call detected" << std::endl;
-							undo();
-							break;
-
-						case false:
-							break;
-							redo();
+							switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
+							{
+								case true:
+									std::cout << "Redo Call detected" <<std::endl;
+									redo();
+									break;
+									
+								case false:
+									std::cout << "Undo call detected" << std::endl;
+									undo();
+									break;
+							}
 					}
 					break;
 					
 				case sf::Keyboard::Return:
+					setSpecialKeyPress();
 					makeANewLine();
 					break;
 
 				case sf::Keyboard::Tab:
+					setSpecialKeyPress();
 					for (int i = 0; i < 4; ++i)
 					{
 						insertChar(' ');
@@ -422,6 +485,7 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					break;
 
 				case sf::Keyboard::Delete:
+					setSpecialKeyPress();
 					cursorPos++;
 					if (cursorPos >= textContent[cursorLine].getString().toAnsiString().length() && textContent.size() - 1 > cursorLine)
 					{
@@ -446,4 +510,20 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 		default:
 			break;
 	}
+}
+
+void TextEditorUtilities::setSpecialKeyPress()
+{
+	switch(keyClock.getElapsedTime().asSeconds() > 1)
+	{
+		case true:
+			specialKeyPressed = true;
+			keyClock.restart();
+			break;
+			
+		case false:
+			break;
+	}
+	updateSnapshot();
+	undoStack.push(latest);
 }

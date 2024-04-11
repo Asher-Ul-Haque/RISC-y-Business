@@ -24,6 +24,7 @@ class TextEditorUtilities
 	unsigned char size = 12;
 
 	bool showCursor = false;
+	sf::Clock keyClock;
 
 	typedef struct 
 	{
@@ -37,8 +38,11 @@ class TextEditorUtilities
 	Snapshot latest;
 
 	bool isEdited = false;
+	sf::Keyboard::Key lastKeyPress;
 	sf::Vector2f viewArea = sf::Vector2f(800, 600);
 	int linePadding = 2;
+
+	void setSpecialKeyPress();
 
 	void updateSnapshot();
 	
