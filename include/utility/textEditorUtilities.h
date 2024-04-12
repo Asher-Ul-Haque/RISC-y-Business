@@ -72,7 +72,9 @@ class TextEditorUtilities
 	void scrollDownLogic();
 	
 public:
-	TextEditorUtilities(sf::RenderWindow* WINDOW);
+	TextEditorUtilities(){};
+
+	TextEditorUtilities(sf::RenderWindow* WINDOW, unsigned short WIDTH, unsigned short HEIGHT);
 
 	void setFilePath(std::string& PATH);
 		

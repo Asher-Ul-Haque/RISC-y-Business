@@ -4,10 +4,9 @@
 #include "../../../include/utility/soundUtilities.h"
 #include "../../../include/utility/mouseUtilities.h"
 #include "../../../include/utility/animationUtilities.h"
+#include "../../../include/utility/textEditorUtilities.h"
 
 // - - - - - - - -
-
-class TextEditor;
 
 class IDE 
 {
@@ -17,7 +16,7 @@ class IDE
     sf::Color backgroundColor = sf::Color(239, 239, 239, 255);
 
     sf::RenderWindow window;
-    //TextEditor* textEditor;
+    TextEditorUtilities textEditor;
     sf::Font font;
     sf::Text title;
     sf::Texture topBarTexture;
@@ -28,6 +27,7 @@ class IDE
     std::string fontDirectoryPath = "../../include/resources/fonts/";
     std::string soundDirectoryPath = "../../include/resources/sounds/";
     std::string projectDirectoryPath;
+    std::string projectFiles[3] = {"assembly.asm", "binary.bin", "simulatorReport.txt"};
     // - - - - - - - -
     std::string topBarTexturePath = "topbar.png";
     std::string buttonTexturePaths[4] = {"run.png", "simulate.png", "assemble.png", "save.png"};
@@ -39,6 +39,8 @@ class IDE
     sf::Texture fileButtonsTextures[3];
     bool fileButtonAnimation[3] = {true, true, true};
     bool buttonClickable[3] = {true, true, true};
+    unsigned short currentFile = 0;
+    std::string currentFilePath;
     
     sf::Text hoverText;
     bool showText = false;

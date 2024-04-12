@@ -4,8 +4,10 @@
 #include <iostream>
 #include <cstdlib>
 
-TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW) : window(WINDOW)
+TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW, unsigned short WIDTH, unsigned short HEIGHT) : window(WINDOW)
 {
+	viewWidth = WIDTH;
+	viewHeight = HEIGHT;
 	font.loadFromFile(fontDirectoryPath + "JetBrainsMono-Light.ttf");
 	
 	scroller.reset(sf::FloatRect(0, 0, viewWidth, viewHeight));
@@ -18,20 +20,24 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW) : window(WIND
 
 void TextEditorUtilities::scrollUp()
 {
-	scroller.move(0, -size);
-	if (scroller.getCenter().y < minY) 
-	{
-		scroller.setCenter(scroller.getCenter().x, minY);
-	}
+	sf::Vector2f scrollerCenter = scroller.getCenter();
+        // Calculate the new center after scrolling up
+    float newY = std::max(scrollerCenter.y + size  + 100, viewHeight / 2.f);
+        // Update the view's center
+    scroller.setCenter(scrollerCenter.x, newY);
+        // Update the window's view	
+	window->setView(scroller);
 }
 
 void TextEditorUtilities::scrollDown()
 {
-	scroller.move(0, size);
-	if (scroller.getCenter().y > maxY) 
-	{
-		scroller.setCenter(scroller.getCenter().x, maxY);
-	}
+	sf::Vector2f scrollerCenter = scroller.getCenter();
+	float totalLinesHeight = textContent.size() * (textContent[0].getGlobalBounds().height + linePadding);
+    float newY = std::min(scrollerCenter.y - size, totalLinesHeight - viewHeight / 2.f);
+        // Update the view's center
+    scroller.setCenter(scrollerCenter.x, newY);
+        // Update the window's view	
+	window->setView(scroller);
 }
 
 void TextEditorUtilities::setCursorPosition()
@@ -41,7 +47,7 @@ void TextEditorUtilities::setCursorPosition()
 
 void TextEditorUtilities::render()
 {
-	window->setView(scroller);
+	
 	window->draw(cursor);
 	for (int i = 0; i < textContent.size(); ++i)
 	{
@@ -85,7 +91,7 @@ void TextEditorUtilities::readFromFile()
 		text.setFillColor(sf::Color::Black);
 		text.setCharacterSize(size);
 		text.setString(line);
-		text.setPosition(sf::Vector2f(40, i*size));
+		text.setPosition(sf::Vector2f(80, (i * size) + 60));
 		++i;
 		
 		textContent.push_back(text);
@@ -195,7 +201,7 @@ void TextEditorUtilities::makeANewLine()
 	cursorPos = 0;
 	for (int i = cursorLine; i < textContent.size(); ++i)
 	{
-		textContent[i].setPosition(sf::Vector2f(40, (i + 2) * size));
+		textContent[i].setPosition(sf::Vector2f(80, ((i + 2) * size) + 60));
 	}
 	
 	isEdited = true;
@@ -270,17 +276,7 @@ void TextEditorUtilities::deleteChar()
 
 void TextEditorUtilities::scrollDownLogic()
 {
-	float totalLinesHeight = textContent.size() * (textContent[0].getLocalBounds().height + linePadding);
-	float windowHeight = window->getSize().y;
-	switch(totalLinesHeight - viewHeight > windowHeight)
-	{
-		case true:
-			break;
-							
-		case false:
-			scrollDown();
-			break;
-	}
+	scrollDown();
 }
 
 void TextEditorUtilities::undo()

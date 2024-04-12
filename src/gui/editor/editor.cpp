@@ -2,7 +2,6 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-#include "../../../include/utility/textEditorUtilities.h"
 
 IDE::IDE() 
     : soundEffects(soundDirectoryPath + "click.wav", 50),
@@ -67,6 +66,8 @@ IDE::IDE()
     fileButtons[0].setPosition(70, 30);
     fileButtons[1].setPosition(190, 30);
     fileButtons[2].setPosition(337, 30);
+
+    textEditor = TextEditorUtilities(&window, screenWidth, screenHeight);
 }
 
 void IDE::render()
@@ -96,6 +97,7 @@ void IDE::render()
         window.draw(hoverBox);
         window.draw(hoverText);
     }
+    textEditor.render();
     window.display();
 }
 
@@ -104,6 +106,7 @@ void IDE::update()
     sf::Event event;
     while (window.pollEvent(event))
     {
+        textEditor.update(&event);
         switch (event.type)
         {
             default:
@@ -153,6 +156,10 @@ void IDE::update()
                                 case true:
                                     soundEffects.playSoundEffect();
                                     fileButtonAnimation[i] = false;
+                                    currentFile = i;
+                                    textEditor.writeToFile();
+                                    currentFilePath = projectDirectoryPath + "/" + projectFiles[i];
+                                    textEditor.readFromFile();
                                     animation.scale(fileButtons[i], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
                                     break;
 
@@ -290,8 +297,14 @@ void IDE::setProject(std::string PROJECTPATH)
         }
     }
 
-    if (!std::filesystem::exists(projectDirectoryPath + "/assembly.txt"))
+    for (int i = 0; i < 3; ++i)
     {
-        std::ofstream output(projectDirectoryPath + "/assembly.txt");
+        if (!std::filesystem::exists(projectDirectoryPath + "/" + projectFiles[i]))
+        {
+            std::ofstream output(projectDirectoryPath + "/" + projectFiles[i]);
+        }
     }
+    std::string assemblyFilePath = projectDirectoryPath + "/" + projectFiles[0];
+    textEditor.setFilePath(assemblyFilePath);
+    textEditor.readFromFile();
 }
