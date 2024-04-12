@@ -16,16 +16,16 @@ class TextEditorUtilities
 	sf::Font font;
 	sf::RectangleShape cursor;
 	unsigned char cursorLine = 0;
-    unsigned char cursorPos = 0;
+    unsigned char cursorPos = 0;	
+    unsigned char size = 12;
+    unsigned char linePadding = 2;
+    bool isEdited = false;
+    
 	unsigned char previousCursorLine = 0;
 	bool specialKeyPressed = false;
-
-	sf::View scroller;
-	unsigned char size = 12;
-
-	bool showCursor = false;
 	sf::Clock keyClock;
-
+	sf::Keyboard::Key lastKeyPress;
+	
 	typedef struct 
 	{
 		unsigned char cursorLine;
@@ -37,10 +37,11 @@ class TextEditorUtilities
 	std::stack<Snapshot> redoStack;
 	Snapshot latest;
 
-	bool isEdited = false;
-	sf::Keyboard::Key lastKeyPress;
-	sf::Vector2f viewArea = sf::Vector2f(800, 600);
-	int linePadding = 2;
+	sf::View scroller;	
+	unsigned short viewHeight = 500;
+	unsigned short viewWidth = 800;
+	unsigned short minY = 0.f;
+	unsigned short maxY = minY + (20 - 1) * (5 + linePadding);
 
 	void setSpecialKeyPress();
 

@@ -8,8 +8,7 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW) : window(WIND
 {
 	font.loadFromFile(fontDirectoryPath + "JetBrainsMono-Light.ttf");
 	
-	viewArea = sf::Vector2f(1000.f, 1000.f);
-	scroller = sf::View(sf::FloatRect(0, 0, 800, 600));
+	scroller.reset(sf::FloatRect(0, 0, viewWidth, viewHeight));
 	
 	cursor.setSize(sf::Vector2f(5, size));
 	cursor.setFillColor(sf::Color(100, 0, 0, 100));
@@ -17,17 +16,22 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW) : window(WIND
 	window->setView(scroller);
 }
 
-
 void TextEditorUtilities::scrollUp()
 {
-	viewArea = viewArea - sf::Vector2f(0, size);
-	scroller.setCenter(viewArea);
+	scroller.move(0, -size);
+	if (scroller.getCenter().y < minY) 
+	{
+		scroller.setCenter(scroller.getCenter().x, minY);
+	}
 }
 
 void TextEditorUtilities::scrollDown()
 {
-	viewArea = viewArea - sf::Vector2f(0, size);
-	scroller.setCenter(viewArea);
+	scroller.move(0, size);
+	if (scroller.getCenter().y > maxY) 
+	{
+		scroller.setCenter(scroller.getCenter().x, maxY);
+	}
 }
 
 void TextEditorUtilities::setCursorPosition()
@@ -37,17 +41,12 @@ void TextEditorUtilities::setCursorPosition()
 
 void TextEditorUtilities::render()
 {
-	scroller.move(100.f, 100.f);
+	window->setView(scroller);
 	window->draw(cursor);
 	for (int i = 0; i < textContent.size(); ++i)
 	{
 		window->draw(textContent[i]);
 	}
-	sf::RectangleShape testRect;
-	testRect.setFillColor(sf::Color::Red);
-	testRect.setSize(sf::Vector2f(100, 100));
-	testRect.setPosition(400, 500);
-	window->draw(testRect);
 }
 
 void TextEditorUtilities::setFilePath(std::string& PATH)
@@ -271,15 +270,15 @@ void TextEditorUtilities::deleteChar()
 
 void TextEditorUtilities::scrollDownLogic()
 {
-	float totalLinesHeight = textContent.size() * (textContent[0].getGlobalBounds().height + linePadding);
+	float totalLinesHeight = textContent.size() * (textContent[0].getLocalBounds().height + linePadding);
 	float windowHeight = window->getSize().y;
-	switch(totalLinesHeight - viewArea.y > window->getSize().y)
+	switch(totalLinesHeight - viewHeight > windowHeight)
 	{
 		case true:
-			scrollDown();
 			break;
 							
 		case false:
+			scrollDown();
 			break;
 	}
 }
@@ -417,7 +416,7 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					
 				case sf::Keyboard::Up:
 					moveCursorUp();
-					switch(viewArea.y > 0.f)
+					switch(viewHeight > 0.f)
 					{
 						case true:
 							scrollUp();
@@ -431,7 +430,6 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 				case sf::Keyboard::Down:
 					moveCursorDown();
 					scrollDownLogic();
-					scroller.move(0.f, 10.f);
 					break;
 
 				case sf::Keyboard::PageUp:
