@@ -73,6 +73,8 @@ IDE::IDE()
 void IDE::render()
 {
     window.clear(backgroundColor);
+    textEditor.render();
+    window.setView(window.getDefaultView()); // Reset view to window coordinates
     window.draw(lineNumbers);
     window.draw(topBar);
     window.draw(title);
@@ -97,7 +99,7 @@ void IDE::render()
         window.draw(hoverBox);
         window.draw(hoverText);
     }
-    textEditor.render();
+
     window.display();
 }
 

@@ -20,34 +20,32 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW, unsigned shor
 
 void TextEditorUtilities::scrollUp()
 {
-	sf::Vector2f scrollerCenter = scroller.getCenter();
-        // Calculate the new center after scrolling up
-    float newY = std::max(scrollerCenter.y + size  + 100, viewHeight / 2.f);
-        // Update the view's center
-    scroller.setCenter(scrollerCenter.x, newY);
-        // Update the window's view	
+	if (cursorLine <= 0)
+	{
+		return;
+	}
+	scroller.move(0, textContent[0].getCharacterSize());
 	window->setView(scroller);
 }
 
 void TextEditorUtilities::scrollDown()
 {
-	sf::Vector2f scrollerCenter = scroller.getCenter();
-	float totalLinesHeight = textContent.size() * (textContent[0].getGlobalBounds().height + linePadding);
-    float newY = std::min(scrollerCenter.y - size, totalLinesHeight - viewHeight / 2.f);
-        // Update the view's center
-    scroller.setCenter(scrollerCenter.x, newY);
-        // Update the window's view	
+	if (cursorLine >= textContent.size() - 1)
+	{
+		return;
+	}
+	scroller.move(0, -size - linePadding);
 	window->setView(scroller);
 }
 
 void TextEditorUtilities::setCursorPosition()
 {
-	cursor.setPosition(textContent[cursorLine].getPosition().x + (7 * cursorPos), cursorLine * 12 + textContent[0].getPosition().y);
+	cursor.setPosition(textContent[cursorLine].getPosition().x + (7 * cursorPos), cursorLine * size + textContent[0].getPosition().y);
 }
 
 void TextEditorUtilities::render()
 {
-	
+	window->setView(scroller);
 	window->draw(cursor);
 	for (int i = 0; i < textContent.size(); ++i)
 	{
@@ -264,7 +262,7 @@ void TextEditorUtilities::deleteChar()
 					--cursorLine;
 					for (int i = cursorLine; i < textContent.size(); ++i)
 					{
-						textContent[i].setPosition(sf::Vector2f(40, (i + 2) * size));
+						textContent[i].setPosition(sf::Vector2f(80, ((i + 2) * size) + 60));
 					}
 					isEdited = true;
 					setCursorPosition();

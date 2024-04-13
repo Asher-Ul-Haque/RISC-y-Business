@@ -5,7 +5,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Text Editor Test");
     window.setFramerateLimit(60); // Limit to 60 FPS
 
-    TextEditorUtilities textEditor(&window); // Create text editor
+    TextEditorUtilities textEditor(&window, 800, 600); // Create text editor
     std::string file = "textfile.txt";
     textEditor.setFilePath(file);
     textEditor.readFromFile();

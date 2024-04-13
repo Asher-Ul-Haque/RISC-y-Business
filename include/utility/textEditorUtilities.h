@@ -25,7 +25,7 @@ class TextEditorUtilities
 	bool specialKeyPressed = false;
 	sf::Clock keyClock;
 	sf::Keyboard::Key lastKeyPress;
-	
+
 	typedef struct 
 	{
 		unsigned char cursorLine;
