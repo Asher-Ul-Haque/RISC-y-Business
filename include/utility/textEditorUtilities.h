@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include <cmath>
 #include <SFML/Graphics.hpp>
 
 class TextEditorUtilities
@@ -25,6 +26,12 @@ class TextEditorUtilities
 	bool specialKeyPressed = false;
 	sf::Clock keyClock;
 	sf::Keyboard::Key lastKeyPress;
+	
+	sf::Clock colorClock;
+	sf::Color textColor;
+	float frequency = 0.1f;
+	float pi = 3.1415926f;
+	float elapsedTime = 0.0f;
 
 	typedef struct 
 	{

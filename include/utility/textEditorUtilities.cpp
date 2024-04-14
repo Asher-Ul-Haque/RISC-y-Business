@@ -9,6 +9,7 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW, unsigned shor
 	viewWidth = WIDTH;
 	viewHeight = HEIGHT;
 	font.loadFromFile(fontDirectoryPath + "JetBrainsMono-Light.ttf");
+	colorClock.restart();
 	
 	scroller.reset(sf::FloatRect(0, 0, viewWidth, viewHeight));
 	
@@ -45,10 +46,18 @@ void TextEditorUtilities::setCursorPosition()
 
 void TextEditorUtilities::render()
 {
+	elapsedTime = colorClock.getElapsedTime().asSeconds() * 2;
+	const float pi = 3.14159265359f;
+    float frequency = 0.1f; // Adjust this for transition speed
+    float red = (std::sin(elapsedTime + 0) * 255);
+    float green = (std::sin(elapsedTime + 2 * pi / 3) * 255);
+    float blue = (std::sin(elapsedTime + 4 * pi / 3) * 255);
+	textColor = sf::Color(red, green, blue);
 	window->setView(scroller);
 	window->draw(cursor);
 	for (int i = 0; i < textContent.size(); ++i)
 	{
+		textContent[i].setFillColor(textColor);
 		window->draw(textContent[i]);
 	}
 }
@@ -151,7 +160,6 @@ void TextEditorUtilities::moveCursorDown()
 		return;
 	}
 }
-
 
 void TextEditorUtilities::moveCursorLeft()
 {
@@ -346,6 +354,11 @@ void TextEditorUtilities::updateSnapshot()
 
 void TextEditorUtilities::update(const sf::Event* EVENT)
 {
+	for (auto i : textContent)
+	{
+		i.setFillColor(textColor);
+	}
+	
 	switch(abs(previousCursorLine - cursorLine) < 5)
 	{
 		case true:
