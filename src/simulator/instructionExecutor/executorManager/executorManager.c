@@ -90,9 +90,12 @@ void destroyExecutorManager(ExecutorManager * EXECUTION_MANAGER)
 void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCTION_SIZE])
 { 
     unsigned char opcode = toDecimal(INSTRUCTION, OPCODE_START, OPCODE_END, false);
+    printf("Opcode: %d\n", opcode);
     switch(opcode)
     {
         case R_TYPE:
+            printf("R Type\n");
+            printf("Opcode: %d\n", opcode);
             executeRTypeInstruction(EXECUTION_MANAGER->rTypeExecutor, INSTRUCTION);
             EXECUTION_MANAGER->programCounter+= 4;
             break;
