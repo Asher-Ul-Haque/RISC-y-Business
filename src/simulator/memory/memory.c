@@ -181,8 +181,10 @@ void increaseStackPointer(Memory* MEMORY)
 
 static bool isAddressInRange(const Bit ADDRESS[ADDRESS_SIZE], int start, int end)
 {
+    printf("Checking if address is in range\n");
     for (int i = 0; i < ADDRESS_SIZE; ++i)
     {
+        printf("[%d] ", ADDRESS[i].value);
         if (ADDRESS[i].value != ((start >> (ADDRESS_SIZE - 1 -i)) & 1))
         {
             return 0; //ADDRESS DOESNT MATCH
@@ -228,7 +230,11 @@ MemoryCell* getMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE])
         printf("returning data memory\n");
         return &MEMORY->dataMemory[calculateMemoryIndex(ADDRESS)];
     }
-
+    for(int i = 0; i < ADDRESS_SIZE; i++)
+    {
+        printf("%d", ADDRESS[i].value);
+    }
+    printf("Address out of range\n");
     return NULL;
 }
 
@@ -315,9 +321,13 @@ void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH)
     {
         lineInput[strcspn(lineInput, "\n")] = '\0';
         char reversedLine[MEMORY_CELL_SIZE];
-        for (int j = 0; j < MEMORY_CELL_SIZE; ++j)
+        // for (int j = 0; j < MEMORY_CELL_SIZE; ++j)
+        // {
+        //     reversedLine[j] = lineInput[MEMORY_CELL_SIZE - j - 1];
+        // }
+        for(int k = 0; k < MEMORY_CELL_SIZE; k++)
         {
-            reversedLine[j] = lineInput[MEMORY_CELL_SIZE - j - 1];
+            reversedLine[k] = lineInput[k];
         }
         if (strlen(reversedLine) <= 1) // Check if the line is too short
         {
