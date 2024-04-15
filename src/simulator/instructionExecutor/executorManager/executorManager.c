@@ -89,7 +89,18 @@ void destroyExecutorManager(ExecutorManager * EXECUTION_MANAGER)
 
 void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCTION_SIZE])
 { 
-    unsigned char opcode = toDecimal(INSTRUCTION, OPCODE_START, OPCODE_END, false);
+    for(int i = 0; i < INSTRUCTION_SIZE; i++)
+    {
+        printf("instruction[%d]: %d\n", i, INSTRUCTION[i]);
+    }
+    Bit* toConvertToOpcode = (Bit*)malloc(sizeof(Bit) * 7);
+    int j = 0;
+    for (int i = 6; i >= 0; --i){
+        // printf("instruction[%d]: %d\n", i, INSTRUCTION[i]);
+        toConvertToOpcode[j] = INSTRUCTION[i];
+        j++;
+    }
+    unsigned char opcode = toDecimal(toConvertToOpcode, OPCODE_START, OPCODE_END, false);
     printf("Opcode: %d\n", opcode);
     switch(opcode)
     {

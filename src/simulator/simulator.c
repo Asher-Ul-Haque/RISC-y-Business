@@ -113,7 +113,9 @@ void runSimulation(Simulator *SIMULATOR)
     printf("Running simulation\n");
         //make an array of bits with this value 00000000000000000000010010110011
         printf("trying to get memory cell\n");
-        Bit *instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
+        Bit *instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[0].bits)->bits;
+        printf("trying to print memory cell\n");
+        printMemoryCell(getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[0].bits));
         printf("trying find and execute\n");
         findAndExecute(SIMULATOR->executionManager, instruction);
         printf("trying to print registers\n");
