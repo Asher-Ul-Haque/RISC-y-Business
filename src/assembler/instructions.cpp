@@ -2,12 +2,15 @@
 #include "iostream"
 #include "sstream"
 #include "string"
+#include <fstream>
 #include <map>
-#include <vector>
-#include "limits"
 #include <stdexcept>
+#include <string>
+#include <vector>
 //------------------------------------------INSTRUCTION-MAP------------------------------------------//
 typedef enum { R_TYPE, I_TYPE, S_TYPE, B_TYPE, U_TYPE, J_TYPE } InstructionType;
+
+using namespace std;
 
 struct InstructionEncoding {
   InstructionType type;
@@ -16,7 +19,9 @@ struct InstructionEncoding {
   bool funct7[7];
 };
 
-std::map<std::string, InstructionEncoding> instruction_map = {
+map<string, int> labels;
+
+map<string, InstructionEncoding> instruction_map = {
     // R-type
     {"add", {R_TYPE, {0, 1, 1, 0, 0, 1, 1}, {0, 0, 0}, {0, 0, 0, 0, 0, 0, 0}}},
     {"sub", {R_TYPE, {0, 1, 1, 0, 0, 1, 1}, {0, 0, 0}, {0, 1, 0, 0, 0, 0, 0}}},
@@ -54,7 +59,7 @@ std::map<std::string, InstructionEncoding> instruction_map = {
 //------------------------------------------REGISTER-MAP------------------------------------------//
 
 struct RegisterEncoding {
-  std::string name;
+  string name;
   bool address[5];
   char saver_status;
   // 0 -Caller
@@ -62,7 +67,7 @@ struct RegisterEncoding {
   // 2 -None
 };
 
-std::map<std::string, RegisterEncoding> register_map = {
+map<string, RegisterEncoding> register_map = {
 
     {"zero", {"x0", {0, 0, 0, 0, 0}, 2}}, {"ra", {"x1", {0, 0, 0, 0, 1}, 0}},
     {"sp", {"x2", {0, 0, 0, 1, 0}, 1}},   {"gp", {"x3", {0, 0, 0, 1, 1}, 2}},
@@ -86,36 +91,37 @@ std::map<std::string, RegisterEncoding> register_map = {
 //--------------------------------------------------------------------------------------------------//
 //------------------------------------------IMM------------------------------------------//
 
-std::vector<bool> int_to_signed_bin_array(int a, int n) {
-    // Check if the number is within the range
-    int max_positive = (1 << (n - 1)) - 1;
-    int min_negative = -(1 << (n - 1));
+vector<bool> int_to_signed_bin_array(int a, int n) {
+  // Check if the number is within the range
+  int max_positive = (1 << (n - 1)) - 1;
+  int min_negative = -(1 << (n - 1));
 
-    if (a > max_positive || a < min_negative) {
-        // Handle the error case
-        throw std::out_of_range("Number out of range for the given bit size");
-    }
+  if (a > max_positive || a < min_negative) {
+    // Handle the error case
+    throw out_of_range("Number out of range for the given bit size");
+  }
 
-    std::vector<bool> bin_array(n);
-    uint32_t value = (a < 0) ? static_cast<uint32_t>(-a) : static_cast<uint32_t>(a);
+  vector<bool> bin_array(n);
+  uint32_t value =
+      (a < 0) ? static_cast<uint32_t>(-a) : static_cast<uint32_t>(a);
 
-    // Handle negative numbers using two's complement
-    if (a < 0) {
-        value = ~value + 1;
-    }
+  // Handle negative numbers using two's complement
+  if (a < 0) {
+    value = ~value + 1;
+  }
 
-    for (int i = 0; i < n; i++) {
-        bin_array[i] = (value & (1 << (n - 1 - i))) ? 1 : 0;
-    }
+  for (int i = 0; i < n; i++) {
+    bin_array[i] = (value & (1 << (n - 1 - i))) ? 1 : 0;
+  }
 
-    return bin_array;
+  return bin_array;
 }
 
-std::vector<bool> slice_bool_array(const std::vector<bool> &bool_array,
-                                   int start_index, int end_index) {
+vector<bool> slice_bool_array(const vector<bool> &bool_array, int start_index,
+                              int end_index) {
 
   // Create a new vector to hold the sliced elements
-  std::vector<bool> sliced_array;
+  vector<bool> sliced_array;
 
   // Iterate over the desired range and copy elements to the new vector
   for (int i = start_index; i < end_index + 1; ++i) {
@@ -126,103 +132,105 @@ std::vector<bool> slice_bool_array(const std::vector<bool> &bool_array,
 }
 //----------------------------------------------------------------------------------------------------------//
 //-----------------------------------------TOKENIZER------------------------------------------//
-std::vector<std::string> tokenize(const std::string& line) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(line);
-    std::string token;
+vector<string> tokenize(const string &line, int line_number) {
+  vector<string> tokens;
+  stringstream ss(line);
+  string token;
 
-    // Tokenize based on spaces and colons
-    while (std::getline(ss, token, ' ')) {
-        // Remove leading and trailing whitespace
-        token.erase(0, token.find_first_not_of(" \t\r\n"));
-        token.erase(token.find_last_not_of(" \t\r\n") + 1);
+  // Tokenize based on spaces and colons
+  while (getline(ss, token, ' ')) {
+    // Remove leading and trailing whitespace
+    token.erase(0, token.find_first_not_of(" \t\r\n"));
+    token.erase(token.find_last_not_of(" \t\r\n") + 1);
 
-        // Skip comments and blank lines
-        if (token.empty() || token[0] == '#') {
-            continue;
-        }
-
-        // Check if the token is a label
-        if (token.back() == ':') {
-            if (token.length() == 1) {
-                std::cerr << "Error: Invalid label" << std::endl;
-                continue;
-            }
-            tokens.push_back(token.substr(0, token.length() - 1));  // Add the label without the colon
-            continue;  // Skip to the next token
-        }
-
-        // Tokenize based on commas
-        std::stringstream subss(token);
-        std::string subToken;
-        std::vector<std::vector<std::vector<std::string>>> subTokens;
-
-        while (std::getline(subss, subToken, ',')) {
-            std::vector<std::vector<std::string>> subSubTokens;
-            std::stringstream subSubss(subToken);
-            std::string subSubToken;
-
-            // Tokenize based on opening parentheses
-            while (std::getline(subSubss, subSubToken, '(')) {
-                std::vector<std::string> subSubSubTokens;
-                std::stringstream subSubSubss(subSubToken);
-                std::string subSubSubToken;
-
-                // Tokenize based on closing parentheses
-                while (std::getline(subSubSubss, subSubSubToken, ')')) {
-                    subSubSubTokens.push_back(subSubSubToken);
-                }
-                subSubTokens.push_back(subSubSubTokens);
-            }
-            subTokens.push_back(subSubTokens);
-        }
-
-        // Flatten the nested vector structure
-        for (const auto& outerToken : subTokens) {
-            for (const auto& innerToken : outerToken) {
-                for (const auto& subInnerToken : innerToken) {
-                    tokens.push_back(subInnerToken);
-                }
-            }
-        }
+    // Skip comments and blank lines
+    if (token.empty() || token[0] == '#') {
+      continue;
     }
 
-    return tokens;
-}
+    // Check if the token is a label
+    if (token.back() == ':') {
+      if (token.length() == 1) {
+        cerr << "Error: Invalid label" << endl;
+        continue;
+      }
+      labels.insert({token.substr(0, token.length() - 1), line_number});
+      // tokens.push_back(token.substr(
+      // 0, token.length() - 1)); // Add the label without the colon
+      continue; // Skip to the next token
+    }
 
+    // Tokenize based on commas
+    stringstream subss(token);
+    string subToken;
+    vector<vector<vector<string>>> subTokens;
+
+    while (getline(subss, subToken, ',')) {
+      vector<vector<string>> subSubTokens;
+      stringstream subSubss(subToken);
+      string subSubToken;
+
+      // Tokenize based on opening parentheses
+      while (getline(subSubss, subSubToken, '(')) {
+        vector<string> subSubSubTokens;
+        stringstream subSubSubss(subSubToken);
+        string subSubSubToken;
+
+        // Tokenize based on closing parentheses
+        while (getline(subSubSubss, subSubSubToken, ')')) {
+          subSubSubTokens.push_back(subSubSubToken);
+        }
+        subSubTokens.push_back(subSubSubTokens);
+      }
+      subTokens.push_back(subSubTokens);
+    }
+
+    // Flatten the nested vector structure
+    for (const auto &outerToken : subTokens) {
+      for (const auto &innerToken : outerToken) {
+        for (const auto &subInnerToken : innerToken) {
+          tokens.push_back(subInnerToken);
+        }
+      }
+    }
+  }
+
+  return tokens;
+}
 
 //----------------------------------------------------------------------------------------------------------//
 //------------------------------------------DECODER------------------------------------------//
 
-std::vector<bool> decode(std::vector<std::string> tokens) {
+vector<bool> decode(vector<string> tokens, int line_number) {
 
-  std::vector<bool> decoded(32);
-  static const std::regex integer_regex("^-?\\d+$");
+  vector<bool> decoded(32);
+  static const regex integer_regex("^-?\\d+$");
 
-    if (tokens.empty()) {
-        std::cerr << "Error: Empty instruction " << std::endl;
-        return decoded;
-    }
-    if (instruction_map.find(tokens[0]) == instruction_map.end()) {
-        std::cerr << "Error: Unknown instruction '" << tokens[0] << std::endl;
-        return decoded;
-    }
-    InstructionType type = instruction_map[tokens[0]].type;
+  // if (tokens.empty()) {
+  //   cerr << "Error: Empty instruction " << endl;
+  //   return decoded;
+  // }
+  // if (instruction_map.find(tokens[0]) == instruction_map.end()) {
+  //   cerr << "Error: Unknown instruction '" << tokens[0] << endl;
+  //   return decoded;
+  // }
+  InstructionType type = instruction_map[tokens[0]].type;
 
   if (type == R_TYPE) {
 
-          if (tokens.size() != 4) {
-              std::cerr << "Error: Invalid number of operands for R-type instruction '" << tokens[0] << std::endl;
-              exit(0);
-          }
+    if (tokens.size() != 4) {
+      cerr << "Error: Invalid number of operands for R-type instruction '"
+           << tokens[0] << endl;
+      exit(0);
+    }
 
-      if (register_map.find(tokens[1]) == register_map.end() ||
-          register_map.find(tokens[2]) == register_map.end() ||
-          register_map.find(tokens[3]) == register_map.end()) {
-          std::cerr << "Error: Invalid register operand for instruction '" << tokens[0]  << std::endl;
-          exit(0);
-      }
-
+    if (register_map.find(tokens[1]) == register_map.end() ||
+        register_map.find(tokens[2]) == register_map.end() ||
+        register_map.find(tokens[3]) == register_map.end()) {
+      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
+           << endl;
+      exit(0);
+    }
 
     // funct7
     for (int i = 0; i < 7; ++i) {
@@ -251,43 +259,49 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
 
   } else if (type == I_TYPE) {
 
-      if (tokens.size() != 4) {
-          std::cerr << "Error: Invalid number of operands for I-type instruction '" << tokens[0] << std::endl;
-          exit(0);
+    if (tokens.size() != 4) {
+      cerr << "Error: Invalid number of operands for I-type instruction '"
+           << tokens[0] << endl;
+      exit(0);
+    }
+
+    if (tokens[0] == "lw") {
+      if (register_map.find(tokens[1]) == register_map.end() ||
+          register_map.find(tokens[3]) == register_map.end()) {
+        cerr << "Error: Invalid register operand for instruction '" << tokens[0]
+             << endl;
+        exit(0);
       }
+    }
 
-      if (tokens[0]=="lw"){
-          if (register_map.find(tokens[1]) == register_map.end() ||
-              register_map.find(tokens[3]) == register_map.end()) {
-              std::cerr << "Error: Invalid register operand for instruction '" << tokens[0]  << std::endl;
-              exit(0);
-          }}
+    if (tokens[0] != "lw") {
+      if (register_map.find(tokens[1]) == register_map.end() ||
+          register_map.find(tokens[2]) == register_map.end()) {
+        cerr << "Error: Invalid register operand for instruction '" << tokens[0]
+             << endl;
+        exit(0);
+      }
+    }
 
-     if (tokens[0]!="lw"){
-        if (register_map.find(tokens[1]) == register_map.end() ||
-            register_map.find(tokens[2]) == register_map.end()) {
-            std::cerr << "Error: Invalid register operand for instruction '" << tokens[0]  << std::endl;
-            exit(0);
-        }}
+    if (tokens[0] == "lw") {
+      if (!regex_match(tokens[2], integer_regex)) {
+        cerr << "Error: Invalid immediate value '" << tokens[3]
+             << "' for instruction '" << tokens[0] << endl;
+        exit(0);
+      }
+    }
 
-     if(tokens[0]=="lw"){
-      if (!std::regex_match(tokens[2], integer_regex)) {
-          std::cerr << "Error: Invalid immediate value '" << tokens[3] << "' for instruction '" << tokens[0] << std::endl;
-          exit(0);
-      }}
-
-
-     if(tokens[0]!="lw"){
-      if (!std::regex_match(tokens[3], integer_regex)) {
-          std::cerr << "Error: Invalid immediate value '" << tokens[3] << "' for instruction '" << tokens[0] << std::endl;
-          exit(0);
-      }}
-
-
+    if (tokens[0] != "lw") {
+      if (!regex_match(tokens[3], integer_regex)) {
+        cerr << "Error: Invalid immediate value '" << tokens[3]
+             << "' for instruction '" << tokens[0] << endl;
+        exit(0);
+      }
+    }
 
     if (tokens[0] == "lw") {
       // imm
-      std::vector<bool> imm = int_to_signed_bin_array(stoi(tokens[2]), 12);
+      vector<bool> imm = int_to_signed_bin_array(stoi(tokens[2]), 12);
       for (int i = 0; i < 12; ++i) {
         decoded[i] = imm[i];
       }
@@ -309,7 +323,7 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
       }
     } else {
       // imm
-      std::vector<bool> imm = int_to_signed_bin_array(stoi(tokens[3]), 12);
+      vector<bool> imm = int_to_signed_bin_array(stoi(tokens[3]), 12);
       for (int i = 0; i < 12; ++i) {
         decoded[i] = imm[i];
       }
@@ -333,25 +347,27 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
 
   } else if (type == S_TYPE) {
 
-      if (tokens.size() != 4) {
-          std::cerr << "Error: Invalid number of operands for I-type instruction '" << tokens[0] << std::endl;
-            exit(0);
-      }
+    if (tokens.size() != 4) {
+      cerr << "Error: Invalid number of operands for I-type instruction '"
+           << tokens[0] << endl;
+      exit(0);
+    }
 
-      if (register_map.find(tokens[1]) == register_map.end() ||
-          register_map.find(tokens[3]) == register_map.end()) {
-          std::cerr << "Error: Invalid register operand for instruction '" << tokens[0] << std::endl;
-         exit(0);
-      }
+    if (register_map.find(tokens[1]) == register_map.end() ||
+        register_map.find(tokens[3]) == register_map.end()) {
+      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
+           << endl;
+      exit(0);
+    }
 
-      if (!std::regex_match(tokens[2], integer_regex)) {
-          std::cerr << "Error: Invalid immediate value '" << tokens[3] << "' for instruction '" << tokens[0]  << std::endl;
-          exit(0);
-      }
-
+    if (!regex_match(tokens[2], integer_regex)) {
+      cerr << "Error: Invalid immediate value '" << tokens[3]
+           << "' for instruction '" << tokens[0] << endl;
+      exit(0);
+    }
 
     // imm[11:5]
-    std::vector<bool> imm_11_5 =
+    vector<bool> imm_11_5 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 12), 0, 6);
     for (int i = 0; i < 7; ++i) {
       decoded[i] = imm_11_5[i];
@@ -369,7 +385,7 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
       decoded[i + 17] = instruction_map[tokens[0]].funct3[i];
     }
     // imm[4:0]
-    std::vector<bool> imm_4_0 =
+    vector<bool> imm_4_0 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 12), 7, 11);
     for (int i = 0; i < 5; ++i) {
       decoded[i + 20] = imm_4_0[i];
@@ -381,31 +397,38 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
 
   } else if (type == B_TYPE) {
 
-      if (tokens.size() != 4) {
-          std::cerr << "Error: Invalid number of operands for B-type instruction '" << tokens[0] <<  std::endl;
-            exit(0);
+    if (tokens.size() != 4) {
+      cerr << "Error: Invalid number of operands for B-type instruction '"
+           << tokens[0] << endl;
+      exit(0);
+    }
+
+    for (auto &label : labels) {
+      if (tokens[3] == label.first) {
+        tokens[3] = to_string(line_number - label.second);
+        cerr << tokens[3] << endl;
       }
+    }
+    if (register_map.find(tokens[1]) == register_map.end()) {
+      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
+           << endl;
+      exit(0);
+    }
 
-      if (register_map.find(tokens[1]) == register_map.end() ||
-          register_map.find(tokens[2]) == register_map.end()) {
-          std::cerr << "Error: Invalid register operand for instruction '" << tokens[0]  << std::endl;
-            exit(0);
-      }
+    if (!regex_match(tokens[3], integer_regex)) {
+      cerr << "Error: Invalid immediate value '" << tokens[3]
+           << "' for instruction '" << tokens[0] << endl;
+      exit(0);
+    }
 
-      if (!std::regex_match(tokens[3], integer_regex)) {
-          std::cerr << "Error: Invalid immediate value '" << tokens[2] << "' for instruction '" << tokens[0]<< std::endl;
-            exit(0);
-      }
-
-
-      // imm[12]
-    std::vector<bool> imm_12 =
+    // imm[12]
+    vector<bool> imm_12 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[3]), 16), 3, 3);
     for (int i = 0; i < 1; ++i) {
       decoded[i] = imm_12[i];
     }
     // imm[10:5]
-    std::vector<bool> imm_10_5 =
+    vector<bool> imm_10_5 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[3]), 16), 5, 10);
     for (int i = 0; i < 6; ++i) {
       decoded[i + 1] = imm_10_5[i];
@@ -423,13 +446,13 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
       decoded[i + 17] = instruction_map[tokens[0]].funct3[i];
     }
     // imm[4:1]
-    std::vector<bool> imm_4_1 =
+    vector<bool> imm_4_1 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[3]), 16), 11, 14);
     for (int i = 0; i < imm_4_1.size(); ++i) {
       decoded[i + 20] = imm_4_1[i];
     }
     // imm[11]
-    std::vector<bool> imm_11 =
+    vector<bool> imm_11 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[3]), 16), 4, 4);
     for (int i = 0; i < 1; ++i) {
       decoded[i + 24] = imm_11[i];
@@ -441,23 +464,26 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
 
   } else if (type == U_TYPE) {
 
-      if (tokens.size() != 3) {
-          std::cerr << "Error: Invalid number of operands for U-type instruction '" << tokens[0] << std::endl;
-            exit(0);
-      }
+    if (tokens.size() != 3) {
+      cerr << "Error: Invalid number of operands for U-type instruction '"
+           << tokens[0] << endl;
+      exit(0);
+    }
 
-        if (register_map.find(tokens[1]) == register_map.end()) {
-            std::cerr << "Error: Invalid register operand for instruction '" << tokens[0]  << std::endl;
-                exit(0);
-        }
+    if (register_map.find(tokens[1]) == register_map.end()) {
+      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
+           << endl;
+      exit(0);
+    }
 
-        if (!std::regex_match(tokens[2], integer_regex)) {
-            std::cerr << "Error: Invalid immediate value '" << tokens[2] << "' for instruction '" << tokens[0] << std::endl;
-            exit(0);
-        }
+    if (!regex_match(tokens[2], integer_regex)) {
+      cerr << "Error: Invalid immediate value '" << tokens[2]
+           << "' for instruction '" << tokens[0] << endl;
+      exit(0);
+    }
 
     // imm[31:12]
-    std::vector<bool> imm_31_12 =
+    vector<bool> imm_31_12 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 32), 0, 19);
     for (int i = 0; i < 20; ++i) {
       decoded[i] = imm_31_12[i];
@@ -472,43 +498,51 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
     }
 
   } else if (type == J_TYPE) {
-      if (tokens.size() != 3) {
-          std::cerr << "Error: Invalid number of operands for J-type instruction '" << tokens[0] << std::endl;
-            exit(0);
+    if (tokens.size() != 3) {
+      cerr << "Error: Invalid number of operands for J-type instruction '"
+           << tokens[0] << endl;
+      exit(0);
+    }
+
+    for (auto &label : labels) {
+      if (tokens[2] == label.first) {
+        tokens[2] = to_string(line_number - label.second);
       }
+    }
+    if (register_map.find(tokens[1]) == register_map.end()) {
+      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
+           << endl;
+      exit(0);
+    }
 
-        if (register_map.find(tokens[1]) == register_map.end()) {
-            std::cerr << "Error: Invalid register operand for instruction '" << tokens[0]  << std::endl;
-                exit(0);
-        }
+    // if (!regex_match(tokens[2], integer_regex)) {
+    //   cout << tokens[2] << endl;
+    //   cerr << "Error: Invalid immediate value '" << tokens[2]
+    //        << "' for instruction '" << tokens[0] << endl;
+    //   exit(0);
+    // }
 
-      if (!std::regex_match(tokens[2], integer_regex)) {
-          std::cerr << "Error: Invalid immediate value '" << tokens[2] << "' for instruction '" << tokens[0]  << std::endl;
-            exit(0);
-      }
-
-
-
-      // imm[20]
-    std::vector<bool> imm_20 =
+    // imm[20]
+    vector<bool> imm_20 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 21), 0, 0);
     for (int i = 0; i < 1; ++i) {
       decoded[i] = imm_20[i];
     }
     // imm[10:1]
-    std::vector<bool> imm_10_1 =
+    vector<bool> imm_10_1 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 21), 10, 19);
     for (int i = 0; i < 10; ++i) {
       decoded[i + 1] = imm_10_1[i];
     }
     // imm[11]
-    std::vector<bool> imm_11 =
+    // dikkat
+    vector<bool> imm_11 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 21), 9, 9);
     for (int i = 0; i < 1; ++i) {
       decoded[i + 11] = imm_11[i];
     }
     // imm[19:12]
-    std::vector<bool> imm_19_12 =
+    vector<bool> imm_19_12 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 21), 1, 8);
     for (int i = 0; i < 8; ++i) {
       decoded[i + 12] = imm_19_12[i];
@@ -521,9 +555,9 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
     for (int i = 0; i < 7; ++i) {
       decoded[i + 25] = instruction_map[tokens[0]].opcode[i];
     }
-  } else{
-      std::cout << "Invalid instruction type" << std::endl;
-      exit(0);
+  } else {
+    cout << "Invalid instruction type" << endl;
+    exit(0);
   }
 
   return decoded;
@@ -532,22 +566,24 @@ std::vector<bool> decode(std::vector<std::string> tokens) {
 
 //-------------------------------------------FILE
 // READER-------------------------------------------//
-void read_file(const std::string &file_name) {
-  std::ifstream file(file_name);
-  std::string line;
+void read_file(const string &file_name) {
+  ifstream file(file_name);
+  string line;
 
-    if (!file.is_open()) {
-        std::cerr << "Error: Unable to open file '" << file_name << "'" << std::endl;
-        return;
-    }
+  if (!file.is_open()) {
+    cerr << "Error: Unable to open file '" << file_name << "'" << endl;
+    return;
+  }
 
-  while (std::getline(file, line)) {
-    std::vector<std::string> tokens = tokenize(line);
-    std::vector<bool> decoded = decode(tokens);
+  int line_number = 1;
+  while (getline(file, line)) {
+    line_number++;
+    vector<string> tokens = tokenize(line, line_number);
+    vector<bool> decoded = decode(tokens, line_number);
     for (int i = 0; i < 32; ++i) {
-      std::cout << decoded[i];
+      cout << decoded[i];
     }
-    std::cout << std::endl;
+    cout << endl;
   }
   file.close();
 }
@@ -555,6 +591,8 @@ void read_file(const std::string &file_name) {
 //-------------------------------------------------MAIN-------------------------------------------------//
 
 int main() {
-  read_file("text.txt");
+  string name;
+  cin >> name;
+  read_file(name);
   return 0;
 }
