@@ -215,14 +215,17 @@ MemoryCell* getMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE])
 {
     if (isAddressInRange(ADDRESS, PROGRAM_ADDRESS_START, PROGRAM_ADDRESS_END))
     {
+        printf("returning program memory\n");
         return &MEMORY->programMemory[calculateMemoryIndex(ADDRESS)];
     }
     if (isAddressInRange(ADDRESS, STACK_ADDRESS_START, STACK_ADDRESS_END))
     {
+        printf("returning stack memory\n");
         return &MEMORY->stackMemory[calculateMemoryIndex(ADDRESS)];
     } 
     if (isAddressInRange(ADDRESS, DATA_ADDRESS_START, DATA_ADDRESS_END))
     {
+        printf("returning data memory\n");
         return &MEMORY->dataMemory[calculateMemoryIndex(ADDRESS)];
     }
 
@@ -303,22 +306,27 @@ void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH)
         exit(EXIT_FAILURE);
     }
 
-    char line[MEMORY_CELL_SIZE + 1]; //JUST SOMEBODY: plus one for the \n character.
+    char lineInput[MEMORY_CELL_SIZE + 1]; //JUST SOMEBODY: plus one for the \n character.
 
     //JUST SOMEBODY: Reading each line and storing it in the programMemory for the simulator to execute
 
     int i = 0; // Initialize i outside the loop
-    while (fgets(line, sizeof(line), file) != NULL && i < PROGRAM_MEMORY) // Stop when end of file is reached or PROGRAM_MEMORY lines are read
+    while (fgets(lineInput, sizeof(lineInput), file) != NULL && i < PROGRAM_MEMORY) // Stop when end of file is reached or PROGRAM_MEMORY lines are read
     {
-        
-        if (strlen(line) <= 1) // Check if the line is too short
+        lineInput[strcspn(lineInput, "\n")] = '\0';
+        char reversedLine[MEMORY_CELL_SIZE];
+        for (int j = 0; j < MEMORY_CELL_SIZE; ++j)
+        {
+            reversedLine[j] = lineInput[MEMORY_CELL_SIZE - j - 1];
+        }
+        if (strlen(reversedLine) <= 1) // Check if the line is too short
         {
             continue;
         }
 
-        for (int j = 0; j < MEMORY_CELL_SIZE && line[j] != '\n'; ++j) // Avoid processing newline characters
+        for (int j = 0; j < MEMORY_CELL_SIZE && reversedLine[j] != '\0'; ++j) // Avoid processing newline characters
         {
-            switch(line[j])
+            switch(reversedLine[j])
             {
                 case '0':
                     MEMORY->programMemory[i].bits[j].value = 0;
@@ -327,7 +335,7 @@ void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH)
                     MEMORY->programMemory[i].bits[j].value = 1;
                     break;
                 default:
-                    printf("Encountered a non-binary character  '%c' while reading the file\n", line[j]);
+                    printf("Encountered a non-binary character  '%c' while reading the file\n", reversedLine[j]);
                     perror("\n");
                     exit(EXIT_FAILURE);
             }

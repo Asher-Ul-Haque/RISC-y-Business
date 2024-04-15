@@ -110,14 +110,17 @@ void printMemory(const Simulator *SIMULATOR)
 
 void runSimulation(Simulator *SIMULATOR)
 {
-    while (!(*SIMULATOR->programCounter >= PROGRAM_MEMORY))
-    {
-        Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
+    printf("Running simulation\n");
+        //make an array of bits with this value 00000000000000000000010010110011
+        printf("trying to get memory cell\n");
+        Bit *instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
+        printf("trying find and execute\n");
         findAndExecute(SIMULATOR->executionManager, instruction);
+        printf("trying to print registers\n");
         printRegisters(SIMULATOR);
-    }
+        printf("Program counter: %d\n", *SIMULATOR->programCounter);
+    
     printMemory(SIMULATOR);
 }
 
 // - - - - - - - - - -
-
