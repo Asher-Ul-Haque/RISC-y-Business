@@ -23,6 +23,7 @@ void destroyITypeExecutor(iTypeExecutor* EXECUTOR)
 
 void addi(Register *RD, Register *RS1, short IMMEDIATE)
 {
+    // printf("hello in the addi function\n");
     short rs1 = signExtend(RS1->bits, REGISTER_SIZE);
     short rd = toDecimal(RD->bits, 0, REGISTER_SIZE, false);
     short answer = rs1 + IMMEDIATE;
@@ -69,6 +70,7 @@ void sltiu(Register *RD, Register *RS1, short IMMEDIATE)
 
 void executeITypeJumpInstruction(iTypeExecutor *EXECUTOR, Bit *Instruction)
 {
+    printf("hello, this works!");
     unsigned char rd = toDecimal(Instruction, RD_START, RD_END, false);
     unsigned char rs1 = toDecimal(Instruction, RS1_START, RS1_END, false);
     Bit* immediateBits;
@@ -91,7 +93,7 @@ void executeITypeJumpInstruction(iTypeExecutor *EXECUTOR, Bit *Instruction)
 
 void executeITypeLWInstruction(iTypeExecutor *EXECUTOR, Bit *Instruction)
 {
-    //Same as the S type instruction, but the immediate is signed
+    //Same as the S type instruction, but the immediate is signed"
     unsigned char rs1 = toDecimal(Instruction, RS1_START, RS1_END, false);
     unsigned char rd = toDecimal(Instruction, RD_START, RD_END, false);
     Bit* immediateBits;
@@ -124,23 +126,28 @@ void executeITypeLWInstruction(iTypeExecutor *EXECUTOR, Bit *Instruction)
 
 void executeITypeDefaultInstruction(iTypeExecutor *EXECUTOR, Bit *Instruction)
 {
+    // printf("hello in the function for i type default");
     char funct3 = toDecimal(Instruction, FUNCT3_START, FUNCT3_END, false);
     char rd = toDecimal(Instruction, RD_START, RD_END, false);
     char rs1 = toDecimal(Instruction, RS1_START, RS1_END, false);
     short immediate = toDecimal(Instruction, IMMEDIATE_START, IMMEDIATE_END, false);
-    Bit* immediateBits;
+    Bit immediateBits[IMMEDIATE_SIZE];
+
     for (int i = 0; i < IMMEDIATE_SIZE; ++i)
     {
         immediateBits[i].value = Instruction[i + IMMEDIATE_START].value;
     }
     short immediateSigned = signExtend(immediateBits, IMMEDIATE_SIZE);
+    
     switch(funct3)
     {
         case 0:
+            // printf("hello in the case 0");
             addi(&EXECUTOR->registerFile->registers[rd], &EXECUTOR->registerFile->registers[rs1], immediateSigned);
             break;
 
         case 1:
+            // printf("hello in the case 1");
             sltiu(getRegisterByIndex(EXECUTOR->registerFile, rd), getRegisterByIndex(EXECUTOR->registerFile, rs1), immediate);
             break;
     }

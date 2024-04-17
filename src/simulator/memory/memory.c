@@ -181,10 +181,8 @@ void increaseStackPointer(Memory* MEMORY)
 
 static bool isAddressInRange(const Bit ADDRESS[ADDRESS_SIZE], int start, int end)
 {
-    printf("Checking if address is in range\n");
     for (int i = 0; i < ADDRESS_SIZE; ++i)
     {
-        printf("[%d] ", ADDRESS[i].value);
         if (ADDRESS[i].value != ((start >> (ADDRESS_SIZE - 1 -i)) & 1))
         {
             return 0; //ADDRESS DOESNT MATCH
@@ -202,13 +200,13 @@ int calculateMemoryIndex(const Bit ADDRESS[ADDRESS_SIZE])
     //So if the address is 0000000, the index points to the first cell in the program memory array and we will return 0;
     //So if the address is 1000001, the index points to the second cell in the stack memory array and we will return 1;
 
-    int index = toDecimal(ADDRESS, 0, REGISTER_SIZE, false);
+    int index = toDecimal(ADDRESS, 0, 7, false);    
     if (index >= PROGRAM_MEMORY)
     {
         index = index % ADDRESS_SIZE;
     }
    
-    return index - 1; //Because indexing starts at 0;
+    return index; //Because indexing starts at 0;
 }
 
 // - - - - - - - - - -
@@ -217,22 +215,18 @@ MemoryCell* getMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE])
 {
     if (isAddressInRange(ADDRESS, PROGRAM_ADDRESS_START, PROGRAM_ADDRESS_END))
     {
-        printf("returning program memory\n");
+        // printf("returning program memory\n");
         return &MEMORY->programMemory[calculateMemoryIndex(ADDRESS)];
     }
     if (isAddressInRange(ADDRESS, STACK_ADDRESS_START, STACK_ADDRESS_END))
     {
-        printf("returning stack memory\n");
+        // printf("returning stack memory\n");
         return &MEMORY->stackMemory[calculateMemoryIndex(ADDRESS)];
     } 
     if (isAddressInRange(ADDRESS, DATA_ADDRESS_START, DATA_ADDRESS_END))
     {
-        printf("returning data memory\n");
+        // printf("returning data memory\n");
         return &MEMORY->dataMemory[calculateMemoryIndex(ADDRESS)];
-    }
-    for(int i = 0; i < ADDRESS_SIZE; i++)
-    {
-        printf("%d", ADDRESS[i].value);
     }
     printf("Address out of range\n");
     return NULL;

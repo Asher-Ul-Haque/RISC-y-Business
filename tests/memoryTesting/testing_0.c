@@ -22,7 +22,19 @@ int main()
     // MemoryCell* memorycell = getMemoryCell(memory, memory->stackMemory[0].address);
     // printMemoryCell(memorycell);
     // Add more test cases or operations as needed
-    printMemoryCell(&memory->stackMemory[0]);
+    memory->programMemory[0].bits[0].value = 1;
+    Bit address[ADDRESS_SIZE];
+    //Give the address of the first program memory cell
+    for (int i = 0; i < ADDRESS_SIZE; i++)
+    {
+        address[i].value = 0;
+        printf("%d", address[i].value);
+    }
+    printf("\n");
+
+    MemoryCell* memorycell = getMemoryCell(memory, address);
+    printMemoryCell(memorycell);
+
     deallocateMemory(memory);
 
     return 0;

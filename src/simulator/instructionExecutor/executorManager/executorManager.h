@@ -12,8 +12,8 @@
 
 #define INSTRUCTION_SIZE 32
 
-#define OPCODE_START 0
-#define OPCODE_END 7
+#define OPCODE_START 25
+#define OPCODE_END 32
 
 #define R_TYPE 51
 // - - - - - -

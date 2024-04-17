@@ -9,7 +9,6 @@ int main() {
     scanf("%s", file_path);
     Simulator* simulator = initializeSimulator();
     loadProgram(simulator, file_path);
-    printProgramMemory(simulator->memoryManager);
     runSimulation(simulator);
     deinitializeSimulator(simulator);
     return 0;
