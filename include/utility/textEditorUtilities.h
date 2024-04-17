@@ -10,6 +10,7 @@ class TextEditorUtilities
 {
 	std::string filePath;
 	std::vector<sf::Text> textContent;
+	std::vector<sf::Text> lineNumbers;
 	std::string textureDirectoryPath = "../../include/resources/textures/";
     std::string fontDirectoryPath = "../../include/resources/fonts/";
     std::string soundDirectoryPath = "../../include/resources/sounds/";
@@ -20,6 +21,8 @@ class TextEditorUtilities
     unsigned char cursorPos = 0;	
     unsigned char size = 12;
     unsigned char linePadding = 2;
+    int bottomDisplayedLine;
+    int topDisplayedLine;
     bool isEdited = false;
     
 	unsigned char previousCursorLine = 0;
@@ -29,9 +32,12 @@ class TextEditorUtilities
 	
 	sf::Clock colorClock;
 	sf::Color textColor;
-	float frequency = 0.1f;
 	float pi = 3.1415926f;
 	float elapsedTime = 0.0f;
+	float zoom = 1.0f;
+
+	std::string status;
+
 
 	typedef struct 
 	{

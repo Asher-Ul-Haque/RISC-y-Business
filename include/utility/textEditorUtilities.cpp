@@ -12,7 +12,7 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW, unsigned shor
 	colorClock.restart();
 	
 	scroller.reset(sf::FloatRect(0, 0, viewWidth, viewHeight));
-	
+
 	cursor.setSize(sf::Vector2f(5, size));
 	cursor.setFillColor(sf::Color(100, 0, 0, 100));
 	
@@ -21,21 +21,34 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW, unsigned shor
 
 void TextEditorUtilities::scrollUp()
 {
-	if (cursorLine <= 0)
+	if (cursorLine <= topDisplayedLine || cursor.getPosition().y > 100)
 	{
 		return;
 	}
 	scroller.move(0, textContent[0].getCharacterSize());
+	--topDisplayedLine;
+	--bottomDisplayedLine;
+	if (topDisplayedLine <= 0)
+	{
+		topDisplayedLine = 0;
+	}
 	window->setView(scroller);
 }
 
 void TextEditorUtilities::scrollDown()
 {
-	if (cursorLine >= textContent.size() - 1)
+	if (cursorLine <= bottomDisplayedLine || cursor.getPosition().y < viewHeight/2)
 	{
 		return;
 	}
 	scroller.move(0, -size - linePadding);
+	++bottomDisplayedLine;
+	++topDisplayedLine;
+	if (bottomDisplayedLine > textContent.size() - 1)
+	{
+		bottomDisplayedLine = textContent.size() - 1;
+	}
+
 	window->setView(scroller);
 }
 
@@ -47,18 +60,18 @@ void TextEditorUtilities::setCursorPosition()
 void TextEditorUtilities::render()
 {
 	elapsedTime = colorClock.getElapsedTime().asSeconds() * 2;
-	const float pi = 3.14159265359f;
-    float frequency = 0.1f; // Adjust this for transition speed
-    float red = (std::sin(elapsedTime + 0) * 255);
-    float green = (std::sin(elapsedTime + 2 * pi / 3) * 255);
-    float blue = (std::sin(elapsedTime + 4 * pi / 3) * 255);
+    float red = (std::sin(elapsedTime + 0) * 127) + 128;
+    float green = (std::sin(elapsedTime + 2 * pi / 3) * 127) + 128;
+    float blue = (std::sin(elapsedTime + 4 * pi / 3) * 127) + 128;
 	textColor = sf::Color(red, green, blue);
 	window->setView(scroller);
 	window->draw(cursor);
 	for (int i = 0; i < textContent.size(); ++i)
 	{
 		textContent[i].setFillColor(textColor);
+		lineNumbers[i].setFillColor(textColor);
 		window->draw(textContent[i]);
+		window->draw(lineNumbers[i]);
 	}
 }
 
@@ -69,6 +82,7 @@ void TextEditorUtilities::setFilePath(std::string& PATH)
 
 void TextEditorUtilities::readFromFile()
 {
+	status = "Reading from file" + filePath;
 	std::ifstream infile(filePath);
 	switch (infile.is_open())
 	{
@@ -82,6 +96,7 @@ void TextEditorUtilities::readFromFile()
 	}
 	
 	textContent.clear();
+	lineNumbers.clear();
 	
 	std::string line;
 	int i = 2;
@@ -94,21 +109,31 @@ void TextEditorUtilities::readFromFile()
 	{
 		std::istringstream iss(line);
 		sf::Text text;
+		sf::Text number;
 		text.setFont(font);
+		number.setFont(font);
 		text.setFillColor(sf::Color::Black);
+		number.setFillColor(sf::Color::Black);
 		text.setCharacterSize(size);
+		number.setCharacterSize(size);
 		text.setString(line);
+		number.setString(std::to_string(i - 1));
 		text.setPosition(sf::Vector2f(80, (i * size) + 60));
+		number.setPosition(sf::Vector2f(10, (i * size) + 60));
 		++i;
 		
 		textContent.push_back(text);
+		lineNumbers.push_back(number);
 	}
 	setCursorPosition();	
+	topDisplayedLine = 0;
+	bottomDisplayedLine = std::min((int)textContent.size() - 1, 25);
 	infile.close();	
 }
 	
 void TextEditorUtilities::writeToFile()
 {
+	status = "writing to file path" + filePath;
 	std::ofstream outputFile(filePath);
 	switch (outputFile.is_open())
 	{
@@ -194,10 +219,16 @@ void TextEditorUtilities::moveCursorRight()
 void TextEditorUtilities::makeANewLine()
 {
 	sf::Text newLine;
+	sf::Text newNumber;
 	newLine.setFont(font);
+	newNumber.setFont(font);
 	newLine.setCharacterSize(size);
+	newNumber.setCharacterSize(size);
 	newLine.setFillColor(sf::Color::Black);
+	newNumber.setFillColor(sf::Color::Black);
 	textContent.insert(textContent.begin() + cursorLine + 1, newLine);
+	lineNumbers.insert(lineNumbers.begin() + cursorLine + 1, newNumber);
+
 	++cursorLine;
 	std::string previousLine = textContent[cursorLine -1].getString().toAnsiString();
 	std::string whatGoesBefore  = previousLine.substr(0, cursorPos);
@@ -205,9 +236,11 @@ void TextEditorUtilities::makeANewLine()
 	textContent[cursorLine - 1].setString(whatGoesBefore);
 	textContent[cursorLine].setString(whatGoesAfter);
 	cursorPos = 0;
+	newNumber.setString("Temporary");
 	for (int i = cursorLine; i < textContent.size(); ++i)
 	{
 		textContent[i].setPosition(sf::Vector2f(80, ((i + 2) * size) + 60));
+		lineNumbers[i].setPosition(sf::Vector2f(10, ((i + 2) * size) + 60));
 	}
 	
 	isEdited = true;
@@ -280,11 +313,6 @@ void TextEditorUtilities::deleteChar()
 	}
 }
 
-void TextEditorUtilities::scrollDownLogic()
-{
-	scrollDown();
-}
-
 void TextEditorUtilities::undo()
 {
 	switch(undoStack.empty()) 
@@ -354,6 +382,9 @@ void TextEditorUtilities::updateSnapshot()
 
 void TextEditorUtilities::update(const sf::Event* EVENT)
 {
+	status = "CursorLine" + std::to_string(cursorLine) + "\tCursorPosition" + std::to_string(cursorPos) + "\t\tTotal: " + std::to_string(textContent.size()) + "\n";
+	std::cout << status << std::endl;
+	std::cout << topDisplayedLine << " " << bottomDisplayedLine << std::endl;
 	for (auto i : textContent)
 	{
 		i.setFillColor(textColor);
@@ -422,26 +453,21 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					break;
 					
 				case sf::Keyboard::Up:
+					scrollUp();
 					moveCursorUp();
-					switch(viewHeight > 0.f)
-					{
-						case true:
-							scrollUp();
-							break;
-							
-						case false:
-							break;
-					}
 					break;
 				
 				case sf::Keyboard::Down:
+					scrollDown();
 					moveCursorDown();
-					scrollDownLogic();
 					break;
 
 				case sf::Keyboard::PageUp:
-					updateSnapshot();
-					undoStack.push(latest);
+					scrollUp();
+					break;
+
+				case sf::Keyboard::PageDown:
+					scrollDown();
 					break;
 
 				case sf::Keyboard::S:
@@ -473,9 +499,10 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 									undo();
 									break;
 							}
+							break;
 					}
-					break;
-					
+					break;					
+
 				case sf::Keyboard::Return:
 					setSpecialKeyPress();
 					makeANewLine();
@@ -527,6 +554,7 @@ void TextEditorUtilities::setSpecialKeyPress()
 			break;
 			
 		case false:
+			specialKeyPressed = false;
 			break;
 	}
 	updateSnapshot();
