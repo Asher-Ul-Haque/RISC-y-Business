@@ -36,6 +36,7 @@ IDE::IDE()
             std::cout << "Error loading " << buttonTexturePaths[i] << std::endl;
         }
         buttonTextures[i].setSmooth(true);
+        
         buttons[i].setTexture(buttonTextures[i]);
         buttons[i].setOrigin(buttonTextures[i].getSize().x / 2, buttonTextures[i].getSize().y / 2);
         buttons[i].setPosition(screenWidth - 50 * (i + 1) - 50, 25);

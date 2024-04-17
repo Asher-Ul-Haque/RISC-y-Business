@@ -5,7 +5,6 @@
 #include "../../../include/utility/mouseUtilities.h"
 #include "../../../include/utility/animationUtilities.h"
 #include "../../../include/utility/textEditorUtilities.h"
-
 // - - - - - - - -
 
 class IDE 

@@ -93,6 +93,7 @@ class TextEditorUtilities
 
 	void resize();
 
+
 public:
 	TextEditorUtilities(){};
 

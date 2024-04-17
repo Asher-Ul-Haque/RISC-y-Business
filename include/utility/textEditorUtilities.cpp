@@ -706,6 +706,7 @@ void TextEditorUtilities::setSpecialKeyPress()
 void TextEditorUtilities::resize()
 {
 	cursor.setSize(sf::Vector2f(5 * (size / 12), size));
+	
 	for (int i = 0; i < textContent.size(); ++i)
 	{
 		textContent[i].setCharacterSize(size);
