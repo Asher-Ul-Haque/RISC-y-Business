@@ -13,52 +13,70 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW, unsigned shor
 	
 	scroller.reset(sf::FloatRect(0, 0, viewWidth, viewHeight));
 
-	cursor.setSize(sf::Vector2f(5, size));
-	cursor.setFillColor(sf::Color(100, 0, 0, 100));
+	cursor.setSize(sf::Vector2f(5 * (size / 12), size));
+	cursor.setFillColor(sf::Color(135, 136, 140));
 	
 	window->setView(scroller);
+	movement = sf::Vector2f(0, 0);
 }
 
 void TextEditorUtilities::scrollUp()
 {
-	if (cursorLine <= topDisplayedLine || cursor.getPosition().y > 100)
+	movement.y -= movementSpeed * scrollClock.restart().asSeconds();
+	if (movement.y < -movementSpeed)
 	{
-		return;
-	}
-	scroller.move(0, textContent[0].getCharacterSize());
-	--topDisplayedLine;
-	--bottomDisplayedLine;
-	if (topDisplayedLine <= 0)
-	{
-		topDisplayedLine = 0;
+		movement.y = -movementSpeed;
 	}
 	window->setView(scroller);
 }
 
 void TextEditorUtilities::scrollDown()
 {
-	if (cursorLine <= bottomDisplayedLine || cursor.getPosition().y < viewHeight/2)
+	movement.y += movementSpeed * scrollClock.restart().asSeconds();
+	if (movement.y > movementSpeed)
+	{
+		movement.y = movementSpeed;
+	}
+	window->setView(scroller);
+}
+
+void TextEditorUtilities::scrollLeft()
+{
+	if (textContent[0].getPosition().x < 80)
 	{
 		return;
 	}
-	scroller.move(0, -size - linePadding);
-	++bottomDisplayedLine;
-	++topDisplayedLine;
-	if (bottomDisplayedLine > textContent.size() - 1)
+	for (int i = 0; i < textContent.size(); ++i)
 	{
-		bottomDisplayedLine = textContent.size() - 1;
+		textContent[i].move(-movementSpeed * scrollClock.restart().asSeconds(), 0);
 	}
+	setCursorPosition();
+}
 
-	window->setView(scroller);
+void TextEditorUtilities::scrollRight()
+{
+	for (int i = 0; i < textContent.size(); ++i)
+	{
+		textContent[i].move(movementSpeed * scrollClock.restart().asSeconds(), 0);
+	}
+	setCursorPosition();
 }
 
 void TextEditorUtilities::setCursorPosition()
 {
-	cursor.setPosition(textContent[cursorLine].getPosition().x + (7 * cursorPos), cursorLine * size + textContent[0].getPosition().y);
+	cursor.setPosition(textContent[cursorLine].getPosition().x + (7 * cursorPos * (size / 12)), cursorLine * size + textContent[0].getPosition().y);
+}
+
+std::string TextEditorUtilities::getStatus()
+{
+	return status;
 }
 
 void TextEditorUtilities::render()
 {
+	scroller.move(movement);
+	window->setView(scroller);
+	lineNumbers[0].setString("1");
 	elapsedTime = colorClock.getElapsedTime().asSeconds() * 2;
     float red = (std::sin(elapsedTime + 0) * 127) + 128;
     float green = (std::sin(elapsedTime + 2 * pi / 3) * 127) + 128;
@@ -84,6 +102,9 @@ void TextEditorUtilities::readFromFile()
 {
 	status = "Reading from file" + filePath;
 	std::ifstream infile(filePath);
+	cursorPos = 0;
+	cursorLine = 0;
+	scroller.reset(sf::FloatRect(0, 0, viewWidth, viewHeight));
 	switch (infile.is_open())
 	{
 		case true:
@@ -100,11 +121,30 @@ void TextEditorUtilities::readFromFile()
 	
 	std::string line;
 	int i = 2;
+
 	if (infile.peek() == std::ifstream::traits_type::eof()) 
 	{
-        infile.close();
-        return;  // Return if the file is empty
+        sf::Text text;
+        sf::Text number;
+        text.setFont(font);
+		number.setFont(font);
+		text.setFillColor(sf::Color::Black);
+		number.setFillColor(sf::Color::Black);
+		text.setCharacterSize(size);
+		number.setCharacterSize(size);
+		text.setString("Enter something in your file");
+		number.setString(std::to_string(1));
+		text.setPosition(sf::Vector2f(80, 60));
+		number.setPosition(sf::Vector2f(10, 60)); 
+		textContent.push_back(text);
+		lineNumbers.push_back(number);
+		infile.close();
+		writeToFile();
+		readFromFile();
+		setCursorPosition();
+		return;
     }
+
 	while (std::getline(infile, line))
 	{
 		std::istringstream iss(line);
@@ -117,7 +157,7 @@ void TextEditorUtilities::readFromFile()
 		text.setCharacterSize(size);
 		number.setCharacterSize(size);
 		text.setString(line);
-		number.setString(std::to_string(i - 1));
+		number.setString(std::to_string((int)i - 1));
 		text.setPosition(sf::Vector2f(80, (i * size) + 60));
 		number.setPosition(sf::Vector2f(10, (i * size) + 60));
 		++i;
@@ -160,8 +200,7 @@ void TextEditorUtilities::writeToFile()
 
 		case true:
 			break;
-	}
-	
+	}	
 }	
 
 void TextEditorUtilities::moveCursorUp()
@@ -236,11 +275,13 @@ void TextEditorUtilities::makeANewLine()
 	textContent[cursorLine - 1].setString(whatGoesBefore);
 	textContent[cursorLine].setString(whatGoesAfter);
 	cursorPos = 0;
-	newNumber.setString("Temporary");
+	lineNumbers[cursorLine].setString(std::to_string((int) cursorLine + 1));
 	for (int i = cursorLine; i < textContent.size(); ++i)
 	{
 		textContent[i].setPosition(sf::Vector2f(80, ((i + 2) * size) + 60));
-		lineNumbers[i].setPosition(sf::Vector2f(10, ((i + 2) * size) + 60));
+		lineNumbers[i].setPosition(textContent[i].getPosition());
+		lineNumbers[i].move(-70, 0);
+		lineNumbers[i].setString(std::to_string((int) i + 1));
 	}
 	
 	isEdited = true;
@@ -304,6 +345,9 @@ void TextEditorUtilities::deleteChar()
 					for (int i = cursorLine; i < textContent.size(); ++i)
 					{
 						textContent[i].setPosition(sf::Vector2f(80, ((i + 2) * size) + 60));
+						lineNumbers[i].setPosition(textContent[i].getPosition());
+						lineNumbers[i].move(-70, 0);
+						lineNumbers[i].setString(std::to_string((int) i + 1));
 					}
 					isEdited = true;
 					setCursorPosition();
@@ -382,9 +426,7 @@ void TextEditorUtilities::updateSnapshot()
 
 void TextEditorUtilities::update(const sf::Event* EVENT)
 {
-	status = "CursorLine" + std::to_string(cursorLine) + "\tCursorPosition" + std::to_string(cursorPos) + "\t\tTotal: " + std::to_string(textContent.size()) + "\n";
-	std::cout << status << std::endl;
-	std::cout << topDisplayedLine << " " << bottomDisplayedLine << std::endl;
+	status = "CursorLine:\t" + std::to_string(cursorLine) + "\t\tCursorPosition:\t" + std::to_string(cursorPos) + "\t\tTotal:\t" + std::to_string(textContent.size()) + "\n";
 	for (auto i : textContent)
 	{
 		i.setFillColor(textColor);
@@ -444,25 +486,74 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 		case sf::Event::KeyPressed:
 			switch(EVENT->key.code)
 			{
+				case sf::Keyboard::Space:
+					window->setView(scroller);
+					break;
+
 				case sf::Keyboard::Left:
-					moveCursorLeft();
+					switch (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
+					{
+						case true:
+							scrollLeft();
+							break;
+
+						case false:
+							moveCursorLeft();
+							break;
+					}
 					break;
 					
 				case sf::Keyboard::Right:
-					moveCursorRight();
+					switch (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
+					{
+						case true:
+							scrollRight();
+							break;
+
+						case false:
+							moveCursorRight();
+							break;
+					}
 					break;
 					
 				case sf::Keyboard::Up:
-					scrollUp();
-					moveCursorUp();
+					switch (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
+					{
+						case true:
+							scrollUp();
+							break;
+
+						case false:
+							moveCursorUp();
+							break;
+					}
 					break;
 				
 				case sf::Keyboard::Down:
-					scrollDown();
-					moveCursorDown();
+					switch (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
+					{
+						case true:
+							scrollDown();				
+							break;
+
+						case false:
+							moveCursorDown();
+							break;
+					}
+					break;
+					
 					break;
 
 				case sf::Keyboard::PageUp:
+					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::PageDown))
+					{
+						case true:	
+							movement.x = movement.y = 0;
+							break;
+
+						case false:
+							break;
+					}
 					scrollUp();
 					break;
 
@@ -474,7 +565,6 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					switch(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
 					{
 						case true:
-						std::cout << "Writing to File" << std::endl;
 							writeToFile();
 							break;
 						
@@ -501,7 +591,38 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 							}
 							break;
 					}
-					break;					
+					break;
+
+				case sf::Keyboard::Equal:
+					{
+						switch (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
+						{
+							case true:
+								++size;
+								resize();
+								break;
+
+							case false:
+								break;
+						}
+					}
+					break;
+
+				case sf::Keyboard::Hyphen:
+					{
+						switch (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
+						{
+							case true:
+								--size;
+								resize();
+								break;
+
+							case false:
+								break;
+						}
+					}
+					break;
+
 
 				case sf::Keyboard::Return:
 					setSpecialKeyPress();
@@ -523,8 +644,14 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					{
 						cursorLine++;
 						cursorPos = 0;
+						deleteChar();
 					}
-					deleteChar();
+					else
+					{
+						deleteChar();
+						--cursorPos;
+					}
+					
 					break;
 
 				case sf::Keyboard::Home:
@@ -542,6 +669,20 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 		default:
 			break;
 	}
+
+    if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Down)&& !sf::Keyboard::isKeyPressed(sf::Keyboard::PageDown)&& !sf::Keyboard::isKeyPressed(sf::Keyboard::PageUp)) 
+	{
+       float magnitude = std::sqrt(movement.y * movement.y);
+       if (magnitude > 0.1f) 
+       {
+           float decelerationStep = std::min(movementSpeed * scrollClock.restart().asSeconds(), movementSpeed);
+           movement.y -= (movement.y / magnitude) * decelerationStep;
+       } 
+       else 
+       {
+           movement.y = 0.0f;
+       }
+    }
 }
 
 void TextEditorUtilities::setSpecialKeyPress()
@@ -559,4 +700,15 @@ void TextEditorUtilities::setSpecialKeyPress()
 	}
 	updateSnapshot();
 	undoStack.push(latest);
+}
+
+
+void TextEditorUtilities::resize()
+{
+	cursor.setSize(sf::Vector2f(5 * (size / 12), size));
+	for (int i = 0; i < textContent.size(); ++i)
+	{
+		textContent[i].setCharacterSize(size);
+		lineNumbers[i].setCharacterSize(size);
+	}
 }

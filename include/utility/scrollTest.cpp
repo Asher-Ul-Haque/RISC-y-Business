@@ -1,60 +1,65 @@
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML View Scrolling");
-    sf::View view(sf::FloatRect(0, 0, 800, 600)); // Initial view
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Smooth Scrolling Example");
 
-    // Create shapes for demonstration
-    sf::RectangleShape rect1(sf::Vector2f(100, 50));
-    rect1.setFillColor(sf::Color::Red);
-    rect1.setPosition(100, 100);
+    sf::View view(sf::FloatRect(0, 0, 800, 600));
+    window.setView(view);
 
-    sf::CircleShape circle(50);
-    circle.setFillColor(sf::Color::Blue);
-    circle.setPosition(300, 200);
+    std::vector<sf::Text> texts;
+    sf::Font font;
+    if (!font.loadFromFile("../../include/resources/fonts/JetBrainsMono-Bold.ttf")) {
+        // Error loading font
+        return -1;
+    }
 
-    sf::RectangleShape rect2(sf::Vector2f(150, 75));
-    rect2.setFillColor(sf::Color::Green);
-    rect2.setPosition(500, 350);
+    // Create some sample text elements
+    for (int i = 0; i < 10; ++i) {
+        sf::Text text("Text " + std::to_string(i), font, 24);
+        text.setPosition(100.f + i * 200.f, 300.f);
+        texts.push_back(text);
+    }
 
-    // Main loop
+    sf::Clock clock;
+    sf::Time deltaTime;
+
+    float movementSpeed = 100.0f; // Adjust as needed
+    sf::Vector2f movement(0.0f, 0.0f);
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+        }
 
-            // Handle key presses for scrolling
-            if (event.type == sf::Event::KeyPressed) {
-                switch (event.key.code) {
-                    case sf::Keyboard::Left:
-                        view.move(-10.f, 0.f);
-                        break;
-                    case sf::Keyboard::Right:
-                        view.move(10.f, 0.f);
-                        break;
-                    case sf::Keyboard::Up:
-                        view.move(0.f, -10.f);
-                        break;
-                    case sf::Keyboard::Down:
-                        view.move(0.f, 10.f);
-                        break;
-                    default:
-                        break;
-                }
+        // Calculate delta time
+        deltaTime = clock.restart();
+
+        // Handle smooth movement
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            // Check if view left is to the right of the leftmost text element
+            if (view.getCenter().x - view.getSize().x / 2 > texts.front().getPosition().x) {
+                movement.x -= movementSpeed * deltaTime.asSeconds();
+            }
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            // Check if view right is to the left of the rightmost text element
+            if (view.getCenter().x + view.getSize().x / 2 < texts.back().getPosition().x + texts.back().getGlobalBounds().width) {
+                movement.x += movementSpeed * deltaTime.asSeconds();
             }
         }
 
-        window.clear();
-
-        // Apply the view to the window
+        // Update view position smoothly
+        view.move(movement);
         window.setView(view);
 
-        // Draw shapes in the world coordinates
-        window.draw(rect1);
-        window.draw(circle);
-        window.draw(rect2);
-
+        // Rendering
+        window.clear(sf::Color::White);
+        for (const auto& text : texts) {
+            window.draw(text);
+        }
         window.display();
     }
 

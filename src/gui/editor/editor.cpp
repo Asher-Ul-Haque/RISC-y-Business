@@ -25,7 +25,11 @@ IDE::IDE()
     hoverText.setCharacterSize(12);
     hoverText.setFillColor(sf::Color::White);
 
-    for (int i = 0; i < 4; i++)
+    statusText.setFont(font);
+    statusText.setCharacterSize(15);
+    statusText.setFillColor(colors[!backgroundColor]);
+
+    for (int i = 0; i < 5; i++)
     {
         if (!buttonTextures[i].loadFromFile(textureDirectoryPath + buttonTexturePaths[i]))
         {
@@ -41,13 +45,23 @@ IDE::IDE()
     topBarTexture.loadFromFile(textureDirectoryPath + topBarTexturePath);
     topBar.setTexture(&topBarTexture);
     topBar.setSize(sf::Vector2f(screenWidth, 50));
+    topBar.setOutlineThickness(1);
+    topBar.setOutlineColor(sf::Color::White);
     topBar.setPosition(0, 0);
     
-    lineNumbers.setSize(sf::Vector2f(50, screenHeight));
-    lineNumbers.setFillColor(backgroundColor);
-    lineNumbers.setPosition(0, 50);
+    lineNumbers.setSize(sf::Vector2f(1, screenHeight));
+    lineNumbers.setFillColor(sf::Color(135, 136, 140));
+    lineNumbers.setPosition(45, 50);
     lineNumbers.setOutlineColor(sf::Color(135, 136, 140));
     lineNumbers.setOutlineThickness(2);
+
+    bottomBar.setSize(sf::Vector2f(screenWidth, 20));
+    bottomBar.setPosition(0, screenHeight - 40);
+    bottomBar.setFillColor(colors[backgroundColor]);
+    bottomBar.setOutlineThickness(2);
+    bottomBar.setOutlineColor(sf::Color(135, 136, 140));
+
+    statusText.setPosition(bottomBar.getPosition() + sf::Vector2f(20, 0));
 
     for (int i = 0; i < 3; ++i)
     {
@@ -72,13 +86,13 @@ IDE::IDE()
 
 void IDE::render()
 {
-    window.clear(backgroundColor);
+    window.clear(colors[backgroundColor]);
     textEditor.render();
     window.setView(window.getDefaultView()); // Reset view to window coordinates
     window.draw(lineNumbers);
     window.draw(topBar);
     window.draw(title);
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         window.draw(buttons[i]);
     }
@@ -99,12 +113,15 @@ void IDE::render()
         window.draw(hoverBox);
         window.draw(hoverText);
     }
+    window.draw(bottomBar);
+    window.draw(statusText);
 
     window.display();
 }
 
 void IDE::update()
 {
+    statusText.setString(textEditor.getStatus());
     sf::Event event;
     while (window.pollEvent(event))
     {
@@ -130,6 +147,8 @@ void IDE::update()
                         break;
 
                     default:
+                        soundEffects.setPath(soundDirectoryPath + "keypress.wav");
+                        soundEffects.playSoundEffect();
                         break;
                 }
                 break;
@@ -138,11 +157,25 @@ void IDE::update()
                 switch(event.mouseButton.button)
                 {
                     case sf::Mouse::Left:
-                        for (int i = 0; i < 4; ++i)
+                        for (int i = 0; i < 5; ++i)
                         {
                             switch (MouseUtilities::isMouseInRectangle(buttons[i].getPosition(), sf::Vector2f(buttonTextures[i].getSize().x, buttonTextures[i].getSize().y), &window))
                             {
                                 case true:
+                                    switch (i)
+                                    {
+                                        case 4:
+                                            textEditor.writeToFile();
+                                            break;
+
+                                        case 0:
+                                            switchColors();
+                                            break;
+
+                                        default:
+                                            break;
+
+                                    }
                                     soundEffects.playSoundEffect();
                                     break;
 
@@ -161,6 +194,7 @@ void IDE::update()
                                     currentFile = i;
                                     textEditor.writeToFile();
                                     currentFilePath = projectDirectoryPath + "/" + projectFiles[i];
+                                    textEditor.setFilePath(currentFilePath);
                                     textEditor.readFromFile();
                                     animation.scale(fileButtons[i], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
                                     break;
@@ -215,7 +249,7 @@ void IDE::update()
                     }
                 }
 
-                for (int i = 0; i < 4; ++i)
+                for (int i = 0; i < 5; ++i)
                 {
                     switch (MouseUtilities::isMouseInRectangle(buttons[i].getPosition(), sf::Vector2f(buttonTextures[i].getSize().x, buttonTextures[i].getSize().y), &window))
                     {
@@ -309,4 +343,12 @@ void IDE::setProject(std::string PROJECTPATH)
     std::string assemblyFilePath = projectDirectoryPath + "/" + projectFiles[0];
     textEditor.setFilePath(assemblyFilePath);
     textEditor.readFromFile();
+}
+
+void IDE::switchColors()
+{
+    backgroundColor = !backgroundColor;
+    std::cout << "New color Scheme: " + std::to_string(backgroundColor) << std::endl;
+    bottomBar.setFillColor(colors[backgroundColor]);
+    statusText.setFillColor(colors[!backgroundColor]);
 }

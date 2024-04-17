@@ -19,11 +19,15 @@ class TextEditorUtilities
 	sf::RectangleShape cursor;
 	unsigned char cursorLine = 0;
     unsigned char cursorPos = 0;	
-    unsigned char size = 12;
+    unsigned char size = 24;
     unsigned char linePadding = 2;
     int bottomDisplayedLine;
     int topDisplayedLine;
     bool isEdited = false;
+
+    sf::Clock scrollClock;
+    float movementSpeed = 1.0f;
+    sf::Vector2f movement;
     
 	unsigned char previousCursorLine = 0;
 	bool specialKeyPressed = false;
@@ -37,7 +41,6 @@ class TextEditorUtilities
 	float zoom = 1.0f;
 
 	std::string status;
-
 
 	typedef struct 
 	{
@@ -67,6 +70,10 @@ class TextEditorUtilities
 	void scrollUp();
 	
 	void scrollDown();
+
+	void scrollLeft();
+
+	void scrollRight();
 	
 	void moveCursorRight();
 	
@@ -83,7 +90,9 @@ class TextEditorUtilities
 	void makeANewLine();
 
 	void scrollDownLogic();
-	
+
+	void resize();
+
 public:
 	TextEditorUtilities(){};
 
@@ -102,6 +111,8 @@ public:
 	void undo();
 
 	void redo();	
+
+	std::string getStatus();
 };
 
 #endif //TEXTEDITORUTILITIES_H
