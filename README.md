@@ -7,6 +7,5 @@ gcc -w -o build/executables/simulator/simulatorCLI build/executables/simulator/s
 # To run the assembler use this command
 
 ```bash
-./build/assembler_executable <input_file> <output_file>
+./build/executables/simulator/simulatorCLI
 ```
-
