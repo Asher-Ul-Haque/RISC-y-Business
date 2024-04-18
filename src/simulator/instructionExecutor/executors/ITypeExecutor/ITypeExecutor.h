@@ -4,16 +4,16 @@
 // - - - - - - - - -
 
 #define INSTRUCTION_SIZE 32
-#define RS1_START 15
+#define RS1_START 12
 #define RS1_END RS1_START + REGISTER_ADDRESS_SIZE
-#define RD_START 7
+#define RD_START 20
 #define RD_END RD_START + REGISTER_ADDRESS_SIZE
 // - - - - - - - - -
-#define IMMEDIATE_START 20
+#define IMMEDIATE_START 0
 #define IMMEDIATE_SIZE 12
 #define IMMEDIATE_END IMMEDIATE_START + IMMEDIATE_SIZE
 // - - - - - - - - -
-#define FUNCT3_START 12
+#define FUNCT3_START 17
 #define FUNCT3_SIZE 3
 #define FUNCT3_END FUNCT3_START + FUNCT3_SIZE
 // - - - - - - - - -

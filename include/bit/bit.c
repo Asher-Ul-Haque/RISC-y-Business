@@ -385,13 +385,12 @@ Bit* toSignedBitArray(int decimal, unsigned char SIZE)
 int toDecimal(const Bit* BIT_ARRAY, unsigned char ARRAY_START, unsigned char ARRAY_END, bool IS_SIGNED)
 {
     int decimal = 0;
-
     for (int i = ARRAY_START; i < ARRAY_END; ++i)
     {
         decimal = (decimal << 1) | BIT_ARRAY[i].value;
     }
 
-    if (IS_SIGNED && BIT_ARRAY[0].value == 1)
+    if (IS_SIGNED && BIT_ARRAY[ARRAY_START].value == 1)
     {
         decimal -= (1 << (ARRAY_END-ARRAY_START));
     }

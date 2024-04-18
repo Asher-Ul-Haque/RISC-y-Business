@@ -2,6 +2,7 @@
 #include "instructionExecutor/executorManager/executorManager.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 // - - - - - - - - -
 
 //Initialise and deinitialise functions
@@ -11,7 +12,22 @@ Simulator* initializeSimulator()
     //Allocate memory for the Simulator struct
     printf("Creating simulator\n");
     Simulator* simulator = (Simulator*) malloc(sizeof(Simulator));
-    
+
+    time_t currentTime;
+    struct tm *localTime;
+    currentTime = time(NULL);
+    localTime = localtime(&currentTime);
+    simulator->logFilePath = "log.txt";
+    //Open the log file in write mode
+    FILE* logFile = fopen(simulator->logFilePath, "w");
+    if (logFile == NULL)
+    {
+        perror("Error: Failed to open log file\n");
+        exit(EXIT_FAILURE);
+    }
+    fprintf(logFile, "Log file created at %s\n", asctime(localTime));
+    fclose(logFile);
+
     if (simulator == NULL)
     {
         perror("Error: Failed to allocate memory for Simulator\n");
@@ -49,7 +65,7 @@ Simulator* initializeSimulator()
         return NULL;
     }
     *simulator->programCounter = 0;
-    printf("program counter created\n");
+    log(simulator, "Program counter created");
 
     simulator->executionManager = initializeExecutorManager(simulator->memoryManager, simulator->registerFile, simulator->programCounter);
     if (simulator->executionManager == NULL)
@@ -60,16 +76,16 @@ Simulator* initializeSimulator()
         free(simulator);
     }
 
-    printf("Simulator created\n");
+    log(simulator, "Simulator created\n");
     return simulator;
 }
 
 // - - - - - - - - -
 
-void loadProgram(Simulator *SIMULATOR, const char* BINARY_FILE_PATH)
+void loadProgram(Simulator* SIMULATOR, const char* BINARY_FILE_PATH)
 {
     SIMULATOR->binaryFilePath = BINARY_FILE_PATH;
-    printf("Loading program into memory\n");
+    log(SIMULATOR, "Loading program into memory\n");
     loadBinaryToProgramMemory(SIMULATOR->memoryManager, SIMULATOR->binaryFilePath);
 }
 
@@ -82,7 +98,7 @@ void deinitializeSimulator(Simulator *SIMULATOR)
     free(SIMULATOR->registerFile);
     free(SIMULATOR);
 
-    printf("Program successfully terminated");
+    log(SIMULATOR, "Program successfully terminated");
     exit(EXIT_SUCCESS);
 }
 
@@ -92,7 +108,7 @@ void deinitializeSimulator(Simulator *SIMULATOR)
 
 void printRegisters(const Simulator *SIMULATOR)
 {
-    printf("Register file for the Simulation %s\n", *SIMULATOR);
+    log(SIMULATOR, "Register file for the Simulation");
     printRegisterFile(SIMULATOR->registerFile);
 }
 
@@ -100,7 +116,7 @@ void printRegisters(const Simulator *SIMULATOR)
 
 void printMemory(const Simulator *SIMULATOR)
 {
-    printf("Memory manager for the Simulation %s\n", *SIMULATOR);
+    log(SIMULATOR, "Memory manager for the Simulation");
     printProgramMemory(SIMULATOR->memoryManager);
     printStackMemory(SIMULATOR->memoryManager);
     printDataMemory(SIMULATOR->memoryManager);
@@ -108,16 +124,62 @@ void printMemory(const Simulator *SIMULATOR)
 
 // - - - - - - - - - - -
 
+void log(Simulator *SIMULATOR, const char* MESSAGE)
+{
+    FILE* logFile = fopen(SIMULATOR->logFilePath, "a");
+    if (logFile == NULL)
+    {
+        FILE* logFile = fopen(SIMULATOR->logFilePath, "w");
+    }
+
+    fprintf(logFile, "%s\n", MESSAGE);
+    fprintf(logFile, "\n");
+    fprintf(logFile, "\n");
+    fprintf(logFile, "\n");
+    fprintf(logFile, "\n");
+
+    fclose(logFile);
+}
+
+// - - - - - - - - - - -
+
 void runSimulation(Simulator *SIMULATOR)
 {
+    log(SIMULATOR, "Running simulation");
+
     while (!(*SIMULATOR->programCounter >= PROGRAM_MEMORY))
     {
+    //     Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
+    //     findAndExecute(SIMULATOR->executionManager, instruction);
+    //     printRegisters(SIMULATOR);
+    // }
+        //make an array of bits with this value 00000000000000000000010010110011
+        // Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
+        printMemoryCell(getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits));
         Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
+        printMemoryCell(getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits));
         findAndExecute(SIMULATOR->executionManager, instruction);
-        printRegisters(SIMULATOR);
-    }
-    printMemory(SIMULATOR);
+        //Log the program counter and the integer value it stores
+        printf("Program counter: %d\n", *SIMULATOR->programCounter);
+
+        instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
+        printMemoryCell(getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits));
+        findAndExecute(SIMULATOR->executionManager, instruction);
+        printf("Program counter: %d\n", *SIMULATOR->programCounter);
+
 }
 
 // - - - - - - - - - -
 
+void logNumber(Simulator *SIMULATOR, int NUMBER)
+{
+    FILE* logFile = fopen(SIMULATOR->logFilePath, "a");
+    if (logFile == NULL)
+    {
+        FILE* logFile = fopen(SIMULATOR->logFilePath, "w");
+    }
+
+    fprintf(logFile, "%d\n", NUMBER);
+
+    fclose(logFile);
+}

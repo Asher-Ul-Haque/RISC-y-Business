@@ -14,9 +14,7 @@ IDE::IDE()
 
     title.setFont(font);
     title.setCharacterSize(16);
-    title.setFillColor(sf::Color::White);
-    title.setPosition(30, 15);
-    
+    title.setFillColor(sf::Color::White);    
     if (!hoverBoxTexture.loadFromFile(textureDirectoryPath + hoverBoxTexturePath))
     {
         std::cout << "Error loading " << hoverBoxTexturePath << std::endl;
@@ -27,35 +25,44 @@ IDE::IDE()
     hoverText.setCharacterSize(12);
     hoverText.setFillColor(sf::Color::White);
 
-    for (int i = 0; i < 4; i++)
+    statusText.setFont(font);
+    statusText.setCharacterSize(15);
+    statusText.setFillColor(colors[!backgroundColor]);
+
+    for (int i = 0; i < 5; i++)
     {
         if (!buttonTextures[i].loadFromFile(textureDirectoryPath + buttonTexturePaths[i]))
         {
             std::cout << "Error loading " << buttonTexturePaths[i] << std::endl;
         }
         buttonTextures[i].setSmooth(true);
+        
         buttons[i].setTexture(buttonTextures[i]);
         buttons[i].setOrigin(buttonTextures[i].getSize().x / 2, buttonTextures[i].getSize().y / 2);
-        buttons[i].setPosition(screenWidth - 50 * (i + 1), 25);
+        buttons[i].setPosition(screenWidth - 50 * (i + 1) - 50, 25);
         buttons[i].setScale(1.2, 1.2);
     }
     
     topBarTexture.loadFromFile(textureDirectoryPath + topBarTexturePath);
     topBar.setTexture(&topBarTexture);
     topBar.setSize(sf::Vector2f(screenWidth, 50));
+    topBar.setOutlineThickness(1);
+    topBar.setOutlineColor(sf::Color::White);
     topBar.setPosition(0, 0);
-
-    files.setFillColor(sf::Color::White);
-    files.setSize(sf::Vector2f(screenWidth, 50));
-    files.setPosition(0, 51);
-    files.setOutlineColor(sf::Color::Black);
-    files.setOutlineThickness(1);
-
-    lineNumbers.setSize(sf::Vector2f(50, screenHeight));
-    lineNumbers.setFillColor(backgroundColor);
-    lineNumbers.setPosition(0, 102);
+    
+    lineNumbers.setSize(sf::Vector2f(1, screenHeight));
+    lineNumbers.setFillColor(sf::Color(135, 136, 140));
+    lineNumbers.setPosition(45, 50);
     lineNumbers.setOutlineColor(sf::Color(135, 136, 140));
     lineNumbers.setOutlineThickness(2);
+
+    bottomBar.setSize(sf::Vector2f(screenWidth, 20));
+    bottomBar.setPosition(0, screenHeight - 40);
+    bottomBar.setFillColor(colors[backgroundColor]);
+    bottomBar.setOutlineThickness(2);
+    bottomBar.setOutlineColor(sf::Color(135, 136, 140));
+
+    statusText.setPosition(bottomBar.getPosition() + sf::Vector2f(20, 0));
 
     for (int i = 0; i < 3; ++i)
     {
@@ -63,23 +70,30 @@ IDE::IDE()
         {
             std::cout << "Failed to load: " << fileButtonsTexturePath[i] << std::endl;
         }
+        fileButtonsTextures[i].setSmooth(true);
         fileButtons[i].setTexture(fileButtonsTextures[i]);
     }
 
     for (int i = 0; i < 3; ++i)
     {
-        fileButtons[i].setPosition(50 * i, 51);
+        fileButtons[i].setOrigin(fileButtonsTextures[i].getSize().x / 2, fileButtonsTextures[i].getSize().y / 2);
     }
+    fileButtons[0].setPosition(70, 30);
+    fileButtons[1].setPosition(190, 30);
+    fileButtons[2].setPosition(337, 30);
+
+    textEditor = TextEditorUtilities(&window, screenWidth, screenHeight);
 }
 
 void IDE::render()
 {
-    window.clear(backgroundColor);
+    window.clear(colors[backgroundColor]);
+    textEditor.render();
+    window.setView(window.getDefaultView()); // Reset view to window coordinates
     window.draw(lineNumbers);
     window.draw(topBar);
-    window.draw(files);
     window.draw(title);
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         window.draw(buttons[i]);
     }
@@ -100,14 +114,19 @@ void IDE::render()
         window.draw(hoverBox);
         window.draw(hoverText);
     }
+    window.draw(bottomBar);
+    window.draw(statusText);
+
     window.display();
 }
 
 void IDE::update()
 {
+    statusText.setString(textEditor.getStatus());
     sf::Event event;
     while (window.pollEvent(event))
     {
+        textEditor.update(&event);
         switch (event.type)
         {
             default:
@@ -129,6 +148,8 @@ void IDE::update()
                         break;
 
                     default:
+                        soundEffects.setPath(soundDirectoryPath + "keypress.wav");
+                        soundEffects.playSoundEffect();
                         break;
                 }
                 break;
@@ -137,13 +158,46 @@ void IDE::update()
                 switch(event.mouseButton.button)
                 {
                     case sf::Mouse::Left:
-                        for (int i = 0; i < 4; ++i)
+                        for (int i = 0; i < 5; ++i)
                         {
                             switch (MouseUtilities::isMouseInRectangle(buttons[i].getPosition(), sf::Vector2f(buttonTextures[i].getSize().x, buttonTextures[i].getSize().y), &window))
                             {
                                 case true:
+                                    switch (i)
+                                    {
+                                        case 4:
+                                            textEditor.writeToFile();
+                                            break;
+
+                                        case 0:
+                                            switchColors();
+                                            break;
+
+                                        default:
+                                            break;
+
+                                    }
                                     soundEffects.playSoundEffect();
-                                    std::cout << "Button " << i << " clicked" << std::endl;
+                                    break;
+
+                                case false:
+                                    break;
+                            }
+                        }
+
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            switch (MouseUtilities::isMouseInRectangle(fileButtons[i].getPosition(), sf::Vector2f(fileButtonsTextures[i].getSize().x, fileButtonsTextures[i].getSize().y), &window))
+                            {
+                                case true:
+                                    soundEffects.playSoundEffect();
+                                    fileButtonAnimation[i] = false;
+                                    currentFile = i;
+                                    textEditor.writeToFile();
+                                    currentFilePath = projectDirectoryPath + "/" + projectFiles[i];
+                                    textEditor.setFilePath(currentFilePath);
+                                    textEditor.readFromFile();
+                                    animation.scale(fileButtons[i], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
                                     break;
 
                                 case false:
@@ -156,7 +210,47 @@ void IDE::update()
                 }
 
             case sf::Event::MouseMoved:
-                for (int i = 0; i < 4; ++i)
+                for (int i = 0; i < 3; ++i)
+                {
+                    switch(buttonClickable[i])
+                    {
+                        case true:
+                            switch (MouseUtilities::isMouseInRectangle(fileButtons[i].getPosition(), sf::Vector2f(fileButtonsTextures[i].getSize().x, fileButtonsTextures[i].getSize().y), &window))
+                            {
+                                case true:
+                                    switch(fileButtonAnimation[i])
+                                    {
+                                        case false:
+                                            animation.scale(fileButtons[i], sf::Vector2f(1, 1), sf::Vector2f(1.05, 1.05), 0.1);
+                                            fileButtonAnimation[i] = true;
+                                            break;
+
+                                        case true:
+                                            break;
+                                    }
+                                break;
+
+                                case false:
+                                    switch(fileButtonAnimation[i])
+                                    {
+                                        case true:
+                                            animation.scale(fileButtons[i], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
+                                            fileButtonAnimation[i] = false;
+                                            break;
+
+                                        case false:
+                                            break;
+                                    }
+                                break;
+                            }
+                            break;
+                        
+                        case false:
+                            break;
+                    }
+                }
+
+                for (int i = 0; i < 5; ++i)
                 {
                     switch (MouseUtilities::isMouseInRectangle(buttons[i].getPosition(), sf::Vector2f(buttonTextures[i].getSize().x, buttonTextures[i].getSize().y), &window))
                     {
@@ -191,9 +285,9 @@ void IDE::update()
                             }
                             break;
                     }
+
                 }
         }
-
     }
 }
 
@@ -210,10 +304,18 @@ void IDE::setProject(std::string PROJECTPATH)
 {
     projectDirectoryPath = PROJECTPATH;
     title.setString(projectDirectoryPath);
+    title.setPosition((screenWidth - title.getGlobalBounds().width) / 2, 15);
 
-    window.create(sf::VideoMode::getFullscreenModes()[0], "RISC-Y Business", sf::Style::Close);
+    window.create(sf::VideoMode::getDesktopMode(), "RISC-Y Business", sf::Style::Default);
     window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width / 2 - window.getSize().x / 2, sf::VideoMode::getDesktopMode().height / 2 - window.getSize().y / 2));
     window.setFramerateLimit(60);
+    sf::Texture logoTexture;
+    if (!logoTexture.loadFromFile(textureDirectoryPath + "logo.png"))
+    {
+        std::cout << "Error loading logo.png" << std::endl;
+    }
+    logoTexture.setSmooth(true);
+    window.setIcon(logoTexture.getSize().x, logoTexture.getSize().y, logoTexture.copyToImage().getPixelsPtr());
 
     for (const auto& entry : std::filesystem::directory_iterator(projectDirectoryPath)) 
     {
@@ -232,8 +334,22 @@ void IDE::setProject(std::string PROJECTPATH)
         }
     }
 
-    if (!std::filesystem::exists(projectDirectoryPath + "/assembly.txt"))
+    for (int i = 0; i < 3; ++i)
     {
-        std::ofstream output(projectDirectoryPath + "/assembly.txt");
+        if (!std::filesystem::exists(projectDirectoryPath + "/" + projectFiles[i]))
+        {
+            std::ofstream output(projectDirectoryPath + "/" + projectFiles[i]);
+        }
     }
+    std::string assemblyFilePath = projectDirectoryPath + "/" + projectFiles[0];
+    textEditor.setFilePath(assemblyFilePath);
+    textEditor.readFromFile();
+}
+
+void IDE::switchColors()
+{
+    backgroundColor = !backgroundColor;
+    std::cout << "New color Scheme: " + std::to_string(backgroundColor) << std::endl;
+    bottomBar.setFillColor(colors[backgroundColor]);
+    statusText.setFillColor(colors[!backgroundColor]);
 }

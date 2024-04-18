@@ -89,27 +89,44 @@ void destroyExecutorManager(ExecutorManager * EXECUTION_MANAGER)
 
 void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCTION_SIZE])
 { 
+    //Print the opcode
+    printf("\nMessasge from findAndExecute\n");
+    //Revese the instruction array interely
+    // for (int i = 0; i < INSTRUCTION_SIZE/2; i++)
+    // {
+    //     Bit temp = INSTRUCTION[i];
+    //     INSTRUCTION[i] = INSTRUCTION[INSTRUCTION_SIZE - i - 1];
+    //     INSTRUCTION[INSTRUCTION_SIZE - i - 1] = temp;
+    // }
     unsigned char opcode = toDecimal(INSTRUCTION, OPCODE_START, OPCODE_END, false);
+    printf("Opcode: %d\n", opcode);
     switch(opcode)
     {
         case R_TYPE:
+            printf("R Type\n");
             executeRTypeInstruction(EXECUTION_MANAGER->rTypeExecutor, INSTRUCTION);
-            EXECUTION_MANAGER->programCounter+= 4;
+            *EXECUTION_MANAGER->programCounter += 4;
             break;
         
         case I_TYPE_LW:
+            printf("I Type LW\n");
             executeITypeLWInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
+            *EXECUTION_MANAGER->programCounter += 4;
             break;
         case I_TYPE_DEFAULT:
+            printf("I Type Default\n");
             executeITypeDefaultInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
+            *EXECUTION_MANAGER->programCounter += 4;
             break;
         case I_TYPE_JUMP:
+            printf("I Type Jump\n");
             executeITypeJumpInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
             break;
 
         case S_TYPE:
+            printf("S Type\n");
             executeSTypeInstruction(EXECUTION_MANAGER->sTypeExecutor, INSTRUCTION);
-            EXECUTION_MANAGER->programCounter+= 4;
+            *EXECUTION_MANAGER->programCounter+= 4;
             break;
         
         case B_TYPE:

@@ -15,6 +15,7 @@ typedef struct
     Memory* memoryManager;
     RegisterFile* registerFile;
     const char* binaryFilePath;
+    const char* logFilePath;
     unsigned short* programCounter;
     ExecutorManager* executionManager;
 } Simulator;
@@ -34,6 +35,10 @@ void printMemory(const Simulator* SIMULATOR);
 void runSimulation(Simulator* SIMULATOR);
 
 void deinitializeSimulator(Simulator* SIMULATOR);
+
+void log(Simulator* SIMULATOR, const char* MESSAGE);
+
+void logNumber(Simulator* SIMULATOR, int NUMBER);
 
 // - - - - - - - - - - - -
 #endif /* SIMULATOR_H */
