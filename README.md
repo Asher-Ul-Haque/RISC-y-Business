@@ -1,12 +1,7 @@
 # To compile use this command
 
 ```bash
-gcc -o build/assembler_executable \
-    src/main.c \
-    src/memory/memory.c \
-    src/instructions/instructions.c \
-    src/registers/registers.c \
-    src/utils/utils.c
+gcc -w -o build/executables/simulator/simulatorCLI build/executables/simulator/simulatorCLI.c include/bit/bit.c src/simulator/simulator.c src/simulator/register/registers.c src/simulator/memory/memory.c src/simulator/instructionExecutor/executorManager/executorManager.c src/simulator/instructionExecutor/executors/BTypeExecutor/BTypeExecutor.c src/simulator/instructionExecutor/executors/ITypeExecutor/ITypeExecutor.c src/simulator/instructionExecutor/executors/JTypeExecutor/JTypeExecutor.c src/simulator/instructionExecutor/executors/RTypeExecutor/RTypeExecutor.c src/simulator/instructionExecutor/executors/STypeExecutor/STypeExecutor.c src/simulator/instructionExecutor/executors/UTypeExecutor/UTypeExecutor.c
 ```
 
 # To run the assembler use this command
