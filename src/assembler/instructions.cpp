@@ -1,18 +1,12 @@
-#include "bits/stdc++.h"
-#include "iostream"
-#include "sstream"
-#include "string"
-#include <fstream>
-#include <map>
-#include <stdexcept>
-#include <string>
-#include <vector>
+#include "instructions.h"
+//------------------------------------------IMM------------------------------------------//
+
+
 //------------------------------------------INSTRUCTION-MAP------------------------------------------//
 typedef enum { R_TYPE, I_TYPE, S_TYPE, B_TYPE, U_TYPE, J_TYPE } InstructionType;
 
-using namespace std;
-
-struct InstructionEncoding {
+struct InstructionEncoding 
+{
   InstructionType type;
   bool opcode[7];
   bool funct3[3];
@@ -21,7 +15,8 @@ struct InstructionEncoding {
 
 map<string, int> labels;
 
-map<string, InstructionEncoding> instruction_map = {
+map<string, InstructionEncoding> instruction_map = 
+{
     // R-type
     {"add", {R_TYPE, {0, 1, 1, 0, 0, 1, 1}, {0, 0, 0}, {0, 0, 0, 0, 0, 0, 0}}},
     {"sub", {R_TYPE, {0, 1, 1, 0, 0, 1, 1}, {0, 0, 0}, {0, 1, 0, 0, 0, 0, 0}}},
@@ -58,7 +53,8 @@ map<string, InstructionEncoding> instruction_map = {
 
 //------------------------------------------REGISTER-MAP------------------------------------------//
 
-struct RegisterEncoding {
+struct RegisterEncoding 
+{
   string name;
   bool address[5];
   char saver_status;
@@ -67,7 +63,8 @@ struct RegisterEncoding {
   // 2 -None
 };
 
-map<string, RegisterEncoding> register_map = {
+map<string, RegisterEncoding> register_map = 
+{
 
     {"zero", {"x0", {0, 0, 0, 0, 0}, 2}}, {"ra", {"x1", {0, 0, 0, 0, 1}, 0}},
     {"sp", {"x2", {0, 0, 0, 1, 0}, 1}},   {"gp", {"x3", {0, 0, 0, 1, 1}, 2}},
@@ -88,15 +85,14 @@ map<string, RegisterEncoding> register_map = {
     {"t6", {"x31", {1, 1, 1, 1, 1}, 0}},
 };
 
-//--------------------------------------------------------------------------------------------------//
-//------------------------------------------IMM------------------------------------------//
-
-vector<bool> int_to_signed_bin_array(int a, int n) {
+vector<bool> int_to_signed_bin_array(int a, int n) 
+{
   // Check if the number is within the range
   int max_positive = (1 << (n - 1)) - 1;
   int min_negative = -(1 << (n - 1));
 
-  if (a > max_positive || a < min_negative) {
+  if (a > max_positive || a < min_negative) 
+  {
     // Handle the error case
     throw out_of_range("Number out of range for the given bit size");
   }
@@ -106,25 +102,27 @@ vector<bool> int_to_signed_bin_array(int a, int n) {
       (a < 0) ? static_cast<uint32_t>(-a) : static_cast<uint32_t>(a);
 
   // Handle negative numbers using two's complement
-  if (a < 0) {
+  if (a < 0) 
+  {
     value = ~value + 1;
   }
 
-  for (int i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) 
+  {
     bin_array[i] = (value & (1 << (n - 1 - i))) ? 1 : 0;
   }
 
   return bin_array;
 }
 
-vector<bool> slice_bool_array(const vector<bool> &bool_array, int start_index,
-                              int end_index) {
-
+vector<bool> slice_bool_array(const vector<bool> &bool_array, int start_index, int end_index) 
+{
   // Create a new vector to hold the sliced elements
   vector<bool> sliced_array;
 
   // Iterate over the desired range and copy elements to the new vector
-  for (int i = start_index; i < end_index + 1; ++i) {
+  for (int i = start_index; i < end_index + 1; ++i) 
+  {
     sliced_array.push_back(bool_array[i]);
   }
 
@@ -132,26 +130,31 @@ vector<bool> slice_bool_array(const vector<bool> &bool_array, int start_index,
 }
 //----------------------------------------------------------------------------------------------------------//
 //-----------------------------------------TOKENIZER------------------------------------------//
-vector<string> tokenize(const string &line, int line_number) {
+vector<string> tokenize(const string &line, int line_number) 
+{
   vector<string> tokens;
   stringstream ss(line);
   string token;
 
   // Tokenize based on spaces and colons
-  while (getline(ss, token, ' ')) {
+  while (getline(ss, token, ' ')) 
+  {
     // Remove leading and trailing whitespace
     token.erase(0, token.find_first_not_of(" \t\r\n"));
     token.erase(token.find_last_not_of(" \t\r\n") + 1);
 
     // Skip comments and blank lines
-    if (token.empty() || token[0] == '#') {
+    if (token.empty() || token[0] == '#' || token[0] == '/') 
+    {
       continue;
     }
 
     // Check if the token is a label
-    if (token.back() == ':') {
-      if (token.length() == 1) {
-        cerr << "Error: Invalid label" << endl;
+    if (token.back() == ':') 
+    {
+      if (token.length() == 1) 
+      {
+        throw runtime_error("Error: Invalid label");
         continue;
       }
       labels.insert({token.substr(0, token.length() - 1), line_number});
@@ -165,19 +168,22 @@ vector<string> tokenize(const string &line, int line_number) {
     string subToken;
     vector<vector<vector<string>>> subTokens;
 
-    while (getline(subss, subToken, ',')) {
+    while (getline(subss, subToken, ',')) 
+    {
       vector<vector<string>> subSubTokens;
       stringstream subSubss(subToken);
       string subSubToken;
 
       // Tokenize based on opening parentheses
-      while (getline(subSubss, subSubToken, '(')) {
+      while (getline(subSubss, subSubToken, '(')) 
+      {
         vector<string> subSubSubTokens;
         stringstream subSubSubss(subSubToken);
         string subSubSubToken;
 
         // Tokenize based on closing parentheses
-        while (getline(subSubSubss, subSubSubToken, ')')) {
+        while (getline(subSubSubss, subSubSubToken, ')')) 
+        {
           subSubSubTokens.push_back(subSubSubToken);
         }
         subSubTokens.push_back(subSubSubTokens);
@@ -186,9 +192,12 @@ vector<string> tokenize(const string &line, int line_number) {
     }
 
     // Flatten the nested vector structure
-    for (const auto &outerToken : subTokens) {
-      for (const auto &innerToken : outerToken) {
-        for (const auto &subInnerToken : innerToken) {
+    for (const auto &outerToken : subTokens) 
+    {
+      for (const auto &innerToken : outerToken) 
+      {
+        for (const auto &subInnerToken : innerToken) 
+        {
           tokens.push_back(subInnerToken);
         }
       }
@@ -201,7 +210,8 @@ vector<string> tokenize(const string &line, int line_number) {
 //----------------------------------------------------------------------------------------------------------//
 //------------------------------------------DECODER------------------------------------------//
 
-vector<bool> decode(vector<string> tokens, int line_number) {
+vector<bool> decode(vector<string> tokens, int line_number) 
+{
 
   vector<bool> decoded(32);
   static const regex integer_regex("^-?\\d+$");
@@ -216,292 +226,324 @@ vector<bool> decode(vector<string> tokens, int line_number) {
   // }
   InstructionType type = instruction_map[tokens[0]].type;
 
-  if (type == R_TYPE) {
+  if (type == R_TYPE) 
+  {
 
-    if (tokens.size() != 4) {
-      cerr << "Error: Invalid number of operands for R-type instruction '"
-           << tokens[0] << endl;
-      exit(0);
+    if (tokens.size() != 4) 
+    {
+      throw runtime_error("Error: Invalid number of operands for R-type instrucion " + to_string(tokens[0]));
     }
 
     if (register_map.find(tokens[1]) == register_map.end() ||
         register_map.find(tokens[2]) == register_map.end() ||
-        register_map.find(tokens[3]) == register_map.end()) {
-      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
-           << endl;
-      exit(0);
+        register_map.find(tokens[3]) == register_map.end()) 
+    {
+      throw runtime_error("Error: Invalid register operand for instruction '" + to_string(tokens[0]));
     }
 
     // funct7
-    for (int i = 0; i < 7; ++i) {
+    for (int i = 0; i < 7; ++i) 
+    {
       decoded[i] = instruction_map[tokens[0]].funct7[i];
     }
     // rs2
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
       decoded[i + 7] = register_map[tokens[3]].address[i];
     }
     // rs1
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
       decoded[i + 12] = register_map[tokens[2]].address[i];
     }
     // funct3
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) 
+    {
       decoded[i + 17] = instruction_map[tokens[0]].funct3[i];
     }
     // rd
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
       decoded[i + 20] = register_map[tokens[1]].address[i];
     }
     // opcode
-    for (int i = 0; i < 7; ++i) {
+    for (int i = 0; i < 7; ++i) 
+    {
       decoded[i + 25] = instruction_map[tokens[0]].opcode[i];
     }
 
-  } else if (type == I_TYPE) {
+  } 
+  else if (type == I_TYPE) 
+  {
 
-    if (tokens.size() != 4) {
-      cerr << "Error: Invalid number of operands for I-type instruction '"
-           << tokens[0] << endl;
-      exit(0);
+    if (tokens.size() != 4) 
+    {
+      throw runtime_error("Error: Invalid number of operands for I-type instruction: " + to_string(tokens[0]));
     }
 
-    if (tokens[0] == "lw") {
+    if (tokens[0] == "lw") 
+    {
       if (register_map.find(tokens[1]) == register_map.end() ||
-          register_map.find(tokens[3]) == register_map.end()) {
-        cerr << "Error: Invalid register operand for instruction '" << tokens[0]
-             << endl;
-        exit(0);
+          register_map.find(tokens[3]) == register_map.end()) 
+      {
+        throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
       }
     }
 
-    if (tokens[0] != "lw") {
+    if (tokens[0] != "lw") 
+    {
       if (register_map.find(tokens[1]) == register_map.end() ||
-          register_map.find(tokens[2]) == register_map.end()) {
-        cerr << "Error: Invalid register operand for instruction '" << tokens[0]
-             << endl;
-        exit(0);
+          register_map.find(tokens[2]) == register_map.end()) 
+      {
+        throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
       }
     }
 
-    if (tokens[0] == "lw") {
-      if (!regex_match(tokens[2], integer_regex)) {
-        cerr << "Error: Invalid immediate value '" << tokens[3]
-             << "' for instruction '" << tokens[0] << endl;
-        exit(0);
+    if (tokens[0] == "lw") 
+    {
+      if (!regex_match(tokens[2], integer_regex)) 
+      {
+        throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3) + " " + to_string(tokens[0]));
       }
     }
 
-    if (tokens[0] != "lw") {
-      if (!regex_match(tokens[3], integer_regex)) {
-        cerr << "Error: Invalid immediate value '" << tokens[3]
-             << "' for instruction '" << tokens[0] << endl;
-        exit(0);
+    if (tokens[0] != "lw") 
+    {
+      if (!regex_match(tokens[3], integer_regex)) 
+      {
+        throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3) + " " + to_string(tokens[0]));
       }
     }
 
-    if (tokens[0] == "lw") {
+    if (tokens[0] == "lw") 
+    {
       // imm
       vector<bool> imm = int_to_signed_bin_array(stoi(tokens[2]), 12);
       for (int i = 0; i < 12; ++i) {
         decoded[i] = imm[i];
       }
       // rs1
-      for (int i = 0; i < 5; ++i) {
+      for (int i = 0; i < 5; ++i) 
+      {
         decoded[i + 12] = register_map[tokens[3]].address[i];
       }
       // funct3
-      for (int i = 0; i < 3; ++i) {
+      for (int i = 0; i < 3; ++i) 
+      {
         decoded[i + 17] = instruction_map[tokens[0]].funct3[i];
       }
       // rd
-      for (int i = 0; i < 5; ++i) {
+      for (int i = 0; i < 5; ++i) 
+      {
         decoded[i + 20] = register_map[tokens[1]].address[i];
       }
       // opcode
-      for (int i = 0; i < 7; ++i) {
+      for (int i = 0; i < 7; ++i) 
+      {
         decoded[i + 25] = instruction_map[tokens[0]].opcode[i];
       }
-    } else {
+    } 
+    else 
+    {
       // imm
       vector<bool> imm = int_to_signed_bin_array(stoi(tokens[3]), 12);
-      for (int i = 0; i < 12; ++i) {
+      for (int i = 0; i < 12; ++i) 
+      {
         decoded[i] = imm[i];
       }
       // rs1
-      for (int i = 0; i < 5; ++i) {
+      for (int i = 0; i < 5; ++i) 
+      {
         decoded[i + 12] = register_map[tokens[2]].address[i];
       }
       // funct3
-      for (int i = 0; i < 3; ++i) {
+      for (int i = 0; i < 3; ++i) 
+      {
         decoded[i + 17] = instruction_map[tokens[0]].funct3[i];
       }
       // rd
-      for (int i = 0; i < 5; ++i) {
+      for (int i = 0; i < 5; ++i) 
+      {
         decoded[i + 20] = register_map[tokens[1]].address[i];
       }
       // opcode
-      for (int i = 0; i < 7; ++i) {
+      for (int i = 0; i < 7; ++i) 
+      {
         decoded[i + 25] = instruction_map[tokens[0]].opcode[i];
       }
     }
 
-  } else if (type == S_TYPE) {
+  } 
+  else if (type == S_TYPE) 
+  {
 
-    if (tokens.size() != 4) {
-      cerr << "Error: Invalid number of operands for I-type instruction '"
-           << tokens[0] << endl;
-      exit(0);
+    if (tokens.size() != 4) 
+    {
+      throw runtime_error("Error: Invalid number of operands for I-Type instruction: " + to_string(tokens[0]));
     }
 
     if (register_map.find(tokens[1]) == register_map.end() ||
-        register_map.find(tokens[3]) == register_map.end()) {
-      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
-           << endl;
-      exit(0);
+        register_map.find(tokens[3]) == register_map.end()) 
+    {
+      throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
     }
 
-    if (!regex_match(tokens[2], integer_regex)) {
-      cerr << "Error: Invalid immediate value '" << tokens[3]
-           << "' for instruction '" << tokens[0] << endl;
-      exit(0);
+    if (!regex_match(tokens[2], integer_regex)) 
+    {
+      throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3]) + " " + to_string(tokens[0]));
     }
 
     // imm[11:5]
     vector<bool> imm_11_5 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 12), 0, 6);
-    for (int i = 0; i < 7; ++i) {
+    for (int i = 0; i < 7; ++i) 
+    {
       decoded[i] = imm_11_5[i];
     }
     // rs2
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
       decoded[i + 7] = register_map[tokens[1]].address[i];
     }
     // rs1
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
       decoded[i + 12] = register_map[tokens[3]].address[i];
     }
     // funct3
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) 
+    {
       decoded[i + 17] = instruction_map[tokens[0]].funct3[i];
     }
     // imm[4:0]
     vector<bool> imm_4_0 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 12), 7, 11);
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
       decoded[i + 20] = imm_4_0[i];
     }
     // opcode
-    for (int i = 0; i < 7; ++i) {
+    for (int i = 0; i < 7; ++i) 
+    {
       decoded[i + 25] = instruction_map[tokens[0]].opcode[i];
     }
 
-  } else if (type == B_TYPE) {
+  } 
+  else if (type == B_TYPE) 
+  {
 
-    if (tokens.size() != 4) {
-      cerr << "Error: Invalid number of operands for B-type instruction '"
-           << tokens[0] << endl;
-      exit(0);
+    if (tokens.size() != 4) 
+    {
+        throw runtime_error("Error: Invalid number of operands for B-Type instruction: " + to_string(tokens[0]));
     }
 
-    for (auto &label : labels) {
-      if (tokens[3] == label.first) {
+    for (auto &label : labels) 
+    {
+      if (tokens[3] == label.first) 
+      {
         tokens[3] = to_string(line_number - label.second);
         cerr << tokens[3] << endl;
       }
     }
-    if (register_map.find(tokens[1]) == register_map.end()) {
-      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
-           << endl;
-      exit(0);
+    if (register_map.find(tokens[1]) == register_map.end()) 
+    {
+      throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
     }
 
-    if (!regex_match(tokens[3], integer_regex)) {
-      cerr << "Error: Invalid immediate value '" << tokens[3]
-           << "' for instruction '" << tokens[0] << endl;
-      exit(0);
+    if (!regex_match(tokens[3], integer_regex)) 
+    {
+      throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3) + " " + to_string(tokens[0]));
     }
 
     // imm[12]
     vector<bool> imm_12 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[3]), 16), 3, 3);
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 1; ++i) 
+    {
       decoded[i] = imm_12[i];
     }
     // imm[10:5]
     vector<bool> imm_10_5 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[3]), 16), 5, 10);
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 6; ++i) 
+    {
       decoded[i + 1] = imm_10_5[i];
     }
     // rs2
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
       decoded[i + 7] = register_map[tokens[2]].address[i];
     }
     // rs1
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
       decoded[i + 12] = register_map[tokens[1]].address[i];
     }
     // funct3
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) 
+    {
       decoded[i + 17] = instruction_map[tokens[0]].funct3[i];
     }
     // imm[4:1]
     vector<bool> imm_4_1 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[3]), 16), 11, 14);
-    for (int i = 0; i < imm_4_1.size(); ++i) {
+    for (int i = 0; i < imm_4_1.size(); ++i) 
+    {
       decoded[i + 20] = imm_4_1[i];
     }
     // imm[11]
     vector<bool> imm_11 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[3]), 16), 4, 4);
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 1; ++i) 
+    {
       decoded[i + 24] = imm_11[i];
     }
     // opcode
-    for (int i = 0; i < 7; ++i) {
+    for (int i = 0; i < 7; ++i) 
+    {
       decoded[i + 25] = instruction_map[tokens[0]].opcode[i];
     }
 
-  } else if (type == U_TYPE) {
+  } 
+  else if (type == U_TYPE) 
+  {
 
-    if (tokens.size() != 3) {
-      cerr << "Error: Invalid number of operands for U-type instruction '"
-           << tokens[0] << endl;
-      exit(0);
+    if (tokens.size() != 3) 
+    {
+      throw runtime_error("Error: Invalid number of operands for U type: " + to_string(tokens[0]));
     }
 
-    if (register_map.find(tokens[1]) == register_map.end()) {
-      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
-           << endl;
-      exit(0);
+    if (register_map.find(tokens[1]) == register_map.end()) 
+    {
+      throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
     }
 
-    if (!regex_match(tokens[2], integer_regex)) {
-      cerr << "Error: Invalid immediate value '" << tokens[2]
-           << "' for instruction '" << tokens[0] << endl;
-      exit(0);
+    if (!regex_match(tokens[2], integer_regex)) 
+    {
+      throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3) + " " + to_string(tokens[0]));
     }
 
     // imm[31:12]
     vector<bool> imm_31_12 =
         slice_bool_array(int_to_signed_bin_array(stoi(tokens[2]), 32), 0, 19);
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 20; ++i) 
+    {
       decoded[i] = imm_31_12[i];
     }
     // rd
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
       decoded[i + 20] = register_map[tokens[1]].address[i];
     }
     // opcode
-    for (int i = 0; i < 7; ++i) {
+    for (int i = 0; i < 7; ++i) 
+    {
       decoded[i + 25] = instruction_map[tokens[0]].opcode[i];
     }
 
   } else if (type == J_TYPE) {
     if (tokens.size() != 3) {
-      cerr << "Error: Invalid number of operands for J-type instruction '"
-           << tokens[0] << endl;
-      exit(0);
+      throw runtime_error("Error: Invalid number of operands for instruction :" + to_string(tokens[0]));
     }
 
     for (auto &label : labels) {
@@ -510,9 +552,7 @@ vector<bool> decode(vector<string> tokens, int line_number) {
       }
     }
     if (register_map.find(tokens[1]) == register_map.end()) {
-      cerr << "Error: Invalid register operand for instruction '" << tokens[0]
-           << endl;
-      exit(0);
+      throw runtime_error("Error: Invalid number of operands for instruction :" + to_string(tokens[0]));
     }
 
     // if (!regex_match(tokens[2], integer_regex)) {
@@ -556,8 +596,7 @@ vector<bool> decode(vector<string> tokens, int line_number) {
       decoded[i + 25] = instruction_map[tokens[0]].opcode[i];
     }
   } else {
-    cout << "Invalid instruction type" << endl;
-    exit(0);
+      throw runtime_error("Error: Invalid instruction");
   }
 
   return decoded;
@@ -566,33 +605,34 @@ vector<bool> decode(vector<string> tokens, int line_number) {
 
 //-------------------------------------------FILE
 // READER-------------------------------------------//
-void read_file(const string &file_name) {
-  ifstream file(file_name);
-  string line;
 
-  if (!file.is_open()) {
-    cerr << "Error: Unable to open file '" << file_name << "'" << endl;
-    return;
-  }
+void asseble(const string& input_file_name, const string& output_file_name) 
+{
+    ifstream input_file(input_file_name);
+    ofstream output_file(output_file_name);
+    string line;
 
-  int line_number = 1;
-  while (getline(file, line)) {
-    line_number++;
-    vector<string> tokens = tokenize(line, line_number);
-    vector<bool> decoded = decode(tokens, line_number);
-    for (int i = 0; i < 32; ++i) {
-      cout << decoded[i];
+    if (!input_file.is_open()) {
+        throw runtime_error("Error: Unable to open input file :" + input_file_name);
     }
-    cout << endl;
-  }
-  file.close();
+
+    if (!output_file.is_open()) {
+      throw runtime_error("Error: Unable to open output file :" + output_file_name);
+    }
+
+    int line_number = 1;
+    while (getline(input_file, line)) {
+        vector<string> tokens = tokenize(line, line_number);
+        vector<bool> decoded = decode(tokens, line_number);
+        for (int i = 0; i < 32; ++i) {
+            output_file << decoded[i];
+        }
+        output_file << endl;
+        line_number++;
+    }
+
+    input_file.close();
+    output_file.close();
 }
 
 //-------------------------------------------------MAIN-------------------------------------------------//
-
-int main() {
-  string name;
-  cin >> name;
-  read_file(name);
-  return 0;
-}

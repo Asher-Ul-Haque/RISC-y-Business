@@ -26,7 +26,7 @@ class TextEditorUtilities
     bool isEdited = false;
 
     sf::Clock scrollClock;
-    float movementSpeed = 1.0f;
+    float movementSpeed = 1.5f;
     sf::Vector2f movement;
     
 	unsigned char previousCursorLine = 0;

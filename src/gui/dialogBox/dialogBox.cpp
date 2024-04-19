@@ -13,9 +13,12 @@ DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN)
     dropdown = DROPDOWN;
 }
 
-std::string DialogBox::run(std::string TITLE)
+std::string DialogBox::run(std::string TITLE, std::string MESSAGE)
 {
     createWindow(TITLE);
+    text.setFillColor(sf::Color::Red);
+    text.setString(MESSAGE);
+    text.setPosition((screenWidth - text.getGlobalBounds().width) / 2, screenHeight / 2 + 30);
     while (window.isOpen())
     {
         update();
@@ -24,7 +27,7 @@ std::string DialogBox::run(std::string TITLE)
         {
             textBox.render();
         }
-        if (dropdown)
+        else if (dropdown)
         {
             dropDown.render();
         }
@@ -177,8 +180,11 @@ void DialogBox::update()
 
 void DialogBox::render()
 {
+    if (!dropdown && !textbox)
+    {
+        window.draw(text);
+    }
     window.draw(logoSprite);
-    window.draw(text);
     window.draw(okSprite);
     window.draw(cancelSprite);
     window.draw(divider);
@@ -207,7 +213,7 @@ void DialogBox::createWindow(std::string TITLE)
     font.loadFromFile(fontDirectoryPath + "JetBrainsMono-Bold.ttf");
     text.setFont(font);
     text.setCharacterSize(24);
-    text.setFillColor(sf::Color::Black);
+    text.setFillColor(sf::Color::Red);
     // - - - - - - - - -
     logoTexture.loadFromFile(textureDirectoryPath + "logo.png");
     logoSprite.setTexture(logoTexture);

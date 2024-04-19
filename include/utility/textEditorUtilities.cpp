@@ -23,6 +23,7 @@ TextEditorUtilities::TextEditorUtilities(sf::RenderWindow* WINDOW, unsigned shor
 void TextEditorUtilities::scrollUp()
 {
 	movement.y -= movementSpeed * scrollClock.restart().asSeconds();
+	movementSpeed = std::min(3.0f, movementSpeed + 0.1f);
 	if (movement.y < -movementSpeed)
 	{
 		movement.y = -movementSpeed;
@@ -33,6 +34,7 @@ void TextEditorUtilities::scrollUp()
 void TextEditorUtilities::scrollDown()
 {
 	movement.y += movementSpeed * scrollClock.restart().asSeconds();
+	movementSpeed = std::min(3.0f, movementSpeed + 0.1f);
 	if (movement.y > movementSpeed)
 	{
 		movement.y = movementSpeed;
@@ -46,18 +48,22 @@ void TextEditorUtilities::scrollLeft()
 	{
 		return;
 	}
+	int moving = movementSpeed * scrollClock.restart().asSeconds();
+	movementSpeed = std::min(3.0f, movementSpeed + 0.1f);
 	for (int i = 0; i < textContent.size(); ++i)
 	{
-		textContent[i].move(-movementSpeed * scrollClock.restart().asSeconds(), 0);
+		textContent[i].move(-moving, 0);
 	}
 	setCursorPosition();
 }
 
 void TextEditorUtilities::scrollRight()
 {
+	int moving = movementSpeed * scrollClock.restart().asSeconds();
+	movementSpeed = std::min(3.0f, movementSpeed + 0.1f);
 	for (int i = 0; i < textContent.size(); ++i)
 	{
-		textContent[i].move(movementSpeed * scrollClock.restart().asSeconds(), 0);
+		textContent[i].move(moving, 0);
 	}
 	setCursorPosition();
 }
@@ -91,6 +97,20 @@ void TextEditorUtilities::render()
 		window->draw(textContent[i]);
 		window->draw(lineNumbers[i]);
 	}
+	if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Down)&& !sf::Keyboard::isKeyPressed(sf::Keyboard::PageDown)&& !sf::Keyboard::isKeyPressed(sf::Keyboard::PageUp)) 
+	{
+       float magnitude = std::sqrt(movement.y * movement.y);
+       if (magnitude > 0.1f) 
+       {
+           float decelerationStep = std::min(movementSpeed * scrollClock.restart().asSeconds(), movementSpeed);
+           movement.y -= (movement.y / magnitude) * decelerationStep;
+       } 
+       else 
+       {
+           movement.y = 0.0f;
+           movementSpeed = 1.0f;
+       }
+    }
 }
 
 void TextEditorUtilities::setFilePath(std::string& PATH)
@@ -426,7 +446,8 @@ void TextEditorUtilities::updateSnapshot()
 
 void TextEditorUtilities::update(const sf::Event* EVENT)
 {
-	status = "CursorLine:\t" + std::to_string(cursorLine) + "\t\tCursorPosition:\t" + std::to_string(cursorPos) + "\t\tTotal:\t" + std::to_string(textContent.size()) + "\n";
+	status = "CursorLine:\t" + std::to_string(cursorLine) + "\t\tCursorPosition:\t" + std::to_string(cursorPos) + "\t\tTotal:\t" + std::to_string(textContent.size()) + "\t\tSave Status:\t";
+	status += isEdited ? "Unsaved" : "Saved";
 	for (auto i : textContent)
 	{
 		i.setFillColor(textColor);
@@ -644,11 +665,10 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 					{
 						cursorLine++;
 						cursorPos = 0;
-						deleteChar();
 					}
-					else
+					deleteChar();
+					if (cursorPos > 0)
 					{
-						deleteChar();
 						--cursorPos;
 					}
 					
@@ -669,20 +689,6 @@ void TextEditorUtilities::update(const sf::Event* EVENT)
 		default:
 			break;
 	}
-
-    if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Down)&& !sf::Keyboard::isKeyPressed(sf::Keyboard::PageDown)&& !sf::Keyboard::isKeyPressed(sf::Keyboard::PageUp)) 
-	{
-       float magnitude = std::sqrt(movement.y * movement.y);
-       if (magnitude > 0.1f) 
-       {
-           float decelerationStep = std::min(movementSpeed * scrollClock.restart().asSeconds(), movementSpeed);
-           movement.y -= (movement.y / magnitude) * decelerationStep;
-       } 
-       else 
-       {
-           movement.y = 0.0f;
-       }
-    }
 }
 
 void TextEditorUtilities::setSpecialKeyPress()
@@ -711,5 +717,9 @@ void TextEditorUtilities::resize()
 	{
 		textContent[i].setCharacterSize(size);
 		lineNumbers[i].setCharacterSize(size);
+		textContent[i].setPosition(sf::Vector2f(textContent[i].getPosition().x, (i * size) + 60));
+		lineNumbers[i].setPosition(sf::Vector2f(10, (i * size) + 60));
 	}
+	
+	setCursorPosition();
 }

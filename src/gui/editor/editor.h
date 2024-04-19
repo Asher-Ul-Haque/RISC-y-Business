@@ -5,6 +5,7 @@
 #include "../../../include/utility/mouseUtilities.h"
 #include "../../../include/utility/animationUtilities.h"
 #include "../../../include/utility/textEditorUtilities.h"
+#include "../dialogBox/dialogBox.h"
 // - - - - - - - -
 
 class IDE 
@@ -12,8 +13,10 @@ class IDE
 
     int screenWidth = sf::VideoMode::getDesktopMode().width;
     int screenHeight = sf::VideoMode::getDesktopMode().height;
-    sf::Color colors[2] = {sf::Color(239, 239, 239, 255), sf::Color(0, 0, 0)};
-    bool backgroundColor = 1;
+    sf::Color colors[2] = {sf::Color(239, 239, 239, 255), sf::Color(30, 31, 34)};
+    bool backgroundColor = 0;
+
+    DialogBox dialogBox;
 
     sf::RenderWindow window;
     TextEditorUtilities textEditor;

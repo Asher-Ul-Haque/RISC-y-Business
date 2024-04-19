@@ -81,7 +81,7 @@ void StartScreen::update()
                             case true:
                                 clickSound.playSoundEffect();
                                 dialogBox.toggleTextbox(false);
-                                temp = dialogBox.run("Open Project");
+                                temp = dialogBox.run("Open Project", "");
                                 if (temp != "")
                                 {
                                     ide.setProject(temp);
@@ -99,7 +99,7 @@ void StartScreen::update()
                             case true:
                                 clickSound.playSoundEffect();
                                 dialogBox.toggleTextbox(true);
-                                temp = dialogBox.run("Create Project");
+                                temp = dialogBox.run("Create Project", "");
                                 if (temp != "")
                                 {
                                     ide.setProject(temp);
@@ -132,7 +132,7 @@ void StartScreen::update()
                     case sf::Keyboard::O:
                         clickSound.playSoundEffect();
                         dialogBox.toggleTextbox(false);
-                        temp = dialogBox.run("Open Project");
+                        temp = dialogBox.run("Open Project", "");
                         if (temp != "")
                         {
                             ide.setProject(temp);
@@ -144,7 +144,7 @@ void StartScreen::update()
                     case sf::Keyboard::N:
                         clickSound.playSoundEffect();
                         dialogBox.toggleTextbox(true);
-                        temp = dialogBox.run("Create Project");
+                        temp = dialogBox.run("Create Project", "");
                         if (temp != "")
                         {
                             ide.setProject(temp);

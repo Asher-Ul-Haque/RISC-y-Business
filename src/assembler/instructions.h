@@ -1,63 +1,25 @@
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 
-#include "../register/registers.h"
+#include "bits/stdc++.h"
+#include "iostream"
+#include "sstream"
+#include "string"
+#include <fstream>
+#include <map>
+#include <stdexcept>
+#include <string>
+#include <vector>
+using namespace std;
 
-typedef enum 
-{
-  R_TYPE,
-  I_TYPE,
-  S_TYPE,
-  B_TYPE,
-  U_TYPE,
-  J_TYPE,
-  COMMENT
-} InstructionType;
+vector<bool> int_to_signed_bin_array(int a, int n);
 
-typedef struct 
-{
-  char *name;
-  InstructionType type;
-  Bit bits[7];
-} Opcode;
+vector<bool> slice_bool_array(const vector<bool> &bool_array, int start_index, int end_index);
 
-typedef struct 
-{
-  int number;
-  Bit bits[12];
-} Immediate;
+vector<string> tokenize(const string &line, int line_number);
 
-typedef struct 
-{
-  char *name;
-  bool isPresent;
-} Label;
+vector<bool> decode(vector<string> tokens, int line_number);
 
-typedef struct 
-{
-  Opcode opcode;
-  Register *registers;
-  Label label;
-  Immediate *immediates;
-  unsigned int position;
-  Bit funct3[3];
-  Bit funct7[7];
-    unsigned short elementCount[7];
-} Instruction;
+void asseble(const string& input_file_name, const string& output_file_name); 
 
-typedef struct 
-{
-    Instruction *instructions;
-    unsigned int size;
-
-} InputFile;
-
-// - - - - - - - - - - -
-
-char *readFile(const char *RELATIVE_FILE_PATH);
-
-Instruction *assignInstruction(char *ASSEMBLY_CODE);
-
-void writeFile(InputFile *INPUT);
-
-#endif //  INSTRUCTIONS_H
+#endif //INSUTRCTIONS_H

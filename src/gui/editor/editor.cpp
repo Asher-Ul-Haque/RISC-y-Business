@@ -2,10 +2,13 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include "../../assembler/instructions.h"
+
 
 IDE::IDE() 
     : soundEffects(soundDirectoryPath + "click.wav", 50),
-    animation([this](){render();})
+    animation([this](){render();}),
+    dialogBox(false, false)
 {
     if (!font.loadFromFile(fontDirectoryPath + "JetBrainsMono-Light.ttf"))
     {
@@ -144,6 +147,7 @@ void IDE::update()
                     case sf::Keyboard::Escape:
                         soundEffects.setPath(soundDirectoryPath + "failure.wav");
                         soundEffects.playSoundEffect();
+                        dialogBox.run("Quit?", "Are you sure you want to quit");
                         window.close();
                         break;
 
@@ -171,6 +175,21 @@ void IDE::update()
 
                                         case 0:
                                             switchColors();
+                                            break;
+
+                                        case 1:
+                                            try
+                                            {
+                                                asseble(projectDirectoryPath + "/" + projectFiles[0], projectDirectoryPath + "/" + projectFiles[1]);
+                                                textEditor.writeToFile();
+                                                currentFilePath = projectDirectoryPath + "/" + projectFiles[1];
+                                                textEditor.setFilePath(currentFilePath);
+                                                textEditor.readFromFile();
+                                            }
+                                            catch (const std::exception& e)
+                                            {
+                                                dialogBox.run("Assemly error", e.what());
+                                            }
                                             break;
 
                                         default:
@@ -349,7 +368,6 @@ void IDE::setProject(std::string PROJECTPATH)
 void IDE::switchColors()
 {
     backgroundColor = !backgroundColor;
-    std::cout << "New color Scheme: " + std::to_string(backgroundColor) << std::endl;
     bottomBar.setFillColor(colors[backgroundColor]);
     statusText.setFillColor(colors[!backgroundColor]);
 }

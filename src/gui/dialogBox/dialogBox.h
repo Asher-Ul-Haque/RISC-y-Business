@@ -10,7 +10,7 @@ class DialogBox
 {
     public:
         DialogBox(bool TEXTBOX, bool DROPDOWN);
-        std::string run(std::string TITLE);
+        std::string run(std::string TITLE, std::string MESSAGE);
         void toggleTextbox(bool TOGGLE);
 
     private:
