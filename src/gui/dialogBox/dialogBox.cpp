@@ -11,13 +11,37 @@ DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN)
 {
     textbox = TEXTBOX;
     dropdown = DROPDOWN;
+    std::cout << "Hello WOrld" << std::endl;
 }
 
 std::string DialogBox::run(std::string TITLE, std::string MESSAGE)
 {
     createWindow(TITLE);
     text.setFillColor(sf::Color::Red);
-    text.setString(MESSAGE);
+    std::string result;
+    int count = 0;
+    int lastSpace = 0;
+
+    for (int i = 0; i < MESSAGE.length(); ++i) 
+    {
+        char ch = MESSAGE[i];
+        result += ch;
+        count++;
+
+        if (ch == ' ') 
+        {
+            lastSpace = i; 
+        }
+
+        if (count == 40 && lastSpace != -1) 
+        {
+            result[lastSpace] = '\n';
+            count = i - lastSpace;
+            lastSpace = -1;
+        }
+    }
+
+    text.setString(result);
     text.setPosition((screenWidth - text.getGlobalBounds().width) / 2, screenHeight / 2 + 30);
     while (window.isOpen())
     {

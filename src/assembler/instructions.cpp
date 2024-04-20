@@ -144,7 +144,7 @@ vector<string> tokenize(const string &line, int line_number)
     token.erase(token.find_last_not_of(" \t\r\n") + 1);
 
     // Skip comments and blank lines
-    if (token.empty() || token[0] == '#' || token[0] == '/') 
+    if (token.empty() || token[0] == '/' || token[0] == '\n') 
     {
       continue;
     }
@@ -231,16 +231,15 @@ vector<bool> decode(vector<string> tokens, int line_number)
 
     if (tokens.size() != 4) 
     {
-      throw runtime_error("Error: Invalid number of operands for R-type instrucion " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid number of operands for R-type instrucion " + (tokens[0]));
     }
 
     if (register_map.find(tokens[1]) == register_map.end() ||
         register_map.find(tokens[2]) == register_map.end() ||
         register_map.find(tokens[3]) == register_map.end()) 
     {
-      throw runtime_error("Error: Invalid register operand for instruction '" + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid register operand for instruction '" + (tokens[0]));
     }
-
     // funct7
     for (int i = 0; i < 7; ++i) 
     {
@@ -278,7 +277,7 @@ vector<bool> decode(vector<string> tokens, int line_number)
 
     if (tokens.size() != 4) 
     {
-      throw runtime_error("Error: Invalid number of operands for I-type instruction: " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid number of operands for I-type instruction: " + (tokens[0]));
     }
 
     if (tokens[0] == "lw") 
@@ -286,7 +285,7 @@ vector<bool> decode(vector<string> tokens, int line_number)
       if (register_map.find(tokens[1]) == register_map.end() ||
           register_map.find(tokens[3]) == register_map.end()) 
       {
-        throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
+        throw runtime_error("Error: Invalid register operand for instruction: " + (tokens[0]));
       }
     }
 
@@ -295,7 +294,7 @@ vector<bool> decode(vector<string> tokens, int line_number)
       if (register_map.find(tokens[1]) == register_map.end() ||
           register_map.find(tokens[2]) == register_map.end()) 
       {
-        throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
+        throw runtime_error("Error: Invalid register operand for instruction: " + (tokens[0]));
       }
     }
 
@@ -303,7 +302,7 @@ vector<bool> decode(vector<string> tokens, int line_number)
     {
       if (!regex_match(tokens[2], integer_regex)) 
       {
-        throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3) + " " + to_string(tokens[0]));
+        throw runtime_error("Error: Invalid immediate value: " + (tokens[3]) + " " + (tokens[0]));
       }
     }
 
@@ -311,7 +310,7 @@ vector<bool> decode(vector<string> tokens, int line_number)
     {
       if (!regex_match(tokens[3], integer_regex)) 
       {
-        throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3) + " " + to_string(tokens[0]));
+        throw runtime_error("Error: Invalid immediate value: " + (tokens[3]) + " " + (tokens[0]));
       }
     }
 
@@ -379,18 +378,18 @@ vector<bool> decode(vector<string> tokens, int line_number)
 
     if (tokens.size() != 4) 
     {
-      throw runtime_error("Error: Invalid number of operands for I-Type instruction: " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid number of operands for I-Type instruction: " + (tokens[0]));
     }
 
     if (register_map.find(tokens[1]) == register_map.end() ||
         register_map.find(tokens[3]) == register_map.end()) 
     {
-      throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid register operand for instruction: " + (tokens[0]));
     }
 
     if (!regex_match(tokens[2], integer_regex)) 
     {
-      throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3]) + " " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid immediate value: " + (tokens[3]) + " " + (tokens[0]));
     }
 
     // imm[11:5]
@@ -434,25 +433,25 @@ vector<bool> decode(vector<string> tokens, int line_number)
 
     if (tokens.size() != 4) 
     {
-        throw runtime_error("Error: Invalid number of operands for B-Type instruction: " + to_string(tokens[0]));
+        throw runtime_error("Error: Invalid number of operands for B-Type instruction: " + (tokens[0]));
     }
 
     for (auto &label : labels) 
     {
       if (tokens[3] == label.first) 
       {
-        tokens[3] = to_string(line_number - label.second);
+        tokens[3] = (line_number - label.second);
         cerr << tokens[3] << endl;
       }
     }
     if (register_map.find(tokens[1]) == register_map.end()) 
     {
-      throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid register operand for instruction: " + (tokens[0]));
     }
 
     if (!regex_match(tokens[3], integer_regex)) 
     {
-      throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3) + " " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid immediate value: " + (tokens[3]) + " " + (tokens[0]));
     }
 
     // imm[12]
@@ -510,17 +509,17 @@ vector<bool> decode(vector<string> tokens, int line_number)
 
     if (tokens.size() != 3) 
     {
-      throw runtime_error("Error: Invalid number of operands for U type: " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid number of operands for U type: " + (tokens[0]));
     }
 
     if (register_map.find(tokens[1]) == register_map.end()) 
     {
-      throw runtime_error("Error: Invalid register operand for instruction: " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid register operand for instruction: " + (tokens[0]));
     }
 
     if (!regex_match(tokens[2], integer_regex)) 
     {
-      throw runtime_error("Error: Invalid immediate value: " + to_string(tokens[3) + " " + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid immediate value: " + (tokens[3]) + " " + (tokens[0]));
     }
 
     // imm[31:12]
@@ -543,16 +542,16 @@ vector<bool> decode(vector<string> tokens, int line_number)
 
   } else if (type == J_TYPE) {
     if (tokens.size() != 3) {
-      throw runtime_error("Error: Invalid number of operands for instruction :" + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid number of operands for instruction :" + (tokens[0]));
     }
 
     for (auto &label : labels) {
       if (tokens[2] == label.first) {
-        tokens[2] = to_string(line_number - label.second);
+        tokens[2] = (line_number - label.second);
       }
     }
     if (register_map.find(tokens[1]) == register_map.end()) {
-      throw runtime_error("Error: Invalid number of operands for instruction :" + to_string(tokens[0]));
+      throw runtime_error("Error: Invalid number of operands for instruction :" + (tokens[0]));
     }
 
     // if (!regex_match(tokens[2], integer_regex)) {

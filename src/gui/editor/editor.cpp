@@ -23,7 +23,7 @@ IDE::IDE()
         std::cout << "Error loading " << hoverBoxTexturePath << std::endl;
     }
     hoverBox.setTexture(hoverBoxTexture);
-    hoverBoxTexture.setSmooth(true);
+    //hoverBoxTexture.setSmooth(true);
     hoverText.setFont(font);
     hoverText.setCharacterSize(12);
     hoverText.setFillColor(sf::Color::White);
@@ -57,7 +57,7 @@ IDE::IDE()
     lineNumbers.setFillColor(sf::Color(135, 136, 140));
     lineNumbers.setPosition(45, 50);
     lineNumbers.setOutlineColor(sf::Color(135, 136, 140));
-    lineNumbers.setOutlineThickness(2);
+    lineNumbers.setOutlineThickness(0.5f);
 
     bottomBar.setSize(sf::Vector2f(screenWidth, 20));
     bottomBar.setPosition(0, screenHeight - 40);
@@ -177,7 +177,7 @@ void IDE::update()
                                             switchColors();
                                             break;
 
-                                        case 1:
+                                        case 3:
                                             try
                                             {
                                                 asseble(projectDirectoryPath + "/" + projectFiles[0], projectDirectoryPath + "/" + projectFiles[1]);
@@ -188,6 +188,7 @@ void IDE::update()
                                             }
                                             catch (const std::exception& e)
                                             {
+                                                //std::cout << "Oopsie" << std::endl;
                                                 dialogBox.run("Assemly error", e.what());
                                             }
                                             break;
