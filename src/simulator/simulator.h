@@ -38,6 +38,8 @@ void printMemory(const Simulator* SIMULATOR);
 
 void runSimulation(Simulator* SIMULATOR);
 
+bool runNextInstruction(Simulator* SIMULATOR);
+
 void deinitializeSimulator(Simulator* SIMULATOR);
 
 // - - - - - - - - - - - -

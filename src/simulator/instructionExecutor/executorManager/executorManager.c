@@ -2,14 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* PROGRAM_COUNTER)
+ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* PROGRAM_COUNTER, Logger* LOGGER)
 {
     //Allocate memory for execution manager
     ExecutorManager* executorManager = (ExecutorManager*)malloc(sizeof(ExecutorManager));
     if (executorManager == NULL)
     {
         perror("Error: failed to create execution manager");
-        exit(EXIT_FAILURE);
     }
 
     //Assign values taken from simulator
@@ -22,43 +21,39 @@ ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile*
     if (executorManager->rTypeExecutor == NULL)
     {
         perror("Error: failed to attach R Type executor");
-        exit(EXIT_FAILURE);
     }
 
     executorManager->iTypeExecutor = initialiseITypeExecutor(executorManager->memoryManager, executorManager->registerFile, executorManager->programCounter);
     if (executorManager->iTypeExecutor == NULL)
     {
         perror("Error: failed to attach S Type executor");
-        exit(EXIT_FAILURE);
     }
 
     executorManager->sTypeExecutor = initialiseSTypeExecutor(executorManager->memoryManager, executorManager->registerFile);
     if (executorManager->sTypeExecutor == NULL)
     {
         perror("Error: failed to attach S Type executor");
-        exit(EXIT_FAILURE);
     }
 
     executorManager->bTypeExecutor = initialiseBTypeExecutor(executorManager->memoryManager, executorManager->registerFile, executorManager->programCounter);
     if (executorManager->bTypeExecutor == NULL)
     {
         perror("Error: failed to attach B Type executor");
-        exit(EXIT_FAILURE);
     }
 
     executorManager->uTypeExecutor = initialiseUTypeExecutor(executorManager->memoryManager, executorManager->registerFile, executorManager->programCounter);
     if (executorManager->uTypeExecutor == NULL)
     {
         perror("Error: failed to attach U Type executor");
-        exit(EXIT_FAILURE);
     }
 
     executorManager->jTypeExecutor = initialiseJTypeExecutor(executorManager->memoryManager, executorManager->registerFile, executorManager->programCounter);
     if (executorManager->jTypeExecutor == NULL)
     {
         perror("Error: failed to attach J Type executor");
-        exit(EXIT_FAILURE);
     }
+
+    executorManager->logger = LOGGER;
 
     return executorManager;
 }
@@ -70,7 +65,6 @@ void destroyExecutorManager(ExecutorManager * EXECUTION_MANAGER)
     if (EXECUTION_MANAGER == NULL)
     {
         perror("Error: failed to destroy execution manager");
-        exit(EXIT_FAILURE);
     }
 
     //Destroy all types of execution managers
@@ -90,7 +84,7 @@ void destroyExecutorManager(ExecutorManager * EXECUTION_MANAGER)
 void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCTION_SIZE])
 { 
     //Print the opcode
-    printf("\nMessasge from findAndExecute\n");
+    //printf("\nMessasge from findAndExecute\n");
     //Revese the instruction array interely
     // for (int i = 0; i < INSTRUCTION_SIZE/2; i++)
     // {
@@ -99,32 +93,32 @@ void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCT
     //     INSTRUCTION[INSTRUCTION_SIZE - i - 1] = temp;
     // }
     unsigned char opcode = toDecimal(INSTRUCTION, OPCODE_START, OPCODE_END, false);
-    printf("Opcode: %d\n", opcode);
+    //printf("Opcode: %d\n", opcode);
     switch(opcode)
     {
         case R_TYPE:
-            printf("R Type\n");
+            //printf("R Type\n");
             executeRTypeInstruction(EXECUTION_MANAGER->rTypeExecutor, INSTRUCTION);
             *EXECUTION_MANAGER->programCounter += 4;
             break;
         
         case I_TYPE_LW:
-            printf("I Type LW\n");
+            //printf("I Type LW\n");
             executeITypeLWInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
             *EXECUTION_MANAGER->programCounter += 4;
             break;
         case I_TYPE_DEFAULT:
-            printf("I Type Default\n");
+            //printf("I Type Default\n");
             executeITypeDefaultInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
             *EXECUTION_MANAGER->programCounter += 4;
             break;
         case I_TYPE_JUMP:
-            printf("I Type Jump\n");
+            //printf("I Type Jump\n");
             executeITypeJumpInstruction(EXECUTION_MANAGER->iTypeExecutor, INSTRUCTION);
             break;
 
         case S_TYPE:
-            printf("S Type\n");
+            //printf("S Type\n");
             executeSTypeInstruction(EXECUTION_MANAGER->sTypeExecutor, INSTRUCTION);
             *EXECUTION_MANAGER->programCounter+= 4;
             break;
@@ -145,11 +139,10 @@ void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCT
             break;
     
         case HALT:
-            printf("Execution Complete\n");
-            exit(EXIT_SUCCESS);
+            logMessage(EXECUTION_MANAGER->logger, "\n- - - - - - - - - - - - \nExecution Complete\n");
+            
         default:
             perror("Error: unknown opcode");
-            exit(EXIT_FAILURE);
     }
 }
 

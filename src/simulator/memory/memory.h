@@ -36,6 +36,7 @@ typedef struct
     MemoryCell stackMemory[STACK_MEMORY];
     MemoryCell dataMemory[DATA_MEMORY];
     Register* stackPointer;
+    Logger* logger;
 } Memory;
 
 /*
@@ -45,7 +46,7 @@ Deallocation will be done by freeing the whole memory.
 */
 
 
-Memory* allocateMemory(Register* STACK_POINTER);
+Memory* allocateMemory(Register* STACK_POINTER, Logger* LOGGER);
 
 void deallocateMemory(Memory* MEMORY);
 
@@ -57,7 +58,7 @@ MemoryCell* getProgramMemory(Memory* MEMORY);
 
 MemoryCell* getMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE]);
 
-void printMemoryCell(const MemoryCell *MEMORYCELL);
+void printMemoryCell(const MemoryCell *MEMORYCELL, Logger* LOGGER);
 
 //JUST_SOMEBODY: Handling stack memory- - - - - - - - -
 

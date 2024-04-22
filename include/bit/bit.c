@@ -10,7 +10,6 @@ Bit* makeBit(bool VALUE)
     if (newBit == NULL)
     {
         perror("Error allocating memory for Bit");
-        exit(EXIT_FAILURE);
     }
     newBit->value = VALUE;
     return newBit;
@@ -24,7 +23,6 @@ Bit* createBitArray(unsigned char SIZE)
     if (SIZE > 32 || SIZE < 1)
     {
         perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
-        exit(EXIT_FAILURE);
     }
     
     //Allocate memory for the array
@@ -32,7 +30,6 @@ Bit* createBitArray(unsigned char SIZE)
     if (newArray == NULL)
     {
         perror("Error allocating memory for Bit array");
-        exit(EXIT_FAILURE);
     }
 
     //Intialise every bit to 0
@@ -109,7 +106,6 @@ Bit* bitwiseOR(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned char SIZ
     if (SIZE > 32 || SIZE < 1)
     {
         perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
-        exit(EXIT_FAILURE);
     }
 
     Bit* result = createBitArray(SIZE);
@@ -145,7 +141,6 @@ Bit* bitwiseNOT(const Bit* BIT_ARRAY, unsigned char SIZE)
     if (SIZE > 32 || SIZE < 1)
     {
         perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
-        exit(EXIT_FAILURE);
     }
 
     Bit* result = createBitArray(SIZE);
@@ -165,7 +160,6 @@ Bit* ADD(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, uns
     if (INPUT_ARRAY_SIZE > 32 || OUTPUT_ARRAY_SIZE < 1)
     {
         perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
-        exit(EXIT_FAILURE);
     }
     if (OUTPUT_ARRAY_SIZE > 32 || OUTPUT_ARRAY_SIZE < 1)
     {
@@ -197,7 +191,6 @@ Bit* SUB(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, uns
     if (INPUT_ARRAY_SIZE > 32 || OUTPUT_ARRAY_SIZE < 1)
     {
         perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
-        exit(EXIT_FAILURE);
     }
     if (OUTPUT_ARRAY_SIZE > 32 || OUTPUT_ARRAY_SIZE < 1)
     {
@@ -234,7 +227,6 @@ Bit* MUL(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, uns
     if (INPUT_ARRAY_SIZE > 32 || OUTPUT_ARRAY_SIZE < 1)
     {
         perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
-        exit(EXIT_FAILURE);
     }
     if (OUTPUT_ARRAY_SIZE > 32 || OUTPUT_ARRAY_SIZE < 1)
     {
@@ -243,17 +235,20 @@ Bit* MUL(Bit* BIT_ARRAY_1, Bit* BIT_ARRAY_2, unsigned char INPUT_ARRAY_SIZE, uns
 
     Bit* result = createBitArray(OUTPUT_ARRAY_SIZE);
 
-    for (unsigned char i = 0; i < INPUT_ARRAY_SIZE; ++i) {
+    for (unsigned char i = 0; i < INPUT_ARRAY_SIZE; ++i) 
+    {
         Bit multiplierBit = BIT_ARRAY_2[i];
         Bit* tempResult = createBitArray(OUTPUT_ARRAY_SIZE);
 
-        for (unsigned char j = 0; j < INPUT_ARRAY_SIZE; ++j) {
+        for (unsigned char j = 0; j < INPUT_ARRAY_SIZE; ++j) 
+        {
             Bit temp = AND(&BIT_ARRAY_1[j], &multiplierBit);
             tempResult[j] = temp;
         }
 
         // Shift left based on the position of the multiplier bit
-        for (unsigned char k = OUTPUT_ARRAY_SIZE - 1; k > i; --k) {
+        for (unsigned char k = OUTPUT_ARRAY_SIZE - 1; k > i; --k) 
+        {
             tempResult[k] = tempResult[k - i];
         }
 
@@ -276,7 +271,6 @@ void incrementBitArray(Bit* BIT_ARRAY, unsigned char SIZE)
     if (SIZE > 32 || SIZE < 1)
     {
         perror("Attempted to increment an array of invalid size. Bro, why did you even create it. You know its RISCV32I");
-        exit(EXIT_FAILURE);
     }
     
     for (int i = SIZE - 1; i >= 0; --i)
@@ -301,7 +295,6 @@ void decrementBitArray(Bit* BIT_ARRAY, unsigned char SIZE)
     if (SIZE > 32 || SIZE < 1)
     {
         perror("Attempted to decrement an array of invalid size. Bro, why did you even create it. You know its RISCV32I");
-        exit(EXIT_FAILURE);
     }
     
     for (int i = SIZE - 1; i >= 0; --i)
@@ -326,7 +319,6 @@ Bit* toUnsignedBitArray(int decimal, unsigned char SIZE)
     if (SIZE > 32 || SIZE < 1)
     {
         perror("Attempted to convert an array of invalid size to decimal. Can only handle arrays upto 32 bits and atleast 1 bit.");
-        exit(EXIT_FAILURE);
     }
     
     Bit* bitArray = createBitArray(SIZE);
@@ -344,7 +336,6 @@ Bit* toSignedBitArray(int decimal, unsigned char SIZE)
     if (SIZE > 32 || SIZE < 1)
     {
         perror("Attempted to convert an array of invalid size to decimal. Can only handle arrays upto 32 bits and atleast 1 bit.");
-        exit(EXIT_FAILURE);
     }
 
     Bit* bitArray = createBitArray(SIZE);
@@ -405,7 +396,6 @@ short signExtend(const Bit* BIT_ARRAY, unsigned char SIZE)
     if (SIZE > 32 || SIZE < 1)
     {
         perror("Attempted to sign extend an array of invalid size. Can only handle arrays upto 32 bits and atleast 1 bit.");
-        exit(EXIT_FAILURE);
     }
     
     //JUST SOMEBODY: I am not sure if this is the correct way to sign extend
@@ -432,7 +422,6 @@ Bit* bitwiseAND(const Bit* BIT_ARRAY_1, const Bit* BIT_ARRAY_2, unsigned char SI
     if (SIZE > 32 || SIZE < 1)
     {
         perror("Attempted to create an array of invalid size. Acceptable sizes arange from 1 to 32 bits.");
-        exit(EXIT_FAILURE);
     }
 
     Bit* result = createBitArray(SIZE);

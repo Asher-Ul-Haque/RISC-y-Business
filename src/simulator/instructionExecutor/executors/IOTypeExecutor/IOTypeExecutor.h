@@ -1,5 +1,5 @@
-#ifndef B_TYPE_EXECUTOR
-#define B_TYPE_EXECUTOR
+#ifndef IO_TYPE_EXECUTOR
+#define IO_TYPE_EXECUTOR
 
 #include "../../../memory/memory/h"
 // - - - - - - - - - -
@@ -11,4 +11,4 @@
 #ifdef __cplusplus
 }
 #endif //extern "C"
-#endif
+#endif //IO_TYPE_INSTRUCTION

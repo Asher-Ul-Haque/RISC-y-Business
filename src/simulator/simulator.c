@@ -30,7 +30,7 @@ Simulator* initializeSimulator(const char* SIMULATOR_REPORT_PATH)
     logMessage(simulator->logger, "Register file created!");
 
     //Initialize the memory manager
-    simulator->memoryManager = allocateMemory(getRegister(simulator->registerFile, "sp"));
+    simulator->memoryManager = allocateMemory(getRegister(simulator->registerFile, "sp"), simulator->logger);
     if (simulator->memoryManager == NULL)
     {
         perror("Error: Failed to initialize memory manager");
@@ -53,7 +53,7 @@ Simulator* initializeSimulator(const char* SIMULATOR_REPORT_PATH)
     *simulator->programCounter = 0;
     logMessage(simulator->logger, "Program counter created");
 
-    simulator->executionManager = initializeExecutorManager(simulator->memoryManager, simulator->registerFile, simulator->programCounter);
+    simulator->executionManager = initializeExecutorManager(simulator->memoryManager, simulator->registerFile, simulator->programCounter, simulator->logger);
     if (simulator->executionManager == NULL)
     {
         perror("Error: Failed to initialize executor manager");
@@ -112,6 +112,16 @@ void deinitializeSimulator(Simulator *SIMULATOR)
 
 // - - - - - - - - - - -
 
+bool runNextInstruction(Simulator* SIMULATOR)
+{
+    if (*SIMULATOR->programCounter >= PROGRAM_MEMORY)
+    {
+        return false;
+    }
+    Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
+    findAndExecute(SIMULATOR->executionManager, instruction);
+    return true;
+}
 
 // - - - - - - - - - - -
 
@@ -119,11 +129,7 @@ void runSimulation(Simulator *SIMULATOR)
 {
     logMessage(SIMULATOR->logger, "Running simulation");
 
-    while (!(*SIMULATOR->programCounter >= PROGRAM_MEMORY))
-    {
-        Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
-        findAndExecute(SIMULATOR->executionManager, instruction);
-    }
+    while (runNextInstruction(SIMULATOR)){}
 }
 
 // - - - - - - - - - -

@@ -121,12 +121,12 @@ void printRegister(const Register *REGISTER, Logger* LOGGER)
 {
     char message[100];
     sprintf(message, "ABI:  %s", REGISTER->abi);
-    printf(message + strlen(message), " , Address: ");
+    sprintf(message + strlen(message), " , Address: ");
     for (int i = 0; i < 5; ++i)
     {
         sprintf(message + strlen(message), "%d", REGISTER->address[i].value);
     }
-    printf(" , Value: ");
+    sprintf(message + strlen(message)," , Value: ");
     for (int i = 0; i < REGISTER_SIZE; ++i)
     {
         sprintf(message + strlen(message), "%d", REGISTER->bits[i].value);
@@ -141,7 +141,7 @@ void printRegisterFile(const RegisterFile *REGISTER_FILE)
     for (int i = 0; i < REGISTER_COUNT; ++i)
     {
         printRegister(&REGISTER_FILE->registers[i], REGISTER_FILE->logger);
-        printf("\n");
+        logMessage(REGISTER_FILE->logger, "\n");
     }
 }
 

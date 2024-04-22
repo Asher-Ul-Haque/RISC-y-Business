@@ -47,9 +47,10 @@ typedef struct
     bTypeExecutor* bTypeExecutor;
     uTypeExecutor* uTypeExecutor;
     jTypeExecutor* jTypeExecutor;
+    Logger* logger;
 } ExecutorManager;
 
-ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* PROGRAM_COUNTER);
+ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile* REGISTER_FILE, unsigned short* PROGRAM_COUNTER, Logger* LOGGER);
 
 void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCTION_SIZE]);
 

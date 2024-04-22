@@ -4,14 +4,13 @@
 #include <string.h>
 // - - - - - - - - -
 
-Memory* allocateMemory(Register* STACK_POINTER)
+Memory* allocateMemory(Register* STACK_POINTER, Logger* LOGGER)
 {
     //Allocate memory for the memory
     Memory* memory = (Memory*)malloc(sizeof(Memory));
     if (memory == NULL)
     {
         perror("Error allocating memory for memory\nOperation: initialising");
-        exit(EXIT_FAILURE);
     }
 
     //Initialise all bits of all memory cells to 0 and give them their address
@@ -65,6 +64,7 @@ Memory* allocateMemory(Register* STACK_POINTER)
     }
     setRegisterValue(memory->stackPointer, stackPointerAddress);
 
+    memory->logger = LOGGER;
 
     return memory;
 }
@@ -99,29 +99,31 @@ MemoryCell* getDataMemory(Memory* MEMORY)
 
 // - - - - - - - - -
 
-void printMemoryCell(const MemoryCell* MEMORYCELL)
+void printMemoryCell(const MemoryCell *MEMORYCELL, Logger* LOGGER)
 {
-    printf("Address: ");
+    char message[100];
+    sprintf(message, "Address: ");
     for (int i = 0; i < ADDRESS_SIZE; ++i)
     {
-        printf("%d", MEMORYCELL->address[i].value);
+        sprintf(message + strlen(message), "%d", MEMORYCELL->address[i].value);
     }
-    printf(" , Value: ");
+    sprintf(message + strlen(message), " , Value: ");
     for (int i = 0; i < MEMORY_CELL_SIZE; ++i)
     {
-        printf("%d", MEMORYCELL->bits[i].value);
+        sprintf(message + strlen(message), "%d", MEMORYCELL->bits[i].value);
     }
+    logMessage(LOGGER, message);
 }
 
 // - - - - - - -
 
 void printProgramMemory(const Memory* MEMORY)
 {
-    printf("\nProgram Memory:\n");
+    logMessage(MEMORY->logger, "Program Memory\n");
     for (int i = 0; i < PROGRAM_MEMORY; ++i)
     {
-        printMemoryCell(&MEMORY->programMemory[i]);
-        printf("\n");
+        printMemoryCell(&MEMORY->programMemory[i], MEMORY->logger);
+        logMessage(MEMORY->logger, "\n");
     }
 }
 
@@ -129,11 +131,11 @@ void printProgramMemory(const Memory* MEMORY)
 
 void printStackMemory(const Memory* MEMORY)
 {
-    printf("\nStack Memory:\n");
+    logMessage(MEMORY->logger, "Stack Memory\n");
     for (int i = 0; i < STACK_MEMORY; ++i)
     {
-        printMemoryCell(&MEMORY->stackMemory[i]);
-        printf("\n");
+        printMemoryCell(&MEMORY->stackMemory[i], MEMORY->logger);
+        logMessage(MEMORY->logger, "\n");
     }
 }
 
@@ -141,11 +143,11 @@ void printStackMemory(const Memory* MEMORY)
 
 void printDataMemory(const Memory* MEMORY)
 {
-    printf("\nData Memory:\n");
+    logMessage(MEMORY->logger, "Data Memory Memory\n");
     for (int i = 0; i < DATA_MEMORY; ++i)
     {
-        printMemoryCell(&MEMORY->dataMemory[i]);
-        printf("\n");
+        printMemoryCell(&MEMORY->dataMemory[i], MEMORY->logger);
+        logMessage(MEMORY->logger, "\n");
     }
 }
 
@@ -157,7 +159,6 @@ void decreaseStackPointer(Memory* MEMORY)
     if (toDecimal(MEMORY->stackPointer->bits, 0, REGISTER_SIZE, false) <= STACK_ADDRESS_START)
     {
         perror("Stack Underflow");
-        exit(EXIT_FAILURE);
     }
 
     decrementBitArray(MEMORY->stackPointer->bits, REGISTER_SIZE);
@@ -171,7 +172,6 @@ void increaseStackPointer(Memory* MEMORY)
     if (toDecimal(MEMORY->stackPointer->bits, 0, REGISTER_SIZE, false) > STACK_ADDRESS_END)
     {
         perror("Stack Overflow! Very punny!");
-        exit(EXIT_FAILURE);
     }
 
     incrementBitArray(MEMORY->stackPointer->bits, REGISTER_SIZE);
@@ -228,7 +228,7 @@ MemoryCell* getMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE])
         // printf("returning data memory\n");
         return &MEMORY->dataMemory[calculateMemoryIndex(ADDRESS)];
     }
-    printf("Address out of range\n");
+    logMessage(MEMORY->logger, "Address out of range\n");
     return NULL;
 }
 
@@ -239,7 +239,6 @@ void pushStackMemory(Memory* MEMORY, const Register* REGISTER)
     if (toDecimal(MEMORY->stackPointer->bits, 0, REGISTER_SIZE, false) > STACK_ADDRESS_END)
     {
         perror("Stack Overflow! Very punny");
-        exit(EXIT_FAILURE);
     }
 
     MemoryCell* stackTopCell = getMemoryCell(MEMORY, MEMORY->stackPointer->bits);
@@ -261,7 +260,6 @@ Bit* popStackMemory(Memory* MEMORY)
     if (toDecimal(MEMORY->stackPointer->bits, 0, REGISTER_SIZE, false) <= STACK_ADDRESS_START)
     {
         perror("Stack Underflow");
-        exit(EXIT_FAILURE);
     }
 
     decreaseStackPointer(MEMORY);
@@ -283,7 +281,6 @@ void setDataMemoryCell(Memory* MEMORY, const Bit ADDRESS[ADDRESS_SIZE], const Bi
     if (!isAddressInRange(ADDRESS, DATA_ADDRESS_START, DATA_ADDRESS_END))
     {
         perror("Invalid data address");
-        exit(EXIT_FAILURE);
     }
 
     MemoryCell* dataMemoryCell = getMemoryCell(MEMORY, ADDRESS);
@@ -303,7 +300,6 @@ void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH)
     if (file == NULL)
     {
         perror("Error opening file\n");
-        exit(EXIT_FAILURE);
     }
 
     char lineInput[MEMORY_CELL_SIZE + 1]; //JUST SOMEBODY: plus one for the \n character.
@@ -330,6 +326,7 @@ void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH)
 
         for (int j = 0; j < MEMORY_CELL_SIZE && reversedLine[j] != '\0'; ++j) // Avoid processing newline characters
         {
+            char message[50];
             switch(reversedLine[j])
             {
                 case '0':
@@ -339,16 +336,16 @@ void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH)
                     MEMORY->programMemory[i].bits[j].value = 1;
                     break;
                 default:
-                    printf("Encountered a non-binary character  '%c' while reading the file\n", reversedLine[j]);
+                    sprintf(message, "Encountered a non-binary character '%c' while reading the file\n", reversedLine[j]);
+                    logMessage(MEMORY->logger, message);
                     perror("\n");
-                    exit(EXIT_FAILURE);
             }
         }
         i++; // Increment i only when a line is successfully read and stored
     }
 
     fclose(file);
-    printf("Successfully read and closed file\n");
+    logMessage(MEMORY->logger, "Successfully read and closed file\n");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - -
@@ -358,7 +355,6 @@ void setDataMemoryCellByIndex(Memory *MEMORY, int INDEX, const Bit *VALUE)
     if (INDEX < 0 || INDEX >= DATA_MEMORY)
     {
         perror("Invalid data memory index\n");
-        exit(EXIT_FAILURE);
     }
 
     for (int i = 0; i < MEMORY_CELL_SIZE; ++i)

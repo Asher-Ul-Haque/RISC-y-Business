@@ -206,14 +206,24 @@ void IDE::update()
                                         	{
                                         		animation.scale(fileButtons[2], sf::Vector2f(1, 1), sf::Vector2f(1.05, 1.05), 0.1);
 	                                            animation.scale(fileButtons[2], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
+                                                simulator = initializeSimulator((projectDirectoryPath + "/" + projectFiles[2]).c_str());
 	                                        	loadProgram(simulator, (projectDirectoryPath + "/" + projectFiles[1]).c_str());
-	                                        	runSimulation(simulator);
-	                                        	soundEffects.setPath(soundDirectoryPath + "success.wav");
-	                                            soundEffects.playSoundEffect();
+                                                soundEffects.setPath(soundDirectoryPath + "success.wav");
+                                                soundEffects.playSoundEffect();
+
+                                                currentFile = 2;
+                                                currentFilePath = projectDirectoryPath + "/" + projectFiles[2];
+                                                textEditor.setFilePath(currentFilePath);
+
+	                                        	while(runNextInstruction(simulator))
+                                                {
+                                                    textEditor.writeToFile();
+                                                    textEditor.readFromFile();   
+                                                }
+	                                        	
+                                                deinitializeSimulator(simulator);
 	                                            textEditor.writeToFile();
-	                                            currentFile = 2;
-	                                            currentFilePath = projectDirectoryPath + "/" + projectFiles[2];
-	                                            textEditor.setFilePath(currentFilePath);
+	                                            
 	                                            textEditor.readFromFile();
                                         	}
                                         	catch (const std::exception& e)
@@ -255,16 +265,18 @@ void IDE::update()
                                             try
                                         	{
                                         		animation.scale(fileButtons[2], sf::Vector2f(1, 1), sf::Vector2f(1.05, 1.05), 0.1);
-	                                            animation.scale(fileButtons[2], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
-	                                        	loadProgram(simulator, (projectDirectoryPath + "/" + projectFiles[1]).c_str());
-	                                        	runSimulation(simulator);
-	                                        	soundEffects.setPath(soundDirectoryPath + "success.wav");
-	                                            soundEffects.playSoundEffect();
-	                                            textEditor.writeToFile();
-	                                            currentFile = 2;
-	                                            currentFilePath = projectDirectoryPath + "/" + projectFiles[2];
-	                                            textEditor.setFilePath(currentFilePath);
-	                                            textEditor.readFromFile();
+                                                animation.scale(fileButtons[2], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
+                                                simulator = initializeSimulator((projectDirectoryPath + "/" + projectFiles[2]).c_str());
+                                                loadProgram(simulator, (projectDirectoryPath + "/" + projectFiles[1]).c_str());
+                                                runSimulation(simulator);
+                                                soundEffects.setPath(soundDirectoryPath + "success.wav");
+                                                soundEffects.playSoundEffect();
+                                                deinitializeSimulator(simulator);
+                                                textEditor.writeToFile();
+                                                currentFile = 2;
+                                                currentFilePath = projectDirectoryPath + "/" + projectFiles[2];
+                                                textEditor.setFilePath(currentFilePath);
+                                                textEditor.readFromFile();
                                         	}
                                         	catch (const std::exception& e)
                                         	{
