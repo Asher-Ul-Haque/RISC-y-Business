@@ -141,6 +141,7 @@ void IDE::update()
             case sf::Event::Closed:
                 soundEffects.setPath(soundDirectoryPath + "failure.wav");
                 soundEffects.playSoundEffect();
+                dialogBox.run("Quit?", "Are you sure you want to quit");
                 window.close();
                 break;
 
@@ -155,8 +156,6 @@ void IDE::update()
                         break;
 
                     default:
-                        soundEffects.setPath(soundDirectoryPath + "keypress.wav");
-                        soundEffects.playSoundEffect();
                         break;
                 }
                 break;
@@ -173,34 +172,119 @@ void IDE::update()
                                     switch (i)
                                     {
                                         case 4:
+                                            soundEffects.setPath(soundDirectoryPath + "success.wav");
+                                            animation.scale(fileButtons[currentFile], sf::Vector2f(1, 1), sf::Vector2f(1.05, 1.05), 0.1);
+                                            animation.scale(fileButtons[currentFile], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
                                             textEditor.writeToFile();
-                                            break;
-
-                                        case 0:
-                                            switchColors();
+                                            soundEffects.playSoundEffect();
                                             break;
 
                                         case 3:
                                             try
                                             {
                                                 asseble(projectDirectoryPath + "/" + projectFiles[0], projectDirectoryPath + "/" + projectFiles[1]);
+                                                soundEffects.setPath(soundDirectoryPath + "success.wav");
+                                                animation.scale(fileButtons[1], sf::Vector2f(1, 1), sf::Vector2f(1.05, 1.05), 0.1);
+                                                animation.scale(fileButtons[1], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
                                                 textEditor.writeToFile();
                                                 currentFilePath = projectDirectoryPath + "/" + projectFiles[1];
                                                 textEditor.setFilePath(currentFilePath);
+                                                soundEffects.playSoundEffect();
                                                 textEditor.readFromFile();
+                                                currentFile = 1;
                                             }
                                             catch (const std::exception& e)
                                             {
-                                                //std::cout << "Oopsie" << std::endl;
+                                            	soundEffects.setPath(soundDirectoryPath + "failure.wav");
+                                            	soundEffects.playSoundEffect();
                                                 dialogBox.run("Assemly error", e.what());
                                             }
+                                            break;
+
+                                        case 2:
+                                        	try
+                                        	{
+                                        		animation.scale(fileButtons[2], sf::Vector2f(1, 1), sf::Vector2f(1.05, 1.05), 0.1);
+	                                            animation.scale(fileButtons[2], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
+	                                        	loadProgram(simulator, (projectDirectoryPath + "/" + projectFiles[1]).c_str());
+	                                        	runSimulation(simulator);
+	                                        	soundEffects.setPath(soundDirectoryPath + "success.wav");
+	                                            soundEffects.playSoundEffect();
+	                                            textEditor.writeToFile();
+	                                            currentFile = 2;
+	                                            currentFilePath = projectDirectoryPath + "/" + projectFiles[2];
+	                                            textEditor.setFilePath(currentFilePath);
+	                                            textEditor.readFromFile();
+                                        	}
+                                        	catch (const std::exception& e)
+                                        	{
+                                        		soundEffects.setPath(soundDirectoryPath + "failure.wav");
+                                            	soundEffects.playSoundEffect();
+                                                dialogBox.run("Simulator error", e.what());
+                                        	}
+                                        	break;
+                                        	
+                                         
+                                        case 1:
+                                        	soundEffects.setPath(soundDirectoryPath + "success.wav");
+                                            animation.scale(fileButtons[currentFile], sf::Vector2f(1, 1), sf::Vector2f(1.05, 1.05), 0.1);
+                                            animation.scale(fileButtons[currentFile], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
+                                            textEditor.writeToFile();
+                                            soundEffects.playSoundEffect();
+                                            
+                                            try
+                                            {
+                                                asseble(projectDirectoryPath + "/" + projectFiles[0], projectDirectoryPath + "/" + projectFiles[1]);
+                                                soundEffects.setPath(soundDirectoryPath + "success.wav");
+                                                animation.scale(fileButtons[1], sf::Vector2f(1, 1), sf::Vector2f(1.05, 1.05), 0.1);
+                                                animation.scale(fileButtons[1], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
+                                                textEditor.writeToFile();
+                                                currentFilePath = projectDirectoryPath + "/" + projectFiles[1];
+                                                textEditor.setFilePath(currentFilePath);
+                                                soundEffects.playSoundEffect();
+                                                textEditor.readFromFile();
+                                                currentFile = 1;
+                                            }
+                                            catch (const std::exception& e)
+                                            {
+                                            	soundEffects.setPath(soundDirectoryPath + "failure.wav");
+                                            	soundEffects.playSoundEffect();
+                                                dialogBox.run("Assemly error", e.what());
+                                            }
+
+                                            try
+                                        	{
+                                        		animation.scale(fileButtons[2], sf::Vector2f(1, 1), sf::Vector2f(1.05, 1.05), 0.1);
+	                                            animation.scale(fileButtons[2], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
+	                                        	loadProgram(simulator, (projectDirectoryPath + "/" + projectFiles[1]).c_str());
+	                                        	runSimulation(simulator);
+	                                        	soundEffects.setPath(soundDirectoryPath + "success.wav");
+	                                            soundEffects.playSoundEffect();
+	                                            textEditor.writeToFile();
+	                                            currentFile = 2;
+	                                            currentFilePath = projectDirectoryPath + "/" + projectFiles[2];
+	                                            textEditor.setFilePath(currentFilePath);
+	                                            textEditor.readFromFile();
+                                        	}
+                                        	catch (const std::exception& e)
+                                        	{
+                                        		soundEffects.setPath(soundDirectoryPath + "failure.wav");
+                                            	soundEffects.playSoundEffect();
+                                                dialogBox.run("Simulator error", e.what());
+                                        	}
+
+                                        	break;
+                                            
+                                        case 0:
+                                        	soundEffects.setPath(soundDirectoryPath + "success.wav");
+                                        	soundEffects.playSoundEffect();
+                                            switchColors();
                                             break;
 
                                         default:
                                             break;
 
                                     }
-                                    soundEffects.playSoundEffect();
                                     break;
 
                                 case false:

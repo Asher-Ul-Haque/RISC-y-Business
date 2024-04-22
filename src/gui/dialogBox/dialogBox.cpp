@@ -235,7 +235,7 @@ void DialogBox::createWindow(std::string TITLE)
     // - - - - - - - - -
     font.loadFromFile(fontDirectoryPath + "JetBrainsMono-Bold.ttf");
     text.setFont(font);
-    text.setCharacterSize(24);
+    text.setCharacterSize(18);
     text.setFillColor(sf::Color::Red);
     // - - - - - - - - -
     logoTexture.loadFromFile(textureDirectoryPath + "logo.png");
