@@ -19,9 +19,9 @@ class DialogBox
         sf::Color backgroundColor = sf::Color(255, 255, 255, 255);
         // - - - - - - - - -
         std::string projectDirectoryPath;
-        std::string textureDirectoryPath = "../../include/resources/textures/";
-        std::string fontDirectoryPath = "../../include/resources/fonts/";
-        std::string soundDirectoryPath = "../../include/resources/sounds/";
+        std::string textureDirectoryPath = "../include/resources/textures/";
+        std::string fontDirectoryPath = "../include/resources/fonts/";
+        std::string soundDirectoryPath = "../include/resources/sounds/";
         std::string successSoundFilePath = "success.wav";
         std::string failureSoundFilePath = "failure.wav";
         std::string cancelTextureFilePath = "cancel.png";

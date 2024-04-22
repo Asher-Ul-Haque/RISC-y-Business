@@ -1,5 +1,8 @@
 #ifndef B_TYPE_EXECUTOR
 #define B_TYPE_EXECUTOR
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "../../../memory/memory.h"
 // - - - - - - - - -
 
@@ -49,5 +52,8 @@ void executeBTypeInstruction(bTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTIO
 void branch(bTypeExecutor* EXECUTOR, bool CONDITION, short IMMEDIATE);
 
 // - - - - - - - -
+#ifdef __cplusplus
+}
+#endif //extern "C"
 
 #endif // B_TYPE_EXECUTOR

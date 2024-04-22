@@ -1,17 +1,27 @@
+#THE RISCY-BUSINESS IDE
+
+# To download use this command
+```bash
+git clone https://github.com/RISCY-BUSINESS/RISC-y-Business.git
+```
+You will need the sfml library to use the IDE. Install from www.sfml.com for windows
+Or on linux, you can use your terminal, say for example-
+```bash
+sudo apt-get install libsfml-dev
+```
+
 # To compile use this command
 
 ```bash
-gcc -o build/assembler_executable \
-    src/main.c \
-    src/memory/memory.c \
-    src/instructions/instructions.c \
-    src/registers/registers.c \
-    src/utils/utils.c
+cd RISC-y-Business
+cmake -DBUILD_RISCY_IDE=ON -DBUILD_SIMULATOR_CLI=OFF
+make
 ```
 
-# To run the assembler use this command
+# To run the IDE use this command
 
 ```bash
-./build/assembler_executable <input_file> <output_file>
+cd build
+./RISCY-IDE
 ```
 

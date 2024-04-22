@@ -1,5 +1,8 @@
 #ifndef EXECUTOR_MANAGER
 #define EXECUTOR_MANAGER
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "../../memory/memory.h"
 #include "../executors/RTypeExecutor/RTypeExecutor.h"
 #include "../executors/ITypeExecutor/ITypeExecutor.h"
@@ -53,5 +56,8 @@ void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCT
 void destroyExecutorManager(ExecutorManager* EXECUTION_MANAGER);
 
 // - - - - - - - -
+#ifdef __cplusplus
+}
+#endif //extern "C"
 
 #endif // !EXECUTOR_MANAGER

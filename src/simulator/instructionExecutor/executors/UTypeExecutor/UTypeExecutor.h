@@ -1,5 +1,8 @@
 #ifndef U_TYPE_EXECUTOR
 #define U_TYPE_EXECUTOR
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "../../../memory/memory.h"
 // - - - - - - - - -
 
@@ -31,5 +34,7 @@ void executeUType1Instruction(uTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTI
 void executeUType2Instruction(uTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
 // - - - - - - - -
-
+#ifdef __cplusplus
+}
+#endif //extern "C"
 #endif // U_TYPE_EXECUTOR

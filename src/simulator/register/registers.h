@@ -1,5 +1,8 @@
 #ifndef REGISTERS_H
 #define REGISTERS_H
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "../../../include/bit/bit.h"
 // - - - - - - - - - -
 
@@ -27,6 +30,7 @@ Register x3 is at index 3
 typedef struct
 {
     Register registers[REGISTER_COUNT];
+    Logger* logger;
 } RegisterFile;
 
 /*
@@ -35,7 +39,7 @@ free all registers.
 Getting a register by its ABI is as simple as a map.
 Also we can get the address of a register too.
 */
-RegisterFile* initializeRegisters();
+RegisterFile* initializeRegisters(Logger* LOGGER);
 
 void deallocateRegisters(RegisterFile *REGISTER_FILE);
 
@@ -53,9 +57,12 @@ void setRegisterValue(Register *REGISTER, const Bit BITS[REGISTER_SIZE]);
 
 void setBit(Register *REGISTER, unsigned int INDEX, const Bit *BIT);
 
-void printRegister(const Register *REGISTER);
+void printRegister(const Register *REGISTER, Logger* LOGGER);
 
 void printRegisterFile(const RegisterFile *REGISTER_FILE);
 
 // - - - - - - - - - -
+#ifdef __cplusplus
+}
+#endif //extern "C"
 #endif // REGISTERS_H

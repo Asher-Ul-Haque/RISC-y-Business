@@ -1,1 +1,5 @@
 *.exe
+*.txt
+*.cmake
+*.make
+*.sublime.project

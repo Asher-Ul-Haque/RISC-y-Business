@@ -1,5 +1,8 @@
 #ifndef MEMORY_H
 #define MEMORY_H
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "../register/registers.h"
 // - - - - - - - - - 
 
@@ -87,6 +90,9 @@ void loadBinaryToProgramMemory(Memory* MEMORY, const char* RELATIVE_FILE_PATH);
 void printProgramMemory(const Memory* MEMORY);
 
 // - - - - - - - - -
+#ifdef __cplusplus
+}
+#endif //extern "C"
 
 #endif // MEMORY_H
 

@@ -11,7 +11,6 @@ DialogBox::DialogBox(bool TEXTBOX, bool DROPDOWN)
 {
     textbox = TEXTBOX;
     dropdown = DROPDOWN;
-    std::cout << "Hello WOrld" << std::endl;
 }
 
 std::string DialogBox::run(std::string TITLE, std::string MESSAGE)

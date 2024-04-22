@@ -1,5 +1,8 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "instructionExecutor/executorManager/executorManager.h"
 // - - - - - - - - - -
 
@@ -15,15 +18,17 @@ typedef struct
     Memory* memoryManager;
     RegisterFile* registerFile;
     const char* binaryFilePath;
+    const char* simulatorReportPath;
     unsigned short* programCounter;
     ExecutorManager* executionManager;
+    Logger* logger;
 } Simulator;
 
 // - - - - - - - - - - - -
 
 // JUST SOMEBODY: Function prototypes. I want others to review this and add more if needed
 
-Simulator* initializeSimulator();
+Simulator* initializeSimulator(const char* SIMULATOR_REPORT_PATH);
 
 void loadProgram(Simulator* SIMULATOR, const char* BINARY_FILE_PATH);
 
@@ -36,4 +41,8 @@ void runSimulation(Simulator* SIMULATOR);
 void deinitializeSimulator(Simulator* SIMULATOR);
 
 // - - - - - - - - - - - -
+
+#ifdef __cplusplus
+}
+#endif //extern "C"
 #endif /* SIMULATOR_H */

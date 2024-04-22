@@ -1,5 +1,8 @@
 #ifndef S_TYPE_EXECUTOR
 #define S_TYPE_EXECUTOR
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "../../../memory/memory.h"
 // - - - - - - - - -
 
@@ -41,4 +44,7 @@ void executeSTypeInstruction(sTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTIO
 
 // - - - - - - - -
 
+#ifdef __cplusplus
+}
+#endif //extern "C"
 #endif // S_TYPE_EXECUTOR

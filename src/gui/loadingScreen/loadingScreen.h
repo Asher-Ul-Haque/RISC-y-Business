@@ -13,9 +13,9 @@ class LoadingScreen
     private:
         sf::Color backgroundColor = sf::Color(255, 255, 255, 255);
         // - - - - - -  - - -
-        std::string textureDirectoryPath = "../../include/resources/textures/";
-        std::string fontDirectoryPath = "../../include/resources/fonts/";
-        std::string soundDirectoryPath = "../../include/resources/sounds/";
+        std::string textureDirectoryPath = "../include/resources/textures/";
+        std::string fontDirectoryPath = "../include/resources/fonts/";
+        std::string soundDirectoryPath = "../include/resources/sounds/";
         // - - - - - -  - - -
         int screenWidth = 650;
         int screenHeight = 400;

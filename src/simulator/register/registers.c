@@ -5,7 +5,8 @@
 // - - - - - - - - - - 
 
 //ABI for all registers
-static const char* abi[REGISTER_COUNT] = {
+static const char* abi[REGISTER_COUNT] = 
+{
     "zero", "ra", "sp", "gp", "tp", "t0", "t1", "t2", "s0", "s1", 
     "a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "s2", "s3", 
     "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
@@ -28,13 +29,12 @@ unsigned int hash(const char* abiName)
 
 // - - - - - - - - - - -
 
-RegisterFile* initializeRegisters()
+RegisterFile* initializeRegisters(Logger* LOGGER)
 {
     RegisterFile *registerFile = (RegisterFile*)malloc(sizeof(RegisterFile));
     if (registerFile == NULL)
     {
         perror("Error allocating memory for registers\nOperation: initialising");
-        exit(EXIT_FAILURE);
     }
 
     for (int i = 0; i < REGISTER_COUNT; ++i)
@@ -55,6 +55,8 @@ RegisterFile* initializeRegisters()
         registerFile->registers[i].abi = strdup(abi[i]);
 
     }
+
+    registerFile->logger = LOGGER;
 
     return registerFile;
 }
@@ -115,20 +117,21 @@ void setBit(Register *REGISTER, unsigned int INDEX, const Bit *BIT)
 
 // - - - - - - - - - -
 
-void printRegister(const Register *REGISTER)
+void printRegister(const Register *REGISTER, Logger* LOGGER)
 {
-    printf("ABI:  %s", REGISTER->abi);
-    printf(" , Address: ");
+    char message[100];
+    sprintf(message, "ABI:  %s", REGISTER->abi);
+    printf(message + strlen(message), " , Address: ");
     for (int i = 0; i < 5; ++i)
     {
-        printf("%d", REGISTER->address[i].value);
+        sprintf(message + strlen(message), "%d", REGISTER->address[i].value);
     }
     printf(" , Value: ");
     for (int i = 0; i < REGISTER_SIZE; ++i)
     {
-        printf("%d", REGISTER->bits[i].value);
+        sprintf(message + strlen(message), "%d", REGISTER->bits[i].value);
     }
-    printf("\n");
+    logMessage(LOGGER, message);
 }
 
 // - - - - - - - - - -
@@ -137,7 +140,7 @@ void printRegisterFile(const RegisterFile *REGISTER_FILE)
 {
     for (int i = 0; i < REGISTER_COUNT; ++i)
     {
-        printRegister(&REGISTER_FILE->registers[i]);
+        printRegister(&REGISTER_FILE->registers[i], REGISTER_FILE->logger);
         printf("\n");
     }
 }

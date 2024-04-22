@@ -1,6 +1,8 @@
 #ifndef BIT_H
 #define BIT_H
 #include <stdbool.h>
+#include "../logger/logger.h"
+
 // - - - - - - - - - -
 
 #define BIT_ARRAY_SIZE 32;

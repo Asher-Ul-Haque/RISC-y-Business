@@ -1,5 +1,8 @@
 #ifndef I_TYPE_EXECUTOR
 #define I_TYPE_EXECUTOR
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "../../../memory/memory.h"
 // - - - - - - - - -
 
@@ -49,5 +52,8 @@ void addi(Register* RD, Register* RS1, short IMMEDIATE);
 
 void sltiu(Register* RD, Register* RS1, short IMMEDIATE);
 // - - - - - - - -
+#ifdef __cplusplus
+}
+#endif //extern "C"
 
 #endif // I_TYPE_EXECUTOR

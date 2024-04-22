@@ -22,9 +22,9 @@ class StartScreen
         int iconHeight = 479;
         float slideInDuration = 0.5f;
         // - - - - - -  - - -
-        std::string textureDirectoryPath = "../../include/resources/textures/";
-        std::string fontDirectoryPath = "../../include/resources/fonts/";
-        std::string soundDirectoryPath = "../../include/resources/sounds/";
+        std::string textureDirectoryPath = "../include/resources/textures/";
+        std::string fontDirectoryPath = "../include/resources/fonts/";
+        std::string soundDirectoryPath = "../include/resources/sounds/";
         // - - - - - -  - - -
         sf::Vector2f buttonSize = sf::Vector2f(403, 72);
         sf::Vector2f openButtonPosition = sf::Vector2f(299 + buttonSize.x/2, 510 + buttonSize.y/2);

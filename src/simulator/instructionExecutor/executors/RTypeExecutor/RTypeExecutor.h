@@ -1,5 +1,8 @@
 #ifndef R_TYPE_EXECUTOR
 #define R_TYPE_EXECUTOR
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "../../../memory/memory.h"
 // - - - - - - - - -
 
@@ -61,5 +64,9 @@ void shiftBits(Register* RD, Register* RS1, Register* RS2, bool SHIFT_LEFT);
 
 
 // - - - - - - - -
+
+#ifdef __cplusplus
+}
+#endif //extern "C"
 
 #endif // R_TYPE_EXECUTOR

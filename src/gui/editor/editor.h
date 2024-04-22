@@ -6,6 +6,7 @@
 #include "../../../include/utility/animationUtilities.h"
 #include "../../../include/utility/textEditorUtilities.h"
 #include "../dialogBox/dialogBox.h"
+#include "../../simulator/simulator.h"
 // - - - - - - - -
 
 class IDE 
@@ -26,9 +27,9 @@ class IDE
     sf::Texture buttonTextures[5];
     sf::Sprite buttons[5];
 
-    std::string textureDirectoryPath = "../../include/resources/textures/";
-    std::string fontDirectoryPath = "../../include/resources/fonts/";
-    std::string soundDirectoryPath = "../../include/resources/sounds/";
+    std::string textureDirectoryPath = "../include/resources/textures/";
+    std::string fontDirectoryPath = "../include/resources/fonts/";
+    std::string soundDirectoryPath = "../include/resources/sounds/";
     std::string projectDirectoryPath;
     std::string projectFiles[3] = {"assembly.asm", "binary.bin", "simulatorReport.txt"};
     // - - - - - - - -
@@ -53,6 +54,8 @@ class IDE
     sf::Texture hoverBoxTexture;
     std::string hoverBoxTexturePath = "hoverBox.png";
     std::string hoverTexts[5] = {"Change Mode", "Run", "Execute", "Assemble", "Save"};
+
+    Simulator* simulator;
 
     SoundUtilities soundEffects;
     AnimationUtilities animation;

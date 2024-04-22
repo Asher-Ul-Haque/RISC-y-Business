@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <fstream>
 #include "../../assembler/instructions.h"
+#include "../../simulator/simulator.h"
+
 
 
 IDE::IDE() 
@@ -10,6 +12,7 @@ IDE::IDE()
     animation([this](){render();}),
     dialogBox(false, false)
 {
+
     if (!font.loadFromFile(fontDirectoryPath + "JetBrainsMono-Light.ttf"))
     {
         std::cout << "Error loading JetBrainsMono-ExtraBold.ttf" << std::endl;
@@ -23,7 +26,7 @@ IDE::IDE()
         std::cout << "Error loading " << hoverBoxTexturePath << std::endl;
     }
     hoverBox.setTexture(hoverBoxTexture);
-    //hoverBoxTexture.setSmooth(true);
+    hoverBoxTexture.setSmooth(true);
     hoverText.setFont(font);
     hoverText.setCharacterSize(12);
     hoverText.setFillColor(sf::Color::White);
@@ -323,6 +326,8 @@ void IDE::run()
 void IDE::setProject(std::string PROJECTPATH)
 {
     projectDirectoryPath = PROJECTPATH;
+    std::string filePath = projectDirectoryPath + "/" + projectFiles[2];
+    simulator = initializeSimulator(filePath.c_str());
     title.setString(projectDirectoryPath);
     title.setPosition((screenWidth - title.getGlobalBounds().width) / 2, 15);
 

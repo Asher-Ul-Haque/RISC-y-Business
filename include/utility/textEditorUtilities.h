@@ -11,9 +11,9 @@ class TextEditorUtilities
 	std::string filePath;
 	std::vector<sf::Text> textContent;
 	std::vector<sf::Text> lineNumbers;
-	std::string textureDirectoryPath = "../../include/resources/textures/";
-    std::string fontDirectoryPath = "../../include/resources/fonts/";
-    std::string soundDirectoryPath = "../../include/resources/sounds/";
+	std::string textureDirectoryPath = "../include/resources/textures/";
+    std::string fontDirectoryPath = "../include/resources/fonts/";
+    std::string soundDirectoryPath = "../include/resources/sounds/";
 	sf::RenderWindow* window;
 	sf::Font font;
 	sf::RectangleShape cursor;

@@ -1,5 +1,8 @@
 #ifndef J_TYPE_EXECUTOR
 #define J_TYPE_EXECUTOR
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "../../../memory/memory.h"
 // - - - - - - - - -
 
@@ -29,5 +32,8 @@ void destroyJTypeExecutor(jTypeExecutor* EXECUTOR);
 void executeJTypeInstruction(jTypeExecutor* EXECUTOR, Bit Instruction[INSTRUCTION_SIZE]);
 
 // - - - - - - - -
+#ifdef __cplusplus
+}
+#endif //extern "C"
 
 #endif // J_TYPE_EXECUTOR

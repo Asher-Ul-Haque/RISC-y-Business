@@ -7,9 +7,9 @@
 
 class TextBox
 {
-std::string fontDirectoryPath = "../../include/resources/fonts/";
-std::string soundDirectoryPath = "../../include/resources/sounds/";
-std::string textureDirectoryPath = "../../include/resources/textures/";
+std::string fontDirectoryPath = "../include/resources/fonts/";
+std::string soundDirectoryPath = "../include/resources/sounds/";
+std::string textureDirectoryPath = "../include/resources/textures/";
 // - - - - - - - - -
 std::string emptyBarTextureFilePath = "bar.png";
 std::string keypressSoundFilePath = "keypress.wav";
@@ -49,9 +49,9 @@ void render();
 
 class DropDown
 {
-std::string fontDirectoryPath = "../../include/resources/fonts/";
-std::string soundDirectoryPath = "../../include/resources/sounds/";
-std::string textureDirectoryPath = "../../include/resources/textures/";
+std::string fontDirectoryPath = "../include/resources/fonts/";
+std::string soundDirectoryPath = "../include/resources/sounds/";
+std::string textureDirectoryPath = "../include/resources/textures/";
 std::string projectsDirectoryPath = std::getenv("HOME") + std::string("/RISCY Projects"); 
 // - - - - - - - - -
 std::string emptyDropDownTextureFilePath = "dropdown.png";
