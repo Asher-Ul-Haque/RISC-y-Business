@@ -20,8 +20,7 @@ Simulator* initializeSimulator(const char* SIMULATOR_REPORT_PATH)
     }
     
     //Initialize the register file
-    simulator->registerFile = initializeRegisters(simulator->logger
-        );
+    simulator->registerFile = initializeRegisters(simulator->logger);
     if (simulator->registerFile == NULL)
     {
         perror("Error: Failed to initialize Register File\n");
@@ -50,7 +49,6 @@ Simulator* initializeSimulator(const char* SIMULATOR_REPORT_PATH)
         free(simulator);
         return NULL;
     }
-    *simulator->programCounter = 0;
     logMessage(simulator->logger, "Program counter created");
 
     simulator->executionManager = initializeExecutorManager(simulator->memoryManager, simulator->registerFile, simulator->programCounter, simulator->logger);
@@ -90,31 +88,11 @@ void deinitializeSimulator(Simulator *SIMULATOR)
     free(SIMULATOR);
 }
 
-// - - - - - - - - - - -
-
-//Print functions:
-
-// void printRegisters(const Simulator *SIMULATOR)
-// {
-//     //logMessage(SIMULATOR, "Register file for the Simulation");
-//     printRegisterFile(SIMULATOR->registerFile);
-// }
-
-// - - - - - - - - - - -
-
-// void printMemory(const Simulator *SIMULATOR)
-// {
-//     //logMessage(SIMULATOR, "Memory manager for the Simulation");
-//     printProgramMemory(SIMULATOR->memoryManager);
-//     printStackMemory(SIMULATOR->memoryManager);
-//     printDataMemory(SIMULATOR->memoryManager);
-// }
-
-// - - - - - - - - - - -
+// - - - - - - - - - -
 
 bool runNextInstruction(Simulator* SIMULATOR)
 {
-    if (*SIMULATOR->programCounter >= PROGRAM_MEMORY)
+    if (*(SIMULATOR->programCounter) >= PROGRAM_MEMORY)
     {
         return false;
     }
@@ -127,8 +105,9 @@ bool runNextInstruction(Simulator* SIMULATOR)
 
 void runSimulation(Simulator *SIMULATOR)
 {
-    logMessage(SIMULATOR->logger, "Running simulation");
-
+    logMessage(SIMULATOR->logger, "\n- - - - - - - - - - - - -\nRunning simulation");
+    //Bit* instruction = getMemoryCell(SIMULATOR->memoryManager, SIMULATOR->memoryManager->programMemory[*SIMULATOR->programCounter/PROGRAM_COUNTER_SCALE_FACTOR].bits)->bits;
+    //findAndExecute(SIMULATOR->executionManager, instruction);
     while (runNextInstruction(SIMULATOR)){}
 }
 

@@ -10,6 +10,7 @@ extern "C"{
 #include "../executors/BTypeExecutor/BTypeExecutor.h"
 #include "../executors/UTypeExecutor/UTypeExecutor.h"
 #include "../executors/JTypeExecutor/JTypeExecutor.h"
+#include "../executors/IOTypeExecutor/IOTypeExecutor.h"
 
 // - - - - - - - - - - - - -
 
@@ -33,6 +34,7 @@ extern "C"{
 // - - - - - -
 #define J_TYPE 111
 // - - - - - -
+#define IO_TYPE 127
 #define HALT 0
 // - - - - - - - -
 
@@ -47,6 +49,7 @@ typedef struct
     bTypeExecutor* bTypeExecutor;
     uTypeExecutor* uTypeExecutor;
     jTypeExecutor* jTypeExecutor;
+    ioTypeExecutor* ioTypeExecutor;
     Logger* logger;
 } ExecutorManager;
 

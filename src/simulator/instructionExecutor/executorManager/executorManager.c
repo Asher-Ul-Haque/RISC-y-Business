@@ -55,6 +55,12 @@ ExecutorManager* initializeExecutorManager(Memory* MEMORY_MANAGER, RegisterFile*
 
     executorManager->logger = LOGGER;
 
+    executorManager->ioTypeExecutor = initialiseIOTypeExecutor(executorManager->memoryManager, executorManager->registerFile, executorManager->logger);
+    if (executorManager->ioTypeExecutor == NULL)
+    {
+        perror("Error: failed to attach IO Type executor");
+    }
+
     return executorManager;
 }
 
@@ -74,6 +80,7 @@ void destroyExecutorManager(ExecutorManager * EXECUTION_MANAGER)
     destroyBTypeExecutor(EXECUTION_MANAGER->bTypeExecutor);
     destroyUTypeExecutor(EXECUTION_MANAGER->uTypeExecutor);
     destroyJTypeExecutor(EXECUTION_MANAGER->jTypeExecutor);
+    destroyIOTypeExecutor(EXECUTION_MANAGER->ioTypeExecutor);
 
     //Free memory
     free(EXECUTION_MANAGER);
@@ -93,7 +100,7 @@ void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCT
     //     INSTRUCTION[INSTRUCTION_SIZE - i - 1] = temp;
     // }
     unsigned char opcode = toDecimal(INSTRUCTION, OPCODE_START, OPCODE_END, false);
-    //printf("Opcode: %d\n", opcode);
+    printf("Opcode: %d\n", opcode);
     switch(opcode)
     {
         case R_TYPE:
@@ -136,6 +143,11 @@ void findAndExecute(ExecutorManager* EXECUTION_MANAGER, Bit INSTRUCTION[INSTRUCT
         
         case J_TYPE:
             executeJTypeInstruction(EXECUTION_MANAGER->jTypeExecutor, INSTRUCTION);
+            break;
+
+        case IO_TYPE:
+            executeIOTypeInstruction(EXECUTION_MANAGER->ioTypeExecutor, INSTRUCTION);
+            *EXECUTION_MANAGER->programCounter+= 4;
             break;
     
         case HALT:

@@ -210,17 +210,14 @@ void IDE::update()
 	                                        	loadProgram(simulator, (projectDirectoryPath + "/" + projectFiles[1]).c_str());
                                                 soundEffects.setPath(soundDirectoryPath + "success.wav");
                                                 soundEffects.playSoundEffect();
-
-                                                currentFile = 2;
                                                 currentFilePath = projectDirectoryPath + "/" + projectFiles[2];
                                                 textEditor.setFilePath(currentFilePath);
-
-	                                        	while(runNextInstruction(simulator))
+                                                currentFile = 2;
+                                                while(runNextInstruction(simulator))
                                                 {
-                                                    textEditor.writeToFile();
                                                     textEditor.readFromFile();   
                                                 }
-	                                        	
+                                                textEditor.writeToFile();
                                                 deinitializeSimulator(simulator);
 	                                            textEditor.writeToFile();
 	                                            
@@ -268,15 +265,16 @@ void IDE::update()
                                                 animation.scale(fileButtons[2], sf::Vector2f(1.05, 1.05), sf::Vector2f(1, 1), 0.1);
                                                 simulator = initializeSimulator((projectDirectoryPath + "/" + projectFiles[2]).c_str());
                                                 loadProgram(simulator, (projectDirectoryPath + "/" + projectFiles[1]).c_str());
-                                                runSimulation(simulator);
                                                 soundEffects.setPath(soundDirectoryPath + "success.wav");
                                                 soundEffects.playSoundEffect();
-                                                deinitializeSimulator(simulator);
-                                                textEditor.writeToFile();
-                                                currentFile = 2;
                                                 currentFilePath = projectDirectoryPath + "/" + projectFiles[2];
                                                 textEditor.setFilePath(currentFilePath);
-                                                textEditor.readFromFile();
+                                                currentFile = 2;
+                                                while(runNextInstruction(simulator))
+                                                {
+                                                    textEditor.readFromFile();   
+                                                }
+                                                textEditor.writeToFile();
                                         	}
                                         	catch (const std::exception& e)
                                         	{

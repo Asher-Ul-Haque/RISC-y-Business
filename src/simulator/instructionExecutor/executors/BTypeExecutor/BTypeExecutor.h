@@ -3,9 +3,9 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
+
 #include "../../../memory/memory.h"
 // - - - - - - - - -
-
 #define INSTRUCTION_SIZE 32
 // - - - - - - - - -
 #define FIRST_HALF_IMMEDIATE_START 20

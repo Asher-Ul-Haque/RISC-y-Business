@@ -33,6 +33,7 @@ set(SOURCES_SIMULATORCLI
     ${PROJECT_SOURCE_DIR}/src/simulator/instructionExecutor/executors/RTypeExecutor/RTypeExecutor.c
     ${PROJECT_SOURCE_DIR}/src/simulator/instructionExecutor/executors/STypeExecutor/STypeExecutor.c
     ${PROJECT_SOURCE_DIR}/src/simulator/instructionExecutor/executors/UTypeExecutor/UTypeExecutor.c
+    ${PROJECT_SOURCE_DIR}/src/simulator/instructionExecutor/executors/IOTypeExecutor/IOTypeExecutor.c
     ${PROJECT_SOURCE_DIR}/src/simulator/simulatorCLI.c
 )
 
@@ -49,6 +50,7 @@ set(SOURCES_RISCY_IDE
     ${PROJECT_SOURCE_DIR}/src/simulator/instructionExecutor/executors/RTypeExecutor/RTypeExecutor.c
     ${PROJECT_SOURCE_DIR}/src/simulator/instructionExecutor/executors/STypeExecutor/STypeExecutor.c
     ${PROJECT_SOURCE_DIR}/src/simulator/instructionExecutor/executors/UTypeExecutor/UTypeExecutor.c
+    ${PROJECT_SOURCE_DIR}/src/simulator/instructionExecutor/executors/IOTypeExecutor/IOTypeExecutor.c
     ${PROJECT_SOURCE_DIR}/src/assembler/instructions.cpp
     ${PROJECT_SOURCE_DIR}/include/utility/animationUtilities.cpp
     ${PROJECT_SOURCE_DIR}/include/utility/menuUtilities.cpp
